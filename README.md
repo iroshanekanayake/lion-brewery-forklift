@@ -26,3 +26,7 @@ The existing application logic and UI have been retained. The service worker cac
 - Wait until GitHub Pages deployment completes.
 - On Android Chrome, open the Pages URL, then use Chrome menu → **Install app** (or **Add to Home screen**, depending on Chrome version).
 - If an older version was installed, uninstall it, reload the Pages website, and install again after the new files are deployed.
+
+
+## Repository layout used in this ZIP
+The three PNG icon files are in the repository root, matching the existing GitHub upload. The HTML, manifest and service worker reference these root-level files.

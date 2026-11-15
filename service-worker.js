@@ -1,11 +1,11 @@
-const CACHE_NAME = "forklift-safety-shell-v2";
+const CACHE_NAME = "forklift-safety-shell-v3";
 const APP_SHELL = [
   new URL("./", self.registration.scope).href,
   new URL("index.html", self.registration.scope).href,
   new URL("manifest.json", self.registration.scope).href,
-  new URL("icons/app-icon-192.png", self.registration.scope).href,
-  new URL("icons/app-icon-512.png", self.registration.scope).href,
-  new URL("icons/favicon-32.png", self.registration.scope).href
+  new URL("app-icon-192.png", self.registration.scope).href,
+  new URL("app-icon-512.png", self.registration.scope).href,
+  new URL("favicon-32.png", self.registration.scope).href
 ];
 
 self.addEventListener("install", event => {
