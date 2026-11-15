@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lion Brewery (Biyagama) — Forklift Safety & Pre-Check Management System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        coral: {
+                            400: '#ff7043',
+                            500: '#ff5722',
+                            600: '#f4511e',
+                            700: '#e64a19',
+                        },
+                        dark: {
+                            950: '#0a0a0c',
+                            900: '#111215',
+                            850: '#16171b',
+                            800: '#1c1d22',
+                            700: '#272930',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-main: #0a0a0c;
+            --bg-card: #111215;
+            --bg-card-hover: #16171b;
+            --border-color: #272930;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent-color: #ff5722;
+            --accent-hover: #f4511e;
+            --accent-glow: rgba(255, 87, 34, 0.25);
+        }
+
+        body.theme-sky-neumorphism {
+            --bg-main: #e6edf5;
+            --bg-card: #f0f4f9;
+            --bg-card-hover: #e2ecf7;
+            --border-color: #d1dde9;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --accent-glow: rgba(2, 132, 199, 0.25);
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+        }
+
+        body.theme-official-corporate {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --border-color: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-color: #1e3a8a;
+            --accent-hover: #1e40af;
+            --accent-glow: rgba(30, 58, 138, 0.2);
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .neu-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        body.theme-sky-neumorphism .neu-card {
+            box-shadow: 6px 6px 14px #cbdaea, -6px -6px 14px #ffffff;
+        }
+
+        body.theme-official-corporate .neu-card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-card);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color);
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #a4PrintArea, #a4PrintArea * {
+                visibility: visible;
+            }
+            #a4PrintArea {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #ffffff !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+                padding: 16px !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
+
+    <!-- Toast Notification Banner -->
+    <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-4 opacity-0">
+        <div class="bg-dark-800 border border-coral-500/40 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3">
+            <div id="toastIcon" class="w-8 h-8 rounded-xl bg-coral-500/20 text-coral-500 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <p id="toastTitle" class="text-sm font-bold text-white">Notification</p>
+                <p id="toastMessage" class="text-xs text-zinc-400">Action completed successfully.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Header & Navigation -->
+    <header class="sticky top-0 z-40 backdrop-blur-md border-b" style="background-color: var(--bg-card); border-color: var(--border-color);">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-3">
+            <!-- Brand Title -->
+            <div class="flex items-center gap-3.5 w-full md:w-auto">
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg shrink-0" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));">
+                    <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border" style="background-color: var(--accent-glow); color: var(--accent-color); border-color: var(--border-color);">
+                            HSE & Fleet Compliance
+                        </span>
+                        <span class="text-xs" style="color: var(--text-muted);">&#8226; Biyagama Plant</span>
+                    </div>
+                    <h1 class="text-sm sm:text-base lg:text-lg font-extrabold tracking-tight mt-0.5" style="color: var(--text-main);">
+                        Lion Brewery (Biyagama) &mdash; Forklift Safety & Pre-Check Management System
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Header Right Controls & Theme Selector -->
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                <!-- Theme Quick Selector Dropdown -->
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                    <i class="fa-solid fa-palette text-xs" style="color: var(--accent-color);"></i>
+                    <select id="headerThemeSelect" onchange="changeTheme(this.value)"
+                        class="bg-transparent text-xs font-bold focus:outline-none cursor-pointer" style="color: var(--text-main);">
+                        <option value="dark-coral">Dark Coral (Default)</option>
+                        <option value="sky-neumorphism">Sky Neumorphism</option>
+                        <option value="official-corporate">Official Corporate</option>
+                    </select>
+                </div>
+
+                <!-- Primary View Navigation -->
+                <nav class="flex items-center gap-2 p-1.5 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-color);">
+                    <button type="button" id="navDashboardBtn" onclick="switchView('dashboard')"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md" style="background-color: var(--accent-color);">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span class="hidden sm:inline">Dashboard</span>
+                    </button>
+                    <button type="button" id="navApkBtn" onclick="switchView('apk')"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <span class="hidden sm:inline">Operator APK</span>
+                    </button>
+                    <button type="button" id="navSettingsBtn" onclick="switchView('settings')" title="System Settings"
+                        class="flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 1: SAFETY OFFICER DASHBOARD                                      -->
+        <!-- ===================================================================== -->
+        <section id="viewDashboard" class="space-y-6">
+            <!-- Sub-Header Controls -->
+            <div class="neu-card p-4 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold flex items-center gap-2" style="color: var(--text-main);">
+                        <span>Safety Officer Analytics & Fleet Overview</span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Feed
+                        </span>
+                    </h2>
+                    <p class="text-xs mt-0.5" style="color: var(--text-muted);">Real-time forklift pre-check compliance, shift logs, and defect resolution across FL 01 &#8211; FL 30.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Time Range Filter -->
+                    <div class="inline-flex p-1 rounded-xl border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <button type="button" onclick="setTimeFilter('daily')" id="filterDaily"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-white shadow" style="background-color: var(--accent-color);">
+                            Daily
+                        </button>
+                        <button type="button" onclick="setTimeFilter('weekly')" id="filterWeekly"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all" style="color: var(--text-muted);">
+                            Weekly
+                        </button>
+                        <button type="button" onclick="setTimeFilter('monthly')" id="filterMonthly"
+                            class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all" style="color: var(--text-muted);">
+                            Monthly
+                        </button>
+                    </div>
+
+                    <!-- Export CSV Button -->
+                    <button type="button" onclick="exportToCSV()"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        <i class="fa-solid fa-file-csv text-emerald-400"></i>
+                        <span>Export CSV</span>
+                    </button>
+
+                    <!-- + New Inspection (APK) Button -->
+                    <button type="button" onclick="switchView('apk')"
+                        class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white shadow-lg transition-all" style="background-color: var(--accent-color);">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Inspection (APK)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 KPI Cards Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="rounded-2xl p-5 shadow-xl border relative overflow-hidden text-white" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover)); border-color: var(--border-color);">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider opacity-90">Total Inspections</p>
+                            <h3 id="kpiTotalInspections" class="text-3xl font-extrabold mt-2">0</h3>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs opacity-90">
+                        <span id="kpiPeriodLabel" class="font-medium">Selected Period: Daily</span>
+                        <span class="px-2 py-0.5 rounded-lg bg-black/20 font-semibold">21-Point Check</span>
+                    </div>
+                </div>
+
+                <div class="neu-card rounded-2xl p-5">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Active Fleet Checked</p>
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <h3 id="kpiActiveFleet" class="text-3xl font-extrabold" style="color: var(--text-main);">0</h3>
+                                <span class="text-sm font-semibold" style="color: var(--text-muted);">/ 30 Units</span>
+                            </div>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-blue-500/15 text-blue-400 border border-blue-500/20 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="w-full h-1.5 rounded-full overflow-hidden" style="background-color: var(--bg-main);">
+                            <div id="kpiFleetProgressBar" class="bg-blue-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p id="kpiFleetPct" class="text-xs mt-1.5" style="color: var(--text-muted);">0% of FL 01&#8211;FL 30 inspected</p>
+                    </div>
+                </div>
+
+                <div class="neu-card rounded-2xl p-5">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Open Defects / Issues</p>
+                            <h3 id="kpiDefects" class="text-3xl font-extrabold text-amber-500 mt-2">0</h3>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-500 border border-amber-500/20 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs">
+                        <span style="color: var(--text-muted);">Requires Maintenance Action</span>
+                        <span id="kpiSafetyScore" class="font-bold text-emerald-500">100% Safe Rate</span>
+                    </div>
+                </div>
+
+                <div class="neu-card rounded-2xl p-5">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Cumulative Meter Reading</p>
+                            <div class="flex items-baseline gap-1.5 mt-2">
+                                <h3 id="kpiRunningHours" class="text-3xl font-extrabold" style="color: var(--text-main);">0</h3>
+                                <span class="text-sm font-bold" style="color: var(--accent-color);">HRS</span>
+                            </div>
+                        </div>
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs" style="color: var(--text-muted);">
+                        <span>Forklift Engine / Battery Meter</span>
+                        <span class="font-semibold" style="color: var(--text-main);">Verified HRS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Breakdown Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-8 neu-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h3 class="text-base font-bold" style="color: var(--text-main);">Inspections & Running Hours (HRS) Trend</h3>
+                            <p class="text-xs" style="color: var(--text-muted);">Comparative pre-check volume and average hour-meter telemetry</p>
+                        </div>
+                        <div class="flex items-center gap-4 text-xs">
+                            <span class="flex items-center gap-1.5" style="color: var(--text-main);">
+                                <span class="w-2.5 h-2.5 rounded-sm" style="background-color: var(--accent-color);"></span> Inspections Count
+                            </span>
+                            <span class="flex items-center gap-1.5" style="color: var(--text-main);">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Avg Meter (HRS)
+                            </span>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-[290px]">
+                        <canvas id="safetyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-4 neu-card rounded-2xl p-5 flex flex-col justify-between space-y-5">
+                    <div>
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">Shift & Fleet Distribution</h3>
+                        <p class="text-xs" style="color: var(--text-muted);">12-Hour Shift coverage and contractor ownership</p>
+
+                        <div class="mt-4 space-y-3">
+                            <div class="p-3.5 rounded-xl border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                                <div class="flex items-center justify-between text-xs mb-1.5">
+                                    <span class="font-semibold text-amber-500 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-sun"></i> Day Shift (06:00 AM - 06:00 PM)
+                                    </span>
+                                    <span id="dayShiftCount" class="font-bold" style="color: var(--text-main);">0</span>
+                                </div>
+                                <div class="w-full h-2 rounded-full overflow-hidden" style="background-color: var(--bg-card);">
+                                    <div id="dayShiftBar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 50%"></div>
+                                </div>
+                            </div>
+
+                            <div class="p-3.5 rounded-xl border" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                                <div class="flex items-center justify-between text-xs mb-1.5">
+                                    <span class="font-semibold text-indigo-400 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-moon"></i> Night Shift (06:00 PM - 06:00 AM)
+                                    </span>
+                                    <span id="nightShiftCount" class="font-bold" style="color: var(--text-main);">0</span>
+                                </div>
+                                <div class="w-full h-2 rounded-full overflow-hidden" style="background-color: var(--bg-card);">
+                                    <div id="nightShiftBar" class="bg-indigo-400 h-full rounded-full transition-all duration-500" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 border-t" style="border-color: var(--border-color);">
+                        <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: var(--text-muted);">Forklift Owner Breakdown</p>
+                        <div class="grid grid-cols-3 gap-2.5 text-center">
+                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Winwill</p>
+                                <p id="ownerWinwillCount" class="text-lg font-extrabold mt-0.5" style="color: var(--accent-color);">0</p>
+                            </div>
+                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Tasma</p>
+                                <p id="ownerTasmaCount" class="text-lg font-extrabold text-emerald-500 mt-0.5">0</p>
+                            </div>
+                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Other</p>
+                                <p id="ownerOtherCount" class="text-lg font-extrabold text-blue-500 mt-0.5">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Defect Tracker -->
+            <div class="neu-card rounded-2xl p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h3 class="text-base font-bold flex items-center gap-2" style="color: var(--text-main);">
+                            <i class="fa-solid fa-wrench" style="color: var(--accent-color);"></i>
+                            <span>Kanban Issue & Defect Tracker</span>
+                        </h3>
+                        <p class="text-xs" style="color: var(--text-muted);">Failed checklist items reported by operators requiring safety officer verification</p>
+                    </div>
+                    <span id="openIssuesBadge" class="px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30 self-start sm:self-auto">
+                        0 Active Defects
+                    </span>
+                </div>
+
+                <div id="kanbanDefectGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Pre-Check Log Table -->
+            <div class="neu-card rounded-2xl overflow-hidden">
+                <div class="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="border-color: var(--border-color);">
+                    <div>
+                        <h3 class="text-base font-bold" style="color: var(--text-main);">Recent Pre-Check Inspection Logs</h3>
+                        <p class="text-xs" style="color: var(--text-muted);">Click "View Sheet" on any entry to inspect or print the official A4 Forklift Pre-Check Sheet</p>
+                    </div>
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
+                        <input type="text" id="logSearchInput" oninput="renderDashboard()" placeholder="Search FL no, operator, dept..."
+                            class="w-full border rounded-xl pl-9 pr-3.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b text-[11px] font-bold uppercase tracking-wider" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-muted);">
+                                <th class="py-3.5 px-4">Date & Shift</th>
+                                <th class="py-3.5 px-4">Forklift</th>
+                                <th class="py-3.5 px-4">Owner / Model</th>
+                                <th class="py-3.5 px-4">Department</th>
+                                <th class="py-3.5 px-4">Operator Name</th>
+                                <th class="py-3.5 px-4">Supervisor</th>
+                                <th class="py-3.5 px-4">Meter (HRS)</th>
+                                <th class="py-3.5 px-4">Status</th>
+                                <th class="py-3.5 px-4 text-right">Official Sheet</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody" class="divide-y text-xs" style="divide-color: var(--border-color);">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 2: OPERATOR APK MODE                                             -->
+        <!-- ===================================================================== -->
+        <section id="viewApk" class="hidden max-w-2xl mx-auto">
+            <form id="preCheckForm" onsubmit="handlePreCheckSubmit(event)" class="neu-card rounded-3xl overflow-hidden shadow-2xl">
+                <div class="px-6 py-5 text-white" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2.5 py-1 rounded-lg bg-black/20 text-[11px] font-bold uppercase tracking-wider">
+                            Mobile Operator APK
+                        </span>
+                        <span class="text-xs font-semibold opacity-90">Lion Brewery (Biyagama)</span>
+                    </div>
+                    <h2 class="text-xl font-extrabold mt-2">Forklift Daily Pre-Check List</h2>
+                    <p class="text-xs opacity-90 mt-0.5">Complete all 21 mandatory safety checks prior to operating machinery.</p>
+                </div>
+
+                <div class="mx-5 mt-5 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 text-xs space-y-1.5">
+                    <div class="font-bold flex items-center gap-2 uppercase tracking-wider text-[11px]">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Mandatory Plant Safety Rules</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 opacity-90">
+                        <li>Forklifts must be properly cleaned before and after operation.</li>
+                        <li><strong>Always maintain a maximum speed limit of 5 KMH</strong> inside plant premises.</li>
+                        <li>Appropriate Personal Protective Equipment (PPE) and seat belt must be worn at all times while on duty.</li>
+                    </ul>
+                </div>
+
+                <div class="p-5 sm:p-6 space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="formForkliftNo" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                                Forklift Number: *
+                            </label>
+                            <select id="formForkliftNo" required
+                                class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="formInspectionDate" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                                Inspection Date: *
+                            </label>
+                            <input type="date" id="formInspectionDate" required
+                                class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Forklift Owner: *
+                        </label>
+                        <div id="ownerPillGroup" class="grid grid-cols-3 gap-2.5">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Forklift Model / Fuel Type: *
+                        </label>
+                        <div id="modelPillGroup" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="formShiftTime" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                                Shift Time: *
+                            </label>
+                            <select id="formShiftTime" required
+                                class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                                <option value="Day Shift (06:00 AM - 06:00 PM)">Day Shift (06:00 AM - 06:00 PM)</option>
+                                <option value="Night Shift (06:00 PM - 06:00 AM)">Night Shift (06:00 PM - 06:00 AM)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="formHourMeter" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                                Running Hours Meter (HRS): *
+                            </label>
+                            <input type="number" step="0.1" min="0" id="formHourMeter" placeholder="e.g. 1425.5" required
+                                class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="formDepartment" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Department (Lion Location): *
+                        </label>
+                        <select id="formDepartment" onchange="onDepartmentChange()" required
+                            class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="formOperator" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Operator Name: *
+                        </label>
+                        <select id="formOperator" required
+                            class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="formSupervisor" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Supervisor Name: *
+                        </label>
+                        <select id="formSupervisor" required
+                            class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </select>
+                    </div>
+
+                    <div class="pt-3 border-t" style="border-color: var(--border-color);">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wide" style="color: var(--text-main);">21-Point Pre-Check Inspection</h3>
+                                <p class="text-xs" style="color: var(--text-muted);">Select Pass, Fail, or N/A for each item</p>
+                            </div>
+                            <button type="button" onclick="markAllChecklistPass()"
+                                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-500 border border-emerald-500/30 transition-all self-start sm:self-auto">
+                                <i class="fa-solid fa-check-double mr-1"></i> Mark All Pass
+                            </button>
+                        </div>
+
+                        <div class="border rounded-2xl overflow-hidden" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                            <div class="divide-y" style="divide-color: var(--border-color);" id="checklistItemsContainer">
+                                <!-- Populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="formRemarks" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
+                            Remarks / Defect Details:
+                        </label>
+                        <textarea id="formRemarks" rows="5"
+                            placeholder="Describe any mechanical defects, oil leakages, tire wear, light failures, or operational remarks in detail..."
+                            class="w-full min-h-[140px] border rounded-2xl p-4 text-sm focus:outline-none leading-relaxed" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full py-4 px-6 rounded-2xl text-white font-extrabold text-sm uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Pre-Check Inspection</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 3: SETTINGS VIEW                                                 -->
+        <!-- ===================================================================== -->
+        <section id="viewSettings" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="neu-card rounded-3xl overflow-hidden shadow-2xl">
+                <div class="px-6 py-5 border-b flex items-center justify-between" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="text-lg font-extrabold flex items-center gap-2" style="color: var(--text-main);">
+                            <i class="fa-solid fa-sliders" style="color: var(--accent-color);"></i>
+                            <span>System & Fleet Configuration Settings</span>
+                        </h2>
+                        <p class="text-xs mt-0.5" style="color: var(--text-muted);">Customize reporting period, fleet owners, models, departments, and supervisors.</p>
+                    </div>
+                    <button type="button" onclick="resetDefaultSettings()"
+                        class="px-3 py-1.5 rounded-xl text-xs font-semibold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        Reset Defaults
+                    </button>
+                </div>
+
+                <form onsubmit="saveSystemSettings(event)" class="p-6 space-y-5">
+                    <div>
+                        <label for="settingTheme" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Application Theme Preset</label>
+                        <select id="settingTheme" onchange="changeTheme(this.value)"
+                            class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                            <option value="dark-coral">Dark Coral (Default)</option>
+                            <option value="sky-neumorphism">Sky Neumorphism</option>
+                            <option value="official-corporate">Official Corporate</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="settingYear" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
+                            <select id="settingYear" class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                                <option value="2025">2025</option>
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="settingMonth" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Month</label>
+                            <select id="settingMonth" class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                                <option value="January">January</option>
+                                <option value="February">February</option>
+                                <option value="March">March</option>
+                                <option value="April">April</option>
+                                <option value="May">May</option>
+                                <option value="June">June</option>
+                                <option value="July">July</option>
+                                <option value="August">August</option>
+                                <option value="September">September</option>
+                                <option value="October">October</option>
+                                <option value="November" selected>November</option>
+                                <option value="December">December</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="settingDepartments" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">
+                            Departments / Lion Locations (Comma Separated)
+                        </label>
+                        <textarea id="settingDepartments" rows="3"
+                            class="w-full border rounded-xl p-3 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="settingModels" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">
+                                Forklift Models (Comma Separated)
+                            </label>
+                            <input type="text" id="settingModels"
+                                class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </div>
+
+                        <div>
+                            <label for="settingOwners" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">
+                                Forklift Owners (Comma Separated)
+                            </label>
+                            <input type="text" id="settingOwners"
+                                class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="settingSupervisors" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">
+                            Authorized Supervisors (Comma Separated)
+                        </label>
+                        <input type="text" id="settingSupervisors"
+                            class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                    </div>
+
+                    <div class="pt-2 flex justify-end gap-3">
+                        <button type="button" onclick="switchView('dashboard')"
+                            class="px-5 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Employee Management Card -->
+            <div class="neu-card rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
+                <div>
+                    <h3 class="text-base font-extrabold flex items-center gap-2" style="color: var(--text-main);">
+                        <i class="fa-solid fa-users-gear" style="color: var(--accent-color);"></i>
+                        <span>Department Employee Management</span>
+                    </h3>
+                    <p class="text-xs mt-0.5" style="color: var(--text-muted);">Select a department to view, add, or remove operators instantly.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="mgmtDeptSelect" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Select Department</label>
+                        <select id="mgmtDeptSelect" onchange="renderEmployeeManagementList()"
+                            class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="newOperatorInput" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Add New Operator Name</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="newOperatorInput" placeholder="Enter operator full name..."
+                                class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                            <button type="button" onclick="addNewOperator()"
+                                class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shrink-0 shadow" style="background-color: var(--accent-color);">
+                                <i class="fa-solid fa-plus mr-1"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--text-muted);">Current Operators in Selected Department</p>
+                    <div id="mgmtOperatorListContainer" class="border rounded-2xl p-3 max-h-56 overflow-y-auto divide-y" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- A4 PRINTABLE OFFICIAL SHEET MODAL                                     -->
+    <!-- ===================================================================== -->
+    <div id="a4ModalBackdrop" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="neu-card rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl my-auto">
+            <div class="no-print px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf" style="color: var(--accent-color);"></i>
+                    <span class="text-sm font-bold" style="color: var(--text-main);">Official A4 Forklift Pre-Check Sheet</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.print()"
+                        class="px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow" style="background-color: var(--accent-color);">
+                        <i class="fa-solid fa-print"></i> Print / Save PDF
+                    </button>
+                    <button type="button" onclick="closeA4Modal()"
+                        class="w-8 h-8 rounded-xl border flex items-center justify-center" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-muted);">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 max-h-[80vh] overflow-y-auto bg-zinc-200">
+                <div id="a4PrintArea" class="bg-white text-black p-6 sm:p-8 rounded-lg shadow-md max-w-[210mm] mx-auto text-xs">
+                    <!-- Dynamic A4 Sheet injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT APP LOGIC                                                  -->
+    <!-- ===================================================================== -->
+    <script>
+        // 1. Employee Directory
+        let departmentEmployees = {
+            "Logistic Division": [
+                "K.B.N. Pradeep Kumara",
+                "P.D. Nandana Udayakumara",
+                "K.W. Krishantha Mendis Perera",
+                "S.M.V.G. Chandana Sandaruwan Thilakarathna",
+                "K.P. Thilina Madushan",
+                "H.H. Danushka Darmasiri",
+                "K.A.D. Sachin Kavindu Athukorala",
+                "E.S.K.M. Eroshan Ekanayake",
+                "P.K. Shehan Madusanka Jayakody",
+                "S. Akila Dewinda",
+                "D.N.G. Padmasiri",
+                "G.M. Vimukthi Wijewardana",
+                "W.M. Akila Nuwan Weerakoon",
+                "V. Rathsara Loku Gamage",
+                "M.K.D. Senaka Gayan",
+                "K.A. Chathuranga Jayanath",
+                "G.G. Lahiru Danushka Dayarathna",
+                "P.K.P. Chaminda Rathnalanka",
+                "R. Hasindu Gimantha",
+                "Janindu Sooriyabandara",
+                "Charles Reginold Laliyat",
+                "A.M. Damith Wasantha Kumara",
+                "G. Kasun Wickramarathna"
+            ],
+            "Logistic Division & Procurement Division - Meegoda": [
+                "L.D.P. Prasanna Kumara",
+                "K.M. Vasantha Kumara",
+                "W.A. Mauli Wanasundara",
+                "S.A. Isuru Manushantha"
+            ],
+            "Procurement Division - HO": [
+                "A.M.M.G. Eranga Madushan Thilaka"
+            ],
+            "Procurement Division - Meegoda": [
+                "N.D.P. Janith Sachintha Kumara"
+            ]
+        };
+
+        const CHECKLIST_ITEMS = [
+            "01. Hour Meter / Running Hours Check",
+            "02. Head lights",
+            "03. Signal lights",
+            "04. Brake lights",
+            "05. Reverse lights",
+            "06. Parking lights",
+            "07. Spinning light",
+            "08. Horn working",
+            "09. Safety belts",
+            "10. Windshield clean",
+            "11. Side mirrors condition",
+            "12. Fork movement",
+            "13. Reverse horn",
+            "14. Brake check",
+            "15. Any exterior damage",
+            "16. All tires' conditions",
+            "17. Battery condition",
+            "18. Any leakages",
+            "19. Power steering",
+            "20. Hand brake",
+            "21. Workability of handles & locks are satisfactory"
+        ];
+
+        const FLEET_UNITS = Array.from({ length: 30 }, (_, i) => {
+            const num = String(i + 1).padStart(2, '0');
+            return `FL ${num}`;
+        });
+
+        let appSettings = {
+            year: "2026",
+            month: "November",
+            departments: Object.keys(departmentEmployees),
+            models: ["Gas", "Battery", "Diesel", "Petrol"],
+            owners: ["Winwill", "Tasma", "Other"],
+            supervisors: [
+                "R.D. Sanjeewa Newil Rajapaksha",
+                "R.M.A. Ajith Indralal Rajathewa"
+            ]
+        };
+
+        let selectedOwner = "Winwill";
+        let selectedModel = "Gas";
+        let checklistResponses = {};
+        let currentTimeFilter = "daily";
+        let trendChartInstance = null;
+
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        function buildDefaultResults(failedIndices = []) {
+            const res = {};
+            CHECKLIST_ITEMS.forEach((item, idx) => {
+                res[idx] = failedIndices.includes(idx) ? "Fail" : "Pass";
+            });
+            return res;
+        }
+
+        let inspectionLogs = [
+            {
+                id: "CHK-1001",
+                date: todayStr,
+                forkliftNo: "FL 01",
+                owner: "Winwill",
+                model: "Gas",
+                shift: "Day Shift (06:00 AM - 06:00 PM)",
+                hourMeter: 1842.5,
+                department: "Logistic Division",
+                operator: "K.B.N. Pradeep Kumara",
+                supervisor: "R.D. Sanjeewa Newil Rajapaksha",
+                results: buildDefaultResults([]),
+                remarks: "All systems operating smoothly. Cleaned before shift.",
+                defectResolved: true
+            },
+            {
+                id: "CHK-1002",
+                date: todayStr,
+                forkliftNo: "FL 04",
+                owner: "Winwill",
+                model: "Battery",
+                shift: "Day Shift (06:00 AM - 06:00 PM)",
+                hourMeter: 964.0,
+                department: "Logistic Division",
+                operator: "E.S.K.M. Eroshan Ekanayake",
+                supervisor: "R.D. Sanjeewa Newil Rajapaksha",
+                results: buildDefaultResults([6, 12]),
+                remarks: "07. Spinning light bulb flickering and 13. Reverse horn low volume in high-noise bay.",
+                defectResolved: false
+            }
+        ];
+
+        // Theme Switcher
+        function changeTheme(themeName) {
+            document.body.classList.remove('theme-sky-neumorphism', 'theme-official-corporate');
+            if (themeName === 'sky-neumorphism') {
+                document.body.classList.add('theme-sky-neumorphism');
+            } else if (themeName === 'official-corporate') {
+                document.body.classList.add('theme-official-corporate');
+            }
+            const headerSelect = document.getElementById('headerThemeSelect');
+            const settingSelect = document.getElementById('settingTheme');
+            if (headerSelect) headerSelect.value = themeName;
+            if (settingSelect) settingSelect.value = themeName;
+            localStorage.setItem('lion_brewery_theme', themeName);
+            showToast("Theme Updated", `Switched to ${themeName.replace('-', ' ')}`, "fa-palette");
+        }
+
+        // View Switching
+        function switchView(viewName) {
+            const vDash = document.getElementById('viewDashboard');
+            const vApk = document.getElementById('viewApk');
+            const vSet = document.getElementById('viewSettings');
+
+            const btnDash = document.getElementById('navDashboardBtn');
+            const btnApk = document.getElementById('navApkBtn');
+            const btnSet = document.getElementById('navSettingsBtn');
+
+            vDash.classList.add('hidden');
+            vApk.classList.add('hidden');
+            vSet.classList.add('hidden');
+
+            btnDash.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all";
+            btnDash.style.color = "var(--text-muted)";
+            btnDash.style.backgroundColor = "transparent";
+
+            btnApk.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all";
+            btnApk.style.color = "var(--text-muted)";
+            btnApk.style.backgroundColor = "transparent";
+
+            btnSet.className = "flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all";
+            btnSet.style.color = "var(--text-muted)";
+            btnSet.style.backgroundColor = "transparent";
+
+            if (viewName === 'dashboard') {
+                vDash.classList.remove('hidden');
+                btnDash.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
+                btnDash.style.backgroundColor = "var(--accent-color)";
+                renderDashboard();
+            } else if (viewName === 'apk') {
+                vApk.classList.remove('hidden');
+                btnApk.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
+                btnApk.style.backgroundColor = "var(--accent-color)";
+                initApkForm();
+            } else if (viewName === 'settings') {
+                vSet.classList.remove('hidden');
+                btnSet.className = "flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
+                btnSet.style.backgroundColor = "var(--accent-color)";
+                initSettingsView();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toast Notification
+        function showToast(title, message, iconClass = "fa-circle-check") {
+            const banner = document.getElementById('toastBanner');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            document.getElementById('toastIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+
+            banner.classList.remove('hidden');
+            setTimeout(() => {
+                banner.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                banner.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => banner.classList.add('hidden'), 300);
+            }, 3500);
+        }
+
+        // Initialize APK Form Controls
+        function initApkForm() {
+            // Forklift numbers
+            const fSelect = document.getElementById('formForkliftNo');
+            fSelect.innerHTML = FLEET_UNITS.map(f => `<option value="${f}">${f}</option>`).join('');
+
+            // Inspection Date
+            document.getElementById('formInspectionDate').value = todayStr;
+
+            // Owners Pills
+            const ownerGroup = document.getElementById('ownerPillGroup');
+            ownerGroup.innerHTML = appSettings.owners.map(o => `
+                <button type="button" onclick="selectOwner('${o}')"
+                    class="py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${selectedOwner === o ? 'text-white shadow' : ''}"
+                    style="${selectedOwner === o ? 'background-color: var(--accent-color); border-color: var(--accent-color);' : 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);'}">
+                    ${o}
+                </button>
+            `).join('');
+
+            // Model Pills
+            const modelGroup = document.getElementById('modelPillGroup');
+            modelGroup.innerHTML = appSettings.models.map(m => `
+                <button type="button" onclick="selectModel('${m}')"
+                    class="py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${selectedModel === m ? 'text-white shadow' : ''}"
+                    style="${selectedModel === m ? 'background-color: var(--accent-color); border-color: var(--accent-color);' : 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);'}">
+                    ${m}
+                </button>
+            `).join('');
+
+            // Departments
+            const dSelect = document.getElementById('formDepartment');
+            dSelect.innerHTML = appSettings.departments.map(d => `<option value="${d}">${d}</option>`).join('');
+
+            // Supervisors
+            const sSelect = document.getElementById('formSupervisor');
+            sSelect.innerHTML = appSettings.supervisors.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            // Init checklist responses to Pass
+            CHECKLIST_ITEMS.forEach((_, idx) => {
+                if (!checklistResponses[idx]) checklistResponses[idx] = "Pass";
+            });
+
+            onDepartmentChange();
+            renderChecklistItems();
+        }
+
+        function selectOwner(o) {
+            selectedOwner = o;
+            initApkForm();
+        }
+
+        function selectModel(m) {
+            selectedModel = m;
+            initApkForm();
+        }
+
+        function onDepartmentChange() {
+            const dept = document.getElementById('formDepartment').value;
+            const opSelect = document.getElementById('formOperator');
+            const ops = departmentEmployees[dept] || [];
+            opSelect.innerHTML = ops.length > 0
+                ? ops.map(op => `<option value="${op}">${op}</option>`).join('')
+                : `<option value="">No Operators Found</option>`;
+        }
+
+        function renderChecklistItems() {
+            const container = document.getElementById('checklistItemsContainer');
+            container.innerHTML = CHECKLIST_ITEMS.map((label, idx) => {
+                const val = checklistResponses[idx] || "Pass";
+                return `
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${val === 'Fail' ? 'bg-red-500/10' : ''}">
+                        <span class="text-sm sm:text-base font-extrabold tracking-wide" style="color: var(--text-main);">${label}</span>
+                        <div class="inline-flex rounded-xl p-1 border shrink-0 self-start sm:self-auto" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                            <button type="button" onclick="setCheckStatus(${idx}, 'Pass')"
+                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${val === 'Pass' ? 'bg-emerald-500 text-white shadow' : ''}" style="${val !== 'Pass' ? 'color: var(--text-muted);' : ''}">
+                                Pass
+                            </button>
+                            <button type="button" onclick="setCheckStatus(${idx}, 'Fail')"
+                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${val === 'Fail' ? 'bg-red-500 text-white shadow' : ''}" style="${val !== 'Fail' ? 'color: var(--text-muted);' : ''}">
+                                Fail
+                            </button>
+                            <button type="button" onclick="setCheckStatus(${idx}, 'N/A')"
+                                class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${val === 'N/A' ? 'bg-zinc-600 text-white shadow' : ''}" style="${val !== 'N/A' ? 'color: var(--text-muted);' : ''}">
+                                N/A
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setCheckStatus(idx, status) {
+            checklistResponses[idx] = status;
+            renderChecklistItems();
+        }
+
+        function markAllChecklistPass() {
+            CHECKLIST_ITEMS.forEach((_, idx) => {
+                checklistResponses[idx] = "Pass";
+            });
+            renderChecklistItems();
+            showToast("Checklist Updated", "All 21 items marked as Pass.", "fa-check-double");
+        }
+
+        // Form Submit
+        function handlePreCheckSubmit(e) {
+            e.preventDefault();
+            const newLog = {
+                id: `CHK-${Math.floor(1000 + Math.random() * 9000)}`,
+                date: document.getElementById('formInspectionDate').value,
+                forkliftNo: document.getElementById('formForkliftNo').value,
+                owner: selectedOwner,
+                model: selectedModel,
+                shift: document.getElementById('formShiftTime').value,
+                hourMeter: parseFloat(document.getElementById('formHourMeter').value) || 0,
+                department: document.getElementById('formDepartment').value,
+                operator: document.getElementById('formOperator').value,
+                supervisor: document.getElementById('formSupervisor').value,
+                results: { ...checklistResponses },
+                remarks: document.getElementById('formRemarks').value || "No remarks provided.",
+                defectResolved: false
+            };
+
+            inspectionLogs.unshift(newLog);
+            showToast("Inspection Submitted", `${newLog.forkliftNo} checklist successfully recorded!`, "fa-circle-check");
+            document.getElementById('preCheckForm').reset();
+            checklistResponses = {};
+            switchView('dashboard');
+        }
+
+        // Dashboard Analytics & Rendering
+        function setTimeFilter(f) {
+            currentTimeFilter = f;
+            ['Daily', 'Weekly', 'Monthly'].forEach(item => {
+                const btn = document.getElementById(`filter${item}`);
+                if (item.toLowerCase() === f) {
+                    btn.style.backgroundColor = "var(--accent-color)";
+                    btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all text-white shadow";
+                } else {
+                    btn.style.backgroundColor = "transparent";
+                    btn.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all";
+                    btn.style.color = "var(--text-muted)";
+                }
+            });
+            document.getElementById('kpiPeriodLabel').textContent = `Selected Period: ${f.charAt(0).toUpperCase() + f.slice(1)}`;
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const searchVal = (document.getElementById('logSearchInput').value || "").toLowerCase();
+            const filteredLogs = inspectionLogs.filter(l => 
+                l.forkliftNo.toLowerCase().includes(searchVal) ||
+                l.operator.toLowerCase().includes(searchVal) ||
+                l.department.toLowerCase().includes(searchVal)
+            );
+
+            // KPIs
+            document.getElementById('kpiTotalInspections').textContent = inspectionLogs.length;
+            const uniqueFleet = new Set(inspectionLogs.map(l => l.forkliftNo)).size;
+            document.getElementById('kpiActiveFleet').textContent = uniqueFleet;
+            const pct = Math.round((uniqueFleet / 30) * 100);
+            document.getElementById('kpiFleetProgressBar').style.width = `${pct}%`;
+            document.getElementById('kpiFleetPct').textContent = `${pct}% of FL 01&#8211;FL 30 inspected`;
+
+            let openDefectsCount = 0;
+            inspectionLogs.forEach(l => {
+                Object.values(l.results).forEach(v => {
+                    if (v === 'Fail' && !l.defectResolved) openDefectsCount++;
+                });
+            });
+            document.getElementById('kpiDefects').textContent = openDefectsCount;
+            document.getElementById('openIssuesBadge').textContent = `${openDefectsCount} Active Defects`;
+
+            const totalHrs = inspectionLogs.reduce((acc, curr) => acc + (curr.hourMeter || 0), 0);
+            document.getElementById('kpiRunningHours').textContent = totalHrs.toLocaleString();
+
+            // Shift & Owner breakdown
+            const dayShiftCount = inspectionLogs.filter(l => l.shift.includes('Day')).length;
+            const nightShiftCount = inspectionLogs.filter(l => l.shift.includes('Night')).length;
+            document.getElementById('dayShiftCount').textContent = dayShiftCount;
+            document.getElementById('nightShiftCount').textContent = nightShiftCount;
+            const totalShifts = (dayShiftCount + nightShiftCount) || 1;
+            document.getElementById('dayShiftBar').style.width = `${Math.round((dayShiftCount / totalShifts) * 100)}%`;
+            document.getElementById('nightShiftBar').style.width = `${Math.round((nightShiftCount / totalShifts) * 100)}%`;
+
+            let winCount = inspectionLogs.filter(l => l.owner === 'Winwill').length;
+            let tasCount = inspectionLogs.filter(l => l.owner === 'Tasma').length;
+            let othCount = inspectionLogs.filter(l => l.owner === 'Other').length;
+            document.getElementById('ownerWinwillCount').textContent = winCount;
+            document.getElementById('ownerTasmaCount').textContent = tasCount;
+            document.getElementById('ownerOtherCount').textContent = othCount;
+
+            // Kanban Defect Cards
+            const kanbanContainer = document.getElementById('kanbanDefectGrid');
+            const failedLogs = inspectionLogs.filter(l => Object.values(l.results).includes('Fail'));
+            if (failedLogs.length === 0) {
+                kanbanContainer.innerHTML = `
+                    <div class="col-span-full py-8 text-center text-xs" style="color: var(--text-muted);">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2"></i>
+                        <p>No active forklift mechanical defects reported. All units safe for operation!</p>
+                    </div>
+                `;
+            } else {
+                kanbanContainer.innerHTML = failedLogs.map(l => `
+                    <div class="border rounded-2xl p-4 space-y-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/15 text-red-500 border border-red-500/30">
+                                ${l.forkliftNo} &bull; Defect Alert
+                            </span>
+                            <span class="text-[11px]" style="color: var(--text-muted);">${l.date}</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold" style="color: var(--text-main);">${l.operator} (${l.department})</p>
+                            <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-muted);">${l.remarks}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t" style="border-color: var(--border-color);">
+                            <span class="text-[11px] font-semibold ${l.defectResolved ? 'text-emerald-500' : 'text-amber-500'}">
+                                ${l.defectResolved ? 'Cleared & Safe' : 'In Maintenance'}
+                            </span>
+                            <button type="button" onclick="toggleDefectResolution('${l.id}')"
+                                class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">
+                                ${l.defectResolved ? 'Re-open' : 'Mark Cleared'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Logs Table Body
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = filteredLogs.map(l => {
+                const hasFail = Object.values(l.results).includes('Fail');
+                const statusBadge = hasFail && !l.defectResolved
+                    ? `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-500 border border-red-500/30">Defect Fail</span>`
+                    : `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">All Pass</span>`;
+
+                return `
+                    <tr class="hover:bg-white/5 transition-all">
+                        <td class="py-3.5 px-4">
+                            <p class="font-bold" style="color: var(--text-main);">${l.date}</p>
+                            <p class="text-[11px]" style="color: var(--text-muted);">${l.shift.split(' ')[0]} Shift</p>
+                        </td>
+                        <td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${l.forkliftNo}</td>
+                        <td class="py-3.5 px-4">
+                            <p class="font-semibold" style="color: var(--text-main);">${l.owner}</p>
+                            <p class="text-[11px]" style="color: var(--text-muted);">${l.model}</p>
+                        </td>
+                        <td class="py-3.5 px-4" style="color: var(--text-main);">${l.department}</td>
+                        <td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${l.operator}</td>
+                        <td class="py-3.5 px-4" style="color: var(--text-muted);">${l.supervisor}</td>
+                        <td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${l.hourMeter} HRS</td>
+                        <td class="py-3.5 px-4">${statusBadge}</td>
+                        <td class="py-3.5 px-4 text-right">
+                            <button type="button" onclick="openA4Modal('${l.id}')"
+                                class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);">
+                                <i class="fa-solid fa-file-pdf mr-1"></i> View Sheet
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            renderTrendChart();
+        }
+
+        function toggleDefectResolution(id) {
+            const log = inspectionLogs.find(l => l.id === id);
+            if (log) {
+                log.defectResolved = !log.defectResolved;
+                renderDashboard();
+                showToast("Defect Status Updated", `Log ${id} marked as ${log.defectResolved ? 'Cleared' : 'Active'}`, "fa-wrench");
+            }
+        }
+
+        // Chart.js Trend Chart
+        function renderTrendChart() {
+            const ctx = document.getElementById('safetyTrendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            trendChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Inspections Count',
+                            data: [18, 22, 25, 20, 28, 15, inspectionLogs.length],
+                            backgroundColor: '#ff5722',
+                            borderRadius: 8,
+                            barThickness: 20
+                        },
+                        {
+                            label: 'Avg Meter (HRS)',
+                            data: [1400, 1420, 1450, 1480, 1510, 1530, 1560],
+                            type: 'line',
+                            borderColor: '#fbbf24',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
+                        y1: { position: 'right', grid: { display: false }, ticks: { color: '#fbbf24', font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        // A4 Printable Sheet Modal
+        function openA4Modal(id) {
+            const l = inspectionLogs.find(item => item.id === id);
+            if (!l) return;
+
+            const printArea = document.getElementById('a4PrintArea');
+            printArea.innerHTML = `
+                <div class="border-b-2 border-black pb-4 mb-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-black uppercase">Lion Brewery (Biyagama)</h2>
+                        <p class="text-[11px] font-bold text-zinc-700">Forklift Daily Pre-Check Inspection Record</p>
+                    </div>
+                    <div class="text-right text-[11px]">
+                        <p><strong>Log ID:</strong> ${l.id}</p>
+                        <p><strong>Date:</strong> ${l.date}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 mb-4 text-[11px] border p-3 rounded bg-zinc-50">
+                    <div><strong>Forklift No:</strong> ${l.forkliftNo}</div>
+                    <div><strong>Owner:</strong> ${l.owner}</div>
+                    <div><strong>Model / Fuel:</strong> ${l.model}</div>
+                    <div><strong>Shift:</strong> ${l.shift}</div>
+                    <div><strong>Department:</strong> ${l.department}</div>
+                    <div><strong>Hour Meter:</strong> ${l.hourMeter} HRS</div>
+                    <div><strong>Operator:</strong> ${l.operator}</div>
+                    <div><strong>Supervisor:</strong> ${l.supervisor}</div>
+                </div>
+
+                <table class="w-full border-collapse border border-zinc-400 text-[10px] mb-4">
+                    <thead>
+                        <tr class="bg-zinc-200">
+                            <th class="border border-zinc-400 p-1.5 text-left">SN</th>
+                            <th class="border border-zinc-400 p-1.5 text-left">CHECKS (21 Points)</th>
+                            <th class="border border-zinc-400 p-1.5 text-center w-20">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${CHECKLIST_ITEMS.map((item, idx) => `
+                            <tr>
+                                <td class="border border-zinc-400 p-1 font-bold">${idx + 1}</td>
+                                <td class="border border-zinc-400 p-1">${item}</td>
+                                <td class="border border-zinc-400 p-1 text-center font-bold ${l.results[idx] === 'Fail' ? 'text-red-600 bg-red-50' : 'text-emerald-700'}">${l.results[idx] || 'Pass'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+
+                <div class="border border-zinc-400 p-3 rounded mb-4 text-[11px]">
+                    <p class="font-bold underline mb-1">REMARKS / DEFECT DETAILS:</p>
+                    <p class="italic text-zinc-800">${l.remarks}</p>
+                </div>
+
+                <div class="text-[10px] text-zinc-600 border-t pt-3 flex justify-between">
+                    <div>
+                        <p>*Note - Forklifts should be properly cleaned before and after operation</p>
+                        <p>Always maintain a speed of 5 KMH &#8226; Appropriate PPE & seat belt must be worn</p>
+                    </div>
+                    <div class="text-right font-bold text-black">
+                        <p>Digitally Verified via APK</p>
+                        <p>${l.supervisor}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('a4ModalBackdrop').classList.remove('hidden');
+        }
+
+        function closeA4Modal() {
+            document.getElementById('a4ModalBackdrop').classList.add('hidden');
+        }
+
+        // CSV Export
+        function exportToCSV() {
+            let csv = "ID,Date,Forklift,Owner,Model,Shift,HourMeter,Department,Operator,Supervisor,Remarks\n";
+            inspectionLogs.forEach(l => {
+                csv += `"${l.id}","${l.date}","${l.forkliftNo}","${l.owner}","${l.model}","${l.shift}","${l.hourMeter}","${l.department}","${l.operator}","${l.supervisor}","${l.remarks}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Lion_Brewery_Forklift_Logs_${todayStr}.csv`);
+            a.click();
+            showToast("CSV Exported", "Inspection logs successfully downloaded.", "fa-file-csv");
+        }
+
+        // Settings View
+        function initSettingsView() {
+            document.getElementById('settingTheme').value = localStorage.getItem('lion_brewery_theme') || 'dark-coral';
+            document.getElementById('settingYear').value = appSettings.year;
+            document.getElementById('settingMonth').value = appSettings.month;
+            document.getElementById('settingDepartments').value = appSettings.departments.join(', ');
+            document.getElementById('settingModels').value = appSettings.models.join(', ');
+            document.getElementById('settingOwners').value = appSettings.owners.join(', ');
+            document.getElementById('settingSupervisors').value = appSettings.supervisors.join(', ');
+
+            const deptSelect = document.getElementById('mgmtDeptSelect');
+            deptSelect.innerHTML = appSettings.departments.map(d => `<option value="${d}">${d}</option>`).join('');
+            renderEmployeeManagementList();
+        }
+
+        function saveSystemSettings(e) {
+            e.preventDefault();
+            appSettings.year = document.getElementById('settingYear').value;
+            appSettings.month = document.getElementById('settingMonth').value;
+            appSettings.departments = document.getElementById('settingDepartments').value.split(',').map(s => s.trim()).filter(Boolean);
+            appSettings.models = document.getElementById('settingModels').value.split(',').map(s => s.trim()).filter(Boolean);
+            appSettings.owners = document.getElementById('settingOwners').value.split(',').map(s => s.trim()).filter(Boolean);
+            appSettings.supervisors = document.getElementById('settingSupervisors').value.split(',').map(s => s.trim()).filter(Boolean);
+
+            showToast("Settings Saved", "System configuration successfully updated.", "fa-floppy-disk");
+            switchView('dashboard');
+        }
+
+        function resetDefaultSettings() {
+            appSettings = {
+                year: "2026",
+                month: "November",
+                departments: Object.keys(departmentEmployees),
+                models: ["Gas", "Battery", "Diesel", "Petrol"],
+                owners: ["Winwill", "Tasma", "Other"],
+                supervisors: [
+                    "R.D. Sanjeewa Newil Rajapaksha",
+                    "R.M.A. Ajith Indralal Rajathewa"
+                ]
+            };
+            initSettingsView();
+            showToast("Reset Defaults", "Settings restored to factory defaults.", "fa-rotate-right");
+        }
+
+        // Employee Management in Settings
+        function renderEmployeeManagementList() {
+            const dept = document.getElementById('mgmtDeptSelect').value;
+            const container = document.getElementById('mgmtOperatorListContainer');
+            const ops = departmentEmployees[dept] || [];
+
+            if (ops.length === 0) {
+                container.innerHTML = `<p class="p-3 text-xs text-center" style="color: var(--text-muted);">No operators in this department.</p>`;
+                return;
+            }
+
+            container.innerHTML = ops.map((op, idx) => `
+                <div class="py-2.5 px-3 flex items-center justify-between text-xs border-b last:border-b-0" style="border-color: var(--border-color); color: var(--text-main);">
+                    <span class="font-semibold">${op}</span>
+                    <button type="button" onclick="removeOperator('${dept}', ${idx})"
+                        class="w-7 h-7 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500/25 flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addNewOperator() {
+            const dept = document.getElementById('mgmtDeptSelect').value;
+            const input = document.getElementById('newOperatorInput');
+            const name = input.value.trim();
+            if (!name) return;
+
+            if (!departmentEmployees[dept]) departmentEmployees[dept] = [];
+            departmentEmployees[dept].push(name);
+            input.value = "";
+            renderEmployeeManagementList();
+            showToast("Operator Added", `${name} added to ${dept}`, "fa-user-plus");
+        }
+
+        function removeOperator(dept, idx) {
+            if (departmentEmployees[dept]) {
+                const removed = departmentEmployees[dept].splice(idx, 1);
+                renderEmployeeManagementList();
+                showToast("Operator Removed", `${removed} removed from ${dept}`, "fa-user-minus");
+            }
+        }
+
+        // DOM Load Init
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('lion_brewery_theme') || 'dark-coral';
+            changeTheme(savedTheme);
+            initApkForm();
+            renderDashboard();
+        });
+    </script>
+</body>
+</html>
