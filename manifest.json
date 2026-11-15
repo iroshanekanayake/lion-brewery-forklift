@@ -2,7 +2,7 @@
   "name": "Forklift Safety & Pre-Check Management System",
   "short_name": "Forklift Safety",
   "description": "Forklift Safety & Pre-Check Management System",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -21,5 +21,7 @@
       "type": "image/png",
       "purpose": "any"
     }
-  ]
+  ],
+  "id": "./",
+  "prefer_related_applications": false
 }

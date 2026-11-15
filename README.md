@@ -20,3 +20,9 @@
 
 ## Important
 The existing application logic and UI have been retained. The service worker caches the local app shell only. The application uses external CDN resources (Tailwind CSS, Google Fonts, Font Awesome and Chart.js), so full offline operation is not guaranteed.
+
+## Important for Chrome installation
+- Open the published **GitHub Pages HTTPS website**, not the `github.com` repository page.
+- Wait until GitHub Pages deployment completes.
+- On Android Chrome, open the Pages URL, then use Chrome menu → **Install app** (or **Add to Home screen**, depending on Chrome version).
+- If an older version was installed, uninstall it, reload the Pages website, and install again after the new files are deployed.

@@ -1,40 +1,56 @@
-const CACHE_NAME = "forklift-safety-shell-v1";
+const CACHE_NAME = "forklift-safety-shell-v2";
 const APP_SHELL = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icons/app-icon-192.png",
-  "./icons/app-icon-512.png",
-  "./icons/favicon-32.png"
+  new URL("./", self.registration.scope).href,
+  new URL("index.html", self.registration.scope).href,
+  new URL("manifest.json", self.registration.scope).href,
+  new URL("icons/app-icon-192.png", self.registration.scope).href,
+  new URL("icons/app-icon-512.png", self.registration.scope).href,
+  new URL("icons/favicon-32.png", self.registration.scope).href
 ];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    for (const url of APP_SHELL) {
+      try {
+        const response = await fetch(url, { cache: "reload" });
+        if (response.ok) await cache.put(url, response);
+      } catch (error) {
+        console.warn("Could not cache app shell resource:", url, error);
+      }
+    }
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-    ))
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith("forklift-safety-shell-") && key !== CACHE_NAME).map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-  event.respondWith(
-    caches.match(event.request).then(cached =>
-      cached || fetch(event.request).then(response => {
-        if (response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-        }
-        return response;
-      })
-    )
-  );
+  event.respondWith((async () => {
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
+    try {
+      const response = await fetch(event.request);
+      if (response && response.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(event.request, response.clone()).catch(() => {});
+      }
+      return response;
+    } catch (error) {
+      if (event.request.mode === "navigate") {
+        const fallback = await caches.match(new URL("index.html", self.registration.scope).href);
+        if (fallback) return fallback;
+      }
+      throw error;
+    }
+  })());
 });
