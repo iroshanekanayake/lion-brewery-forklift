@@ -1589,6 +1589,8 @@
                 'auth/wrong-password': 'Password එක වැරදියි.',
                 'auth/invalid-credential': 'Email හෝ Password වැරදියි.',
                 'auth/popup-closed-by-user': 'Google Login කවුළුව වසා දමා ඇත. නැවත උත්සාහ කරන්න.',
+                'auth/popup-blocked': 'Browser එක Google Login popup එක අවහිර කළා. Chrome හි සාමාන්‍ය tab එකකින් නැවත උත්සාහ කරන්න.',
+                'auth/cancelled-popup-request': 'Google Login ඉල්ලීම අවලංගු වුණා. නැවත උත්සාහ කරන්න.',
                 'auth/unauthorized-domain': 'මෙම Website Domain එක Firebase Authorized Domains තුළ නැහැ.',
                 'auth/network-request-failed': 'Internet සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.',
                 'auth/too-many-requests': 'උත්සාහ කිරීම් වැඩියි. ටික වේලාවකින් නැවත උත්සාහ කරන්න.'
@@ -1643,8 +1645,12 @@
             setLoginError('');
             try {
                 await applyLoginPersistence();
-                // Redirect flow is more reliable than popups on mobile browsers/PWA.
-                await firebaseAuth.signInWithRedirect(googleProvider);
+                // Popup flow avoids redirect-helper third-party storage restrictions
+                // commonly encountered when the app is hosted on GitHub Pages.
+                const result = await firebaseAuth.signInWithPopup(googleProvider);
+                if (result && result.user) {
+                    setLoginError('');
+                }
             } catch (error) {
                 setLoginError(friendlyAuthError(error));
                 button.disabled = false;
@@ -1695,7 +1701,6 @@
                 document.getElementById('headerAuthEmail').textContent = '';
             }
         });
-        firebaseAuth.getRedirectResult().catch(error => setLoginError(friendlyAuthError(error)));
 
         // DOM Load Init
         window.addEventListener('DOMContentLoaded', () => {
