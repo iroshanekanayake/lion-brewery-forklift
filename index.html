@@ -145,9 +145,63 @@
                 display: none !important;
             }
         }
-    </style>
+    
+/* Soft embossed login gate */
+.login-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto;background:#e8edf5;background-image:radial-gradient(circle at 15% 18%,#f9fbff 0,transparent 34%),radial-gradient(circle at 88% 82%,#d8e1ef 0,transparent 35%);color:#263247}
+.login-shell{width:min(100%,440px);padding:34px 30px 28px;border-radius:34px;background:linear-gradient(145deg,#edf2fa,#e2e8f2);box-shadow:16px 16px 34px #c5cedb,-16px -16px 34px #fff;border:1px solid rgba(255,255,255,.72);text-align:center}
+.login-emblem{width:88px;height:88px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;border-radius:28px;color:#2563a6;font-size:30px;background:linear-gradient(145deg,#f7faff,#e1e8f2);box-shadow:9px 9px 18px #c7d0dd,-9px -9px 18px #fff}
+.login-title{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.8px;color:#202b3d}
+.login-subtitle{font-size:13px;color:#718096;margin-top:9px;margin-bottom:28px}
+.login-field{position:relative;margin:15px 0;text-align:left}
+.login-field label{display:block;font-size:11px;font-weight:700;color:#47729f;margin:0 0 7px 12px}
+.login-field input{width:100%;height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.8);outline:none;border-radius:17px;background:#e9eef6;color:#263247;font-size:14px;box-shadow:inset 5px 5px 10px #cbd3df,inset -5px -5px 10px #fff}
+.login-field input:focus{box-shadow:inset 3px 3px 7px #cbd3df,inset -3px -3px 7px #fff,0 0 0 3px rgba(45,121,190,.12)}
+.login-password-wrap{position:relative}.login-password-wrap input{padding-right:52px}
+.login-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:11px;background:transparent;color:#718096}
+.login-primary{width:100%;height:58px;margin-top:20px;border:0;border-radius:18px;font-weight:800;letter-spacing:.5px;color:#23639d;background:linear-gradient(145deg,#f4f8ff,#e1e8f2);box-shadow:8px 8px 17px #c6cfdd,-8px -8px 17px #fff;transition:transform .18s,box-shadow .18s}
+.login-primary:active{transform:translateY(2px);box-shadow:inset 5px 5px 10px #c6cfdd,inset -5px -5px 10px #fff}
+.login-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 2px 0;font-size:12px;color:#718096}
+.login-meta button,.login-switch button{color:#286da8;font-weight:800}
+.login-check{display:flex;align-items:center;gap:8px}.login-check input{accent-color:#2875b6;width:16px;height:16px}
+.login-switch{margin-top:27px;font-size:13px;color:#718096}.login-error{min-height:18px;margin-top:10px;font-size:12px;color:#c24145;font-weight:600}
+.login-foot{margin-top:22px;font-size:10px;letter-spacing:1.4px;color:#9aa7b8;font-weight:700}.login-hidden{display:none!important}
+@media(max-width:420px){.login-shell{padding:28px 22px 24px;border-radius:29px}.login-title{font-size:25px}.login-emblem{width:78px;height:78px}}
+
+    
+.login-or{display:flex;align-items:center;gap:12px;margin:20px 0 14px;color:#91a0b3;font-size:10px;font-weight:800;letter-spacing:1.5px}
+.login-or:before,.login-or:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#c5cfdd,transparent)}
+.login-google{width:100%;height:54px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid rgba(255,255,255,.9);border-radius:17px;background:linear-gradient(145deg,#f7faff,#e2e9f3);color:#34445b;font-size:13px;font-weight:800;box-shadow:7px 7px 15px #c8d1df,-7px -7px 15px #fff;transition:transform .18s,box-shadow .18s}
+.login-google i{font-size:17px;color:#4285f4}.login-google:active{transform:translateY(2px);box-shadow:inset 4px 4px 8px #c8d1df,inset -4px -4px 8px #fff}
+.login-google:disabled{opacity:.6;cursor:wait}
+.login-account-chip{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--border-color);border-radius:12px;background:var(--bg-main);color:var(--text-muted);font-size:11px;max-width:220px}
+.login-account-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.login-logout{border:1px solid var(--border-color);border-radius:10px;padding:7px 10px;color:var(--text-main);font-size:11px;font-weight:800}
+
+</style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
+
+
+    <section id="loginGate" class="login-gate" aria-label="Application login">
+      <div class="login-shell">
+        <div class="login-emblem"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="login-title" id="loginHeading">Welcome Back</div>
+        <p class="login-subtitle" id="loginSubtitle">Sign in to continue to your safety dashboard</p>
+        <form id="localLoginForm" onsubmit="handleLocalAuth(event)">
+          <div class="login-field"><label for="loginEmail">EMAIL ADDRESS</label><input id="loginEmail" type="email" autocomplete="username" placeholder="Enter your email" required></div>
+          <div class="login-field"><label for="loginPassword">PASSWORD</label><div class="login-password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="6" required><button class="login-eye" type="button" onclick="toggleLoginPassword()" aria-label="Show or hide password"><i id="loginEyeIcon" class="fa-solid fa-eye"></i></button></div></div>
+          <div class="login-meta"><label class="login-check"><input id="rememberLogin" type="checkbox"> Remember me</label><button type="button" id="forgotPasswordBtn" onclick="handleForgotPassword()">Forgot Password?</button></div>
+          <div id="loginError" class="login-error" role="status" aria-live="polite"></div>
+          <button class="login-primary" id="loginSubmitBtn" type="submit">LOGIN</button>
+        </form>
+        <div class="login-or"><span>OR</span></div>
+        <button class="login-google" id="googleLoginBtn" type="button" onclick="signInWithGoogle()">
+          <i class="fa-brands fa-google"></i><span>Continue with Google</span>
+        </button>
+        <div class="login-switch" id="loginSwitchText">Don't have an account? <button type="button" onclick="setAuthMode('signup')">Create Account</button></div>
+        <div class="login-foot">LION BREWERY · BIYAGAMA · HSE SYSTEM</div>
+      </div>
+    </section>
 
     <!-- Toast Notification Banner -->
     <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-4 opacity-0">
@@ -194,6 +248,12 @@
                         <option value="sky-neumorphism">Sky Neumorphism</option>
                         <option value="official-corporate">Official Corporate</option>
                     </select>
+                </div>
+
+                <div class="login-account-chip" id="headerAuthChip" style="display:none;">
+                    <i class="fa-solid fa-user-shield" style="color:var(--accent-color);"></i>
+                    <span id="headerAuthEmail"></span>
+                    <button class="login-logout" type="button" onclick="signOutCurrentUser()">Logout</button>
                 </div>
 
                 <!-- Primary View Navigation -->
@@ -809,6 +869,8 @@
     <!-- ===================================================================== -->
     <!-- JAVASCRIPT APP LOGIC                                                  -->
     <!-- ===================================================================== -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script>
         // 1. Employee Directory
         let departmentEmployees = {
@@ -1496,6 +1558,144 @@
                 showToast("Operator Removed", `${removed} removed from ${dept}`, "fa-user-minus");
             }
         }
+
+
+
+        // Firebase Authentication for Lion Brewery App
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzgqcp5zM_Ny95DGqlMwUikiG49zQ_LVw",
+            authDomain: "lion-brewery-app.firebaseapp.com",
+            projectId: "lion-brewery-app",
+            storageBucket: "lion-brewery-app.firebasestorage.app",
+            messagingSenderId: "770106674062",
+            appId: "1:770106674062:web:7778041fecde71bbb1f2df"
+        };
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        const firebaseAuth = firebaseApp.auth();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
+        let localAuthMode = 'login';
+
+        function setLoginError(message) {
+            const el = document.getElementById('loginError');
+            if (el) el.textContent = message || '';
+        }
+        function friendlyAuthError(error) {
+            const messages = {
+                'auth/email-already-in-use': 'මෙම Email Address එක දැනටමත් භාවිතා කරලා තියෙනවා.',
+                'auth/invalid-email': 'නිවැරදි Email Address එකක් ඇතුළත් කරන්න.',
+                'auth/weak-password': 'Password එක අවම වශයෙන් අක්ෂර 6ක් විය යුතුයි.',
+                'auth/user-not-found': 'මෙම Email Address එකට ගිණුමක් හමු වුණේ නැහැ.',
+                'auth/wrong-password': 'Password එක වැරදියි.',
+                'auth/invalid-credential': 'Email හෝ Password වැරදියි.',
+                'auth/popup-closed-by-user': 'Google Login කවුළුව වසා දමා ඇත. නැවත උත්සාහ කරන්න.',
+                'auth/unauthorized-domain': 'මෙම Website Domain එක Firebase Authorized Domains තුළ නැහැ.',
+                'auth/network-request-failed': 'Internet සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.',
+                'auth/too-many-requests': 'උත්සාහ කිරීම් වැඩියි. ටික වේලාවකින් නැවත උත්සාහ කරන්න.'
+            };
+            return messages[error && error.code] || (error && error.message) || 'Login කිරීමේදී දෝෂයක් ඇතිවුණා. නැවත උත්සාහ කරන්න.';
+        }
+        async function applyLoginPersistence() {
+            const remember = document.getElementById('rememberLogin').checked;
+            await firebaseAuth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
+        }
+        function setAuthMode(mode) {
+            localAuthMode = mode;
+            const signup = mode === 'signup';
+            document.getElementById('loginHeading').textContent = signup ? 'Create Account' : 'Welcome Back';
+            document.getElementById('loginSubtitle').textContent = signup ? 'Create your secure account to access the safety dashboard' : 'Sign in to continue to your safety dashboard';
+            document.getElementById('loginSubmitBtn').textContent = signup ? 'CREATE ACCOUNT' : 'LOGIN';
+            document.getElementById('loginPassword').autocomplete = signup ? 'new-password' : 'current-password';
+            document.getElementById('loginPassword').minLength = 6;
+            document.getElementById('loginSwitchText').innerHTML = signup
+                ? "Already have an account? <button type=\"button\" onclick=\"setAuthMode('login')\">Sign In</button>"
+                : "Don't have an account? <button type=\"button\" onclick=\"setAuthMode('signup')\">Create Account</button>";
+            document.getElementById('forgotPasswordBtn').classList.toggle('login-hidden', signup);
+            setLoginError('');
+            document.getElementById('loginPassword').value = '';
+        }
+        async function handleLocalAuth(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const submit = document.getElementById('loginSubmitBtn');
+            if (password.length < 6) { setLoginError('Password එක අවම වශයෙන් අක්ෂර 6ක් විය යුතුයි.'); return; }
+            submit.disabled = true;
+            submit.textContent = localAuthMode === 'signup' ? 'CREATING ACCOUNT…' : 'SIGNING IN…';
+            setLoginError('');
+            try {
+                await applyLoginPersistence();
+                if (localAuthMode === 'signup') {
+                    await firebaseAuth.createUserWithEmailAndPassword(email, password);
+                } else {
+                    await firebaseAuth.signInWithEmailAndPassword(email, password);
+                }
+            } catch (error) {
+                setLoginError(friendlyAuthError(error));
+                submit.disabled = false;
+                submit.textContent = localAuthMode === 'signup' ? 'CREATE ACCOUNT' : 'LOGIN';
+            }
+        }
+        async function signInWithGoogle() {
+            const button = document.getElementById('googleLoginBtn');
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-brands fa-google"></i><span>Connecting to Google…</span>';
+            setLoginError('');
+            try {
+                await applyLoginPersistence();
+                // Redirect flow is more reliable than popups on mobile browsers/PWA.
+                await firebaseAuth.signInWithRedirect(googleProvider);
+            } catch (error) {
+                setLoginError(friendlyAuthError(error));
+                button.disabled = false;
+                button.innerHTML = '<i class="fa-brands fa-google"></i><span>Continue with Google</span>';
+            }
+        }
+        async function handleForgotPassword() {
+            const email = document.getElementById('loginEmail').value.trim();
+            if (!email) {
+                setLoginError('Password Reset කිරීමට පළමුව Email Address එක ඇතුළත් කරන්න.');
+                document.getElementById('loginEmail').focus();
+                return;
+            }
+            try {
+                await firebaseAuth.sendPasswordResetEmail(email);
+                setLoginError('Password Reset Link එක ඔබේ Email එකට යවා ඇත. Inbox එක පරීක්ෂා කරන්න.');
+            } catch (error) {
+                setLoginError(friendlyAuthError(error));
+            }
+        }
+        async function signOutCurrentUser() {
+            try {
+                await firebaseAuth.signOut();
+                document.getElementById('loginPassword').value = '';
+                setAuthMode('login');
+            } catch (error) {
+                if (typeof showToast === 'function') showToast('Logout Failed', friendlyAuthError(error), 'error');
+                else alert(friendlyAuthError(error));
+            }
+        }
+        function toggleLoginPassword() {
+            const field = document.getElementById('loginPassword');
+            const shown = field.type === 'password';
+            field.type = shown ? 'text' : 'password';
+            document.getElementById('loginEyeIcon').className = shown ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        }
+
+        firebaseAuth.onAuthStateChanged(user => {
+            const gate = document.getElementById('loginGate');
+            const chip = document.getElementById('headerAuthChip');
+            if (user) {
+                gate.classList.add('login-hidden');
+                chip.style.display = 'flex';
+                document.getElementById('headerAuthEmail').textContent = user.displayName || user.email || 'Signed in';
+            } else {
+                gate.classList.remove('login-hidden');
+                chip.style.display = 'none';
+                document.getElementById('headerAuthEmail').textContent = '';
+            }
+        });
+        firebaseAuth.getRedirectResult().catch(error => setLoginError(friendlyAuthError(error)));
 
         // DOM Load Init
         window.addEventListener('DOMContentLoaded', () => {
