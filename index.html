@@ -1592,6 +1592,7 @@
                 'auth/popup-blocked': 'Browser එක Google Login popup එක අවහිර කළා. Chrome හි සාමාන්‍ය tab එකකින් නැවත උත්සාහ කරන්න.',
                 'auth/cancelled-popup-request': 'Google Login ඉල්ලීම අවලංගු වුණා. නැවත උත්සාහ කරන්න.',
                 'auth/unauthorized-domain': 'මෙම Website Domain එක Firebase Authorized Domains තුළ නැහැ.',
+                'auth/operation-not-supported-in-this-environment': 'මෙම App පරිසරයේ Google Login ක්‍රමය සහාය නොදක්වයි. Chrome Browser එකෙන් උත්සාහ කරන්න.',
                 'auth/network-request-failed': 'Internet සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.',
                 'auth/too-many-requests': 'උත්සාහ කිරීම් වැඩියි. ටික වේලාවකින් නැවත උත්සාහ කරන්න.'
             };
@@ -1638,6 +1639,10 @@
                 submit.textContent = localAuthMode === 'signup' ? 'CREATE ACCOUNT' : 'LOGIN';
             }
         }
+        function isInstalledPwa() {
+            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                   (window.navigator && window.navigator.standalone === true);
+        }
         async function signInWithGoogle() {
             const button = document.getElementById('googleLoginBtn');
             button.disabled = true;
@@ -1645,18 +1650,35 @@
             setLoginError('');
             try {
                 await applyLoginPersistence();
-                // Popup flow avoids redirect-helper third-party storage restrictions
-                // commonly encountered when the app is hosted on GitHub Pages.
-                const result = await firebaseAuth.signInWithPopup(googleProvider);
-                if (result && result.user) {
-                    setLoginError('');
+                if (isInstalledPwa()) {
+                    // Installed Android PWA: use full-page redirect, then process
+                    // getRedirectResult() during app startup after returning.
+                    await firebaseAuth.signInWithRedirect(googleProvider);
+                    return;
                 }
+                // Normal browser tab: popup remains the smoother flow.
+                await firebaseAuth.signInWithPopup(googleProvider);
             } catch (error) {
                 setLoginError(friendlyAuthError(error));
                 button.disabled = false;
                 button.innerHTML = '<i class="fa-brands fa-google"></i><span>Continue with Google</span>';
             }
         }
+        // Complete an installed-PWA Google redirect when the app is reopened.
+        // Firebase returns null when there is no pending redirect, which is normal.
+        (async function completeGoogleRedirect() {
+            try {
+                const result = await firebaseAuth.getRedirectResult();
+                if (result && result.user) setLoginError('');
+            } catch (error) {
+                setLoginError(friendlyAuthError(error));
+                const button = document.getElementById('googleLoginBtn');
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fa-brands fa-google"></i><span>Continue with Google</span>';
+                }
+            }
+        })();
         async function handleForgotPassword() {
             const email = document.getElementById('loginEmail').value.trim();
             if (!email) {
