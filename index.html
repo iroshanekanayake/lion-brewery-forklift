@@ -252,18 +252,30 @@
         #weeklyPrintArea .weekly-meta { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; margin-top:8px; font-size:7px; }
         #weeklyPrintArea .weekly-meta > div { border:1px solid #999; padding:4px; min-height:42px; overflow-wrap:anywhere; }
         @media print {
-            @page { size:A4 landscape; margin:6mm; }
-            body.print-weekly { background:#fff !important; color:#000 !important; }
-            body.print-weekly *, body.print-weekly *::before, body.print-weekly *::after { visibility:visible !important; }
+            @page { size: 297mm 210mm; margin: 5mm; }
+            body.print-weekly { display:block !important; width:auto !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; background:#fff !important; color:#000 !important; }
+            body.print-weekly * , body.print-weekly *::before, body.print-weekly *::after { visibility:visible !important; }
+            body.print-weekly > * { display:none !important; }
+            body.print-weekly > main { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
             body.print-weekly #a4ModalBackdrop { display:none !important; }
-            body.print-weekly header, body.print-weekly main > section:not(#viewWeekly), body.print-weekly #toastBanner,
-            body.print-weekly #viewWeekly > .no-print, body.print-weekly #weeklyManualPanel, body.print-weekly #weeklyScreenSummary { display:none !important; }
-            body.print-weekly main { display:block !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; }
-            body.print-weekly #viewWeekly { display:block !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; }
-            body.print-weekly #weeklyPrintArea { display:block !important; width:100% !important; padding:0 !important; margin:0 !important; overflow:visible !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
-            body.print-weekly #weeklyPrintArea .weekly-grid { font-size:7.2px !important; }
-            body.print-weekly #weeklyPrintArea .weekly-grid th, body.print-weekly #weeklyPrintArea .weekly-grid td { padding:3px 2px !important; }
-            body.print-weekly #weeklyPrintArea .weekly-meta { font-size:6.8px !important; }
+            body.print-weekly main > section:not(#viewWeekly) { display:none !important; }
+            body.print-weekly #viewWeekly { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
+            body.print-weekly #viewWeekly > * { display:none !important; }
+            body.print-weekly #viewWeekly > #weeklyPrintArea { display:block !important; position:static !important; box-sizing:border-box !important; width:100% !important; max-width:none !important; min-height:0 !important; height:auto !important; max-height:none !important; margin:0 !important; padding:0 !important; overflow:visible !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; color:#000 !important; font-family:Arial,sans-serif !important; font-size:7px !important; line-height:1.15 !important; break-inside:avoid !important; page-break-inside:avoid !important; }
+            body.print-weekly #weeklyPrintArea > div { width:100% !important; min-width:0 !important; max-width:none !important; margin:0 !important; padding:0 !important; }
+            body.print-weekly #weeklyPrintArea .weekly-grid { width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; font-size:7px !important; break-inside:avoid !important; page-break-inside:avoid !important; }
+            body.print-weekly #weeklyPrintArea .weekly-grid th, body.print-weekly #weeklyPrintArea .weekly-grid td { padding:1.2px 2px !important; line-height:1.12 !important; height:auto !important; break-inside:avoid !important; page-break-inside:avoid !important; }
+            body.print-weekly #weeklyPrintArea .weekly-grid .day-cell { font-size:6.5px !important; }
+            body.print-weekly #weeklyPrintArea .weekly-meta { grid-template-columns:repeat(7,minmax(0,1fr)) !important; gap:3px !important; margin-top:4px !important; font-size:6px !important; line-height:1.12 !important; break-inside:avoid !important; page-break-inside:avoid !important; }
+            body.print-weekly #weeklyPrintArea .weekly-meta > div { min-height:0 !important; padding:2px !important; overflow-wrap:anywhere !important; }
+            body.print-weekly #weeklyPrintArea .weekly-status { margin:0 !important; }
+            body.print-weekly #weeklyPrintArea .mt-2 { margin-top:3px !important; }
+            body.print-weekly #weeklyPrintArea .mb-3 { margin-bottom:4px !important; }
+            body.print-weekly #weeklyPrintArea .text-lg { font-size:13px !important; }
+            body.print-weekly #weeklyPrintArea .text-xs { font-size:7px !important; }
+            body.print-weekly #weeklyPrintArea .text-\[10px\] { font-size:6.5px !important; }
+            body.print-weekly #weeklyPrintArea .text-\[9px\] { font-size:6px !important; }
+            body.print-weekly #weeklyPrintArea .text-\[8px\] { font-size:5.8px !important; }
         }
         @media print {
             body.print-report header, body.print-report main > section:not(#viewReport), body.print-report #toastBanner,
@@ -984,6 +996,7 @@
                     <div><label class="block text-[11px] font-bold uppercase mb-1">Operator EPF / Name</label><input id="wmOperator" type="text" maxlength="120" placeholder="EPF / Operator name" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
                     <div><label class="block text-[11px] font-bold uppercase mb-1">Inspection Time</label><input id="wmTime" type="time" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
                     <div><label class="block text-[11px] font-bold uppercase mb-1">Hour Meter (HRS)</label><input id="wmHourMeter" type="number" min="0" step="0.1" placeholder="Optional" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
+                    <div><label for="wmSupervisor" class="block text-[11px] font-bold uppercase mb-1">Supervisor</label><select id="wmSupervisor" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"><option value="">Select supervisor</option></select></div>
                 </div>
                 <div><h4 class="text-sm font-bold mb-2">21 Inspection Checks</h4><div id="weeklyManualChecks" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div></div>
                 <div><label for="wmRemarks" class="block text-[11px] font-bold uppercase mb-1">Remarks / Defect Details</label><textarea id="wmRemarks" rows="2" maxlength="1500" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)" placeholder="Required when any item is Fail"></textarea></div>
@@ -2045,6 +2058,8 @@ function initWeeklyView() {
   if(keep && fleetNames().includes(keep)) sel.value=keep;
   if(!$('weeklyStart').value) $('weeklyStart').value=mondayOf(localDate()); else $('weeklyStart').value=mondayOf($('weeklyStart').value);
   $('wmDate').value=$('weeklyStart').value; $('wmTime').value=new Date().toTimeString().slice(0,5);
+  const supervisorSelect=$('wmSupervisor');
+  if(supervisorSelect){const keepSupervisor=supervisorSelect.value;supervisorSelect.innerHTML='<option value="">Select supervisor</option>'+(appSettings.supervisors||[]).map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('');if(keepSupervisor)supervisorSelect.value=keepSupervisor;}
   $('weeklyManualChecks').innerHTML=CHECKLIST_ITEMS.map((item,i)=>`<div class="flex items-center gap-2 border rounded-xl p-2" style="border-color:var(--border-color)"><label class="text-xs font-semibold flex-1">${esc(item)}</label><select id="wmCheck${i}" class="border rounded-lg px-2 py-1.5 text-xs" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"><option value="">Select</option><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="N/A">N/A</option></select></div>`).join('');
   LogDB.weeklyAll().then(rows=>{weeklyManualRecords=rows||[];renderWeekly();}).catch(e=>{weeklyManualRecords=[];renderWeekly();showToast('Weekly storage unavailable',e.message||'Manual entries cannot be loaded.','fa-triangle-exclamation');});
 }
@@ -2062,7 +2077,7 @@ function shiftShort(s){return (s||'').startsWith('Night')?'N':'D';}
 function statusShort(v){return v==='Pass'?'P':v==='Fail'?'F':v==='N/A'?'N/A':'—';}
 function weeklyCell(records, idx) {
   if(!records.length)return '<span style="color:#999">—</span>';
-  return records.map(r=>{const v=(r.results||{})[idx]||'';const cls=v==='Pass'?'weekly-pass':v==='Fail'?'weekly-fail':v==='N/A'?'weekly-na':'';return `<span class="weekly-status ${cls}">${shiftShort(r.shift)}:${statusShort(v)}${r.source==='manual'?'*':''}</span>`;}).join('');
+  return records.map(r=>{const v=(r.results||{})[idx]||'';const cls=v==='Pass'?'weekly-pass':v==='Fail'?'weekly-fail':v==='N/A'?'weekly-na':'';return `<span class="weekly-status ${cls}">${statusShort(v)}${r.source==='manual'?'*':''}</span>`;}).join('');
 }
 function weeklyDayRecords(all,date){return all.filter(r=>r.date===date);}
 function weeklyMetaText(records,field){const vals=[...new Set(records.map(r=>r[field]).filter(v=>v!==undefined&&v!==null&&v!==''))];return vals.length?vals.join(' / '):'—';}
@@ -2079,19 +2094,20 @@ function renderWeekly() {
   h+='<table class="weekly-grid"><thead><tr><th class="sn">SN</th><th class="check-name">CHECKS (21 POINTS)</th>'+WEEK_SHORT.map((d,i)=>`<th>${d}<br><span style="font-weight:400">${dates[i].slice(5)}</span></th>`).join('')+'</tr></thead><tbody>';
   CHECKLIST_ITEMS.forEach((item,i)=>{h+=`<tr><td class="sn">${String(i+1).padStart(2,'0')}</td><td class="check-name">${esc(item.replace(/^\d+\.\s*/,''))}</td>`+dayRecords.map(rs=>`<td class="day-cell">${weeklyCell(rs,i)}</td>`).join('')+'</tr>';});
   h+='</tbody></table><div class="text-[9px] font-bold mt-2">* Manual entry &nbsp; D = Day Shift &nbsp; N = Night Shift &nbsp; P = Pass &nbsp; F = Fail &nbsp; N/A = Not Applicable</div>';
-  h+='<div class="weekly-meta">'+dates.map((d,i)=>{const rs=dayRecords[i];return `<div><b>${WEEK_SHORT[i]} · ${d}</b><br><b>Operator:</b> ${esc(weeklyMetaText(rs,'operator'))}<br><b>Time:</b> ${esc(weeklyTimeText(rs))}<br><b>Hour Meter:</b> ${esc(weeklyMetaText(rs,'hourMeter'))}</div>`;}).join('')+'</div>';
+  h+='<div class="weekly-meta">'+dates.map((d,i)=>{const rs=dayRecords[i];return `<div><b>${WEEK_SHORT[i]} · ${d}</b><br><b>Operator:</b> ${esc(weeklyMetaText(rs,'operator'))}<br><b>Supervisor:</b> ${esc(weeklyMetaText(rs,'supervisor'))}<br><b>Shift:</b> ${esc(weeklyMetaText(rs,'shift'))}<br><b>Time:</b> ${esc(weeklyTimeText(rs))}<br><b>Hour Meter:</b> ${esc(weeklyMetaText(rs,'hourMeter'))}</div>`;}).join('')+'</div>';
   h+='<div class="mt-2 border p-2 text-[9px]" style="border-color:#888"><b>REMARKS / DEFECT DETAILS</b><div class="grid grid-cols-7 gap-1 mt-1">'+dates.map((d,i)=>`<div class="border-r pr-1" style="border-color:#bbb"><b>${WEEK_SHORT[i]}:</b> ${esc(dayRecords[i].map(r=>r.remarks||'').filter(x=>x&&x!=='No remarks provided.').join(' / ')||'—')}</div>`).join('')+'</div></div>';
   h+='<div class="mt-2 text-[8px] leading-relaxed border-t pt-2" style="border-color:#999"><b>SAFETY NOTES:</b> Forklifts should be properly cleaned before and after operation. Always maintain a speed of 5 KMH. Appropriate PPE and seat belt must be worn while on duty.</div>';
   h+='<div class="mt-2 text-right text-[8px]">Generated: '+esc(localDate())+' · Digital record · No signatures required</div></div>';
   $('weeklyPrintArea').innerHTML=h;
 }
 function toggleWeeklyManual(show){$('weeklyManualPanel').classList.toggle('hidden',!show);if(show){const start=mondayOf($('weeklyStart').value||localDate());$('wmDate').value=start;window.scrollTo({top:$('weeklyManualPanel').offsetTop-20,behavior:'smooth'});}}
-function resetWeeklyManual(){['wmOperator','wmHourMeter','wmRemarks'].forEach(id=>$(id).value='');$('wmDate').value=mondayOf($('weeklyStart').value||localDate());$('wmTime').value=new Date().toTimeString().slice(0,5);CHECKLIST_ITEMS.forEach((_,i)=>$('wmCheck'+i).value='');}
+function resetWeeklyManual(){['wmOperator','wmHourMeter','wmRemarks','wmSupervisor'].forEach(id=>{if($(id))$(id).value='';});$('wmDate').value=mondayOf($('weeklyStart').value||localDate());$('wmTime').value=new Date().toTimeString().slice(0,5);CHECKLIST_ITEMS.forEach((_,i)=>$('wmCheck'+i).value='');}
 async function saveWeeklyManual(){
-  const unit=$('weeklyForklift').value,date=$('wmDate').value,shift=$('wmShift').value,operator=$('wmOperator').value.trim(),time=$('wmTime').value,remarks=$('wmRemarks').value.trim(),hourMeter=parseFloat($('wmHourMeter').value)||0;
+  const unit=$('weeklyForklift').value,date=$('wmDate').value,shift=$('wmShift').value,operator=$('wmOperator').value.trim(),supervisor=$('wmSupervisor').value.trim(),time=$('wmTime').value,remarks=$('wmRemarks').value.trim(),hourMeter=parseFloat($('wmHourMeter').value)||0;
   const start=mondayOf($('weeklyStart').value||localDate()),dates=weekDates(start);
   if(!unit||!dates.includes(date)){showToast('Check date','Choose a date inside the selected Monday–Sunday week.','fa-triangle-exclamation');return;}
   if(!operator){showToast('Operator required','Enter the operator EPF number and/or name.','fa-triangle-exclamation');return;}
+  if(!supervisor){showToast('Supervisor required','Select the supervisor for this manual inspection.','fa-triangle-exclamation');$('wmSupervisor').focus();return;}
   const results={};let missing=[],fails=[];CHECKLIST_ITEMS.forEach((_,i)=>{const v=$('wmCheck'+i).value;if(!v)missing.push(i+1);else{results[i]=v;if(v==='Fail')fails.push(i);}});
   if(missing.length){showToast('Checklist incomplete',`Select a status for all 21 items. Missing: ${missing.join(', ')}`,'fa-triangle-exclamation');return;}
   if(fails.length&&!remarks){showToast('Remarks required','Add defect details when any check is marked Fail.','fa-triangle-exclamation');$('wmRemarks').focus();return;}
@@ -2099,7 +2115,7 @@ async function saveWeeklyManual(){
   if(sameManual){showToast('Manual record exists','A manual record already exists for this forklift, date and shift. It has not been overwritten.','fa-triangle-exclamation');return;}
   const synced=inspectionLogs.some(r=>r.forkliftNo===unit&&r.date===date&&shiftShort(r.shift)===shiftShort(shift));
   if(synced){showToast('Daily record already exists','Use the existing Daily Inspection record. Manual entry is only for a missing date/shift and will not create duplicates.','fa-triangle-exclamation');return;}
-  const record={id:'WKM-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),source:'manual',date,forkliftNo:unit,owner:(findUnit(unit)||{}).owner||'',shift,operator,time,hourMeter,department:'Weekly Manual Entry',supervisor:'',results,remarks:remarks||'No remarks provided.',photos:{},defectResolved:false,createdAt:Date.now()};
+  const record={id:'WKM-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),source:'manual',date,forkliftNo:unit,owner:(findUnit(unit)||{}).owner||'',shift,operator,time,hourMeter,department:'Weekly Manual Entry',supervisor,results,remarks:remarks||'No remarks provided.',photos:{},defectResolved:false,createdAt:Date.now()};
   try{await LogDB.put(record);try{await LogDB.weeklyPut(record);}catch(storeError){await LogDB.del(record.id);throw storeError;}inspectionLogs.unshift(record);inspectionLogs.sort(byNewest);weeklyManualRecords.push(record);renderWeekly();toggleWeeklyManual(false);resetWeeklyManual();showToast(Safety.criticalFails(record).length?'DO NOT OPERATE':'Manual entry saved',Safety.criticalFails(record).length?`${unit} has a critical failure and is locked.`:`${unit} · ${date} · ${shift}`,'fa-circle-check');}
   catch(e){showToast('Save failed','The manual entry could not be saved to both inspection and weekly records. Please retry.','fa-triangle-exclamation');}
 }
