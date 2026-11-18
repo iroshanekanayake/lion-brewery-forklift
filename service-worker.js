@@ -1,9 +1,9 @@
-/* Forklift Safety – service worker v6
+/* Forklift Safety – service worker v11
    - index.html: network first (so updates show up), cache when offline
    - own files (icons, manifest): cache first, refreshed in the background
    - CDN files (Tailwind, Chart.js, Font Awesome, Inter): saved on first visit so the app works offline
    To release an update, change VERSION below. */
-const VERSION = "v10";
+const VERSION = "v11";
 const SHELL_CACHE = `forklift-shell-${VERSION}`;
 const CDN_CACHE = "forklift-cdn-v1";
 const SCOPE = self.registration.scope;
