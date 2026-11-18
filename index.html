@@ -124,9 +124,26 @@
             background: var(--accent-color);
         }
 
-        @page {
-            size: A4 portrait;
-            margin: 10mm;
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #a4PrintArea, #a4PrintArea * {
+                visibility: visible;
+            }
+            #a4PrintArea {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #ffffff !important;
+                color: #000000 !important;
+                box-shadow: none !important;
+                padding: 16px !important;
+            }
+            .no-print {
+                display: none !important;
+            }
         }
 
         /* ---- v2: dialogs, report, QR labels, print modes ---- */
@@ -166,45 +183,6 @@
         .qrl .qr { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:1cqw 8cqw; } .qrl .qr svg { height:100%; max-width:100%; aspect-ratio:1; }
         .qrl .foot { text-align:center; font-weight:700; font-size:4.6cqw; padding:0 2cqw 2.6cqw; }
 
-        #weeklyPrintArea { color:#111; background:#fff; }
-        #weeklyPrintArea .weekly-grid { width:100%; border-collapse:collapse; table-layout:fixed; font-family:Arial,sans-serif; font-size:8px; }
-        #weeklyPrintArea .weekly-grid th, #weeklyPrintArea .weekly-grid td { border:1px solid #555; padding:4px 3px; vertical-align:middle; overflow-wrap:anywhere; }
-        #weeklyPrintArea .weekly-grid th { background:#e5e7eb; font-weight:800; text-align:center; }
-        #weeklyPrintArea .weekly-grid .check-name { width:25%; font-weight:700; }
-        #weeklyPrintArea .weekly-grid .sn { width:4%; text-align:center; }
-        #weeklyPrintArea .weekly-grid .day-cell { text-align:center; font-size:7px; }
-        #weeklyPrintArea .weekly-status { display:block; margin:1px 0; font-weight:700; }
-        #weeklyPrintArea .weekly-pass { color:#087443; } #weeklyPrintArea .weekly-fail { color:#b00020; } #weeklyPrintArea .weekly-na { color:#555; }
-        #weeklyPrintArea .weekly-meta { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; margin-top:8px; font-size:7px; }
-        #weeklyPrintArea .weekly-meta > div { border:1px solid #999; padding:4px; min-height:42px; overflow-wrap:anywhere; }
-        @page weekly {
-            size: 297mm 210mm;
-            margin: 6mm;
-        }
-        @media print {
-            body.print-weekly { page: weekly; display:block !important; width:auto !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; background:#fff !important; color:#000 !important; }
-            body.print-weekly * , body.print-weekly *::before, body.print-weekly *::after { visibility:visible !important; }
-            body.print-weekly > * { display:none !important; }
-            body.print-weekly > main { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
-            body.print-weekly main > section:not(#viewWeekly) { display:none !important; }
-            body.print-weekly #viewWeekly { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
-            body.print-weekly #viewWeekly > * { display:none !important; }
-            body.print-weekly #viewWeekly > #weeklyPrintArea { display:block !important; position:static !important; box-sizing:border-box !important; width:100% !important; max-width:none !important; min-height:0 !important; height:auto !important; max-height:none !important; margin:0 !important; padding:0 !important; overflow:visible !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; color:#000 !important; font-family:Arial,sans-serif !important; font-size:10px !important; line-height:1.2 !important; break-inside:avoid !important; page-break-inside:avoid !important; }
-            body.print-weekly #weeklyPrintArea > div { width:100% !important; min-width:0 !important; max-width:none !important; margin:0 !important; padding:0 !important; }
-            body.print-weekly #weeklyPrintArea .weekly-grid { width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; font-size:10px !important; break-inside:avoid !important; page-break-inside:avoid !important; }
-            body.print-weekly #weeklyPrintArea .weekly-grid th, body.print-weekly #weeklyPrintArea .weekly-grid td { padding:3px 2px !important; line-height:1.2 !important; height:auto !important; break-inside:avoid !important; page-break-inside:avoid !important; }
-            body.print-weekly #weeklyPrintArea .weekly-grid .day-cell { font-size:9px !important; }
-            body.print-weekly #weeklyPrintArea .weekly-meta { grid-template-columns:repeat(7,minmax(0,1fr)) !important; gap:4px !important; margin-top:7px !important; font-size:8.5px !important; line-height:1.2 !important; break-inside:avoid !important; page-break-inside:avoid !important; }
-            body.print-weekly #weeklyPrintArea .weekly-meta > div { min-height:48px !important; padding:4px !important; overflow-wrap:anywhere !important; }
-            body.print-weekly #weeklyPrintArea .weekly-status { margin:0 !important; }
-            body.print-weekly #weeklyPrintArea .mt-2 { margin-top:6px !important; }
-            body.print-weekly #weeklyPrintArea .mb-3 { margin-bottom:6px !important; }
-            body.print-weekly #weeklyPrintArea .text-lg { font-size:16px !important; }
-            body.print-weekly #weeklyPrintArea .text-xs { font-size:8.5px !important; }
-            body.print-weekly #weeklyPrintArea .text-\[10px\] { font-size:9px !important; }
-            body.print-weekly #weeklyPrintArea .text-\[9px\] { font-size:8.5px !important; }
-            body.print-weekly #weeklyPrintArea .text-\[8px\] { font-size:8px !important; }
-        }
         @media print {
             body.print-report header, body.print-report main > section:not(#viewReport), body.print-report #toastBanner,
             body.print-qr header, body.print-qr main > section:not(#viewQr), body.print-qr #toastBanner { display: none !important; }
@@ -216,11 +194,6 @@
             body.print-report #reportBody .bad { color:#b00020; } body.print-report #reportBody .good { color:#1b7a4b; } body.print-report #reportBody .amber { color:#9a6700; }
             body.print-report #reportBody .sign { display:grid; } body.print-report #reportBody table { min-width:0; } body.print-report #reportBody tr, body.print-report #reportBody .kpi { break-inside:avoid; }
             body.print-report #reportBody .bar { background:#ddd; }
-            body.print-report #weeklyPrintArea,
-            body.print-report #qrSheet,
-            body.print-report #modal,
-            body.print-report #viewer { display:none !important; }
-            body.print-report main > section#viewReport { display:block !important; }
             body.print-qr .qrsheet { grid-template-columns:repeat(var(--cols), calc(var(--lw) * 1mm)); gap:0; justify-content:center; }
             body.print-qr .qrl { width:calc(var(--lw) * 1mm); height:calc(var(--lh) * 1mm); aspect-ratio:auto; border-radius:0; border:1px dashed #999; }
         }
@@ -286,11 +259,6 @@
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <span class="hidden sm:inline">Operator APK</span>
-                    </button>
-                    <button type="button" id="navWeeklyBtn" onclick="switchView('weekly')" title="Weekly Checklist"
-                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
-                        <i class="fa-solid fa-calendar-week"></i>
-                        <span class="hidden sm:inline">Weekly</span>
                     </button>
                     <button type="button" id="navReportBtn" onclick="switchView('report')" title="Monthly Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
@@ -521,7 +489,7 @@
                 <div class="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="border-color: var(--border-color);">
                     <div>
                         <h3 class="text-base font-bold" style="color: var(--text-main);">Recent Pre-Check Inspection Logs</h3>
-                        <p class="text-xs" style="color: var(--text-muted);">Daily inspection records are retained here. Weekly and monthly reports remain available in their report sections.</p>
+                        <p class="text-xs" style="color: var(--text-muted);">Click "View Sheet" on any entry to inspect or print the official A4 Forklift Pre-Check Sheet</p>
                     </div>
                     <div class="relative w-full sm:w-64">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
@@ -738,8 +706,7 @@
                     </div>
 
                     <label class="flex items-center gap-2 text-xs font-bold" style="color: var(--text-main);"><input type="checkbox" id="settingAutoPeriod" onchange="onAutoPeriodChange()" class="w-4 h-4"> Follow today's date automatically (reporting year and month)</label>
-                    <div>
-                        <label for="settingYear" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
+                    \1 class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
                             <select id="settingYear" class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
                                 <option value="2025">2025</option>
                                 <option value="2026" selected>2026</option>
@@ -898,48 +865,6 @@
         </section>
 
 <!-- ===================================================================== -->
-        <!-- VIEW: WEEKLY CHECKLIST                                               -->
-        <!-- ===================================================================== -->
-        <section id="viewWeekly" class="hidden max-w-[1500px] mx-auto space-y-4">
-            <div class="neu-card rounded-2xl p-4 no-print space-y-3">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div><h2 class="text-lg font-extrabold"><i class="fa-solid fa-calendar-week mr-2" style="color:var(--accent-color)"></i>Weekly Forklift Pre-Check</h2>
-                    <p class="text-xs mt-1" style="color:var(--text-muted)">Monday to Sunday · Daily Inspection Auto Sync + Manual Entry</p></div>
-                    <span class="text-xs font-bold px-3 py-1.5 rounded-full border" style="border-color:var(--border-color);color:var(--text-muted)">21 Checks × 7 Days</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div><label for="weeklyForklift" class="block text-[11px] font-bold uppercase mb-1" style="color:var(--text-muted)">Forklift</label><select id="weeklyForklift" onchange="renderWeekly()" class="w-full border rounded-xl px-3 py-2.5 text-sm font-bold" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></select></div>
-                    <div><label for="weeklyStart" class="block text-[11px] font-bold uppercase mb-1" style="color:var(--text-muted)">Week starting (Monday)</label><input id="weeklyStart" type="date" onchange="normalizeWeeklyDate();renderWeekly()" class="w-full border rounded-xl px-3 py-2.5 text-sm font-bold" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
-                    <div class="flex items-end"><button type="button" onclick="setCurrentWeeklyWeek()" class="w-full border rounded-xl px-3 py-2.5 text-xs font-bold" style="border-color:var(--border-color);color:var(--text-main)"><i class="fa-solid fa-calendar-day mr-1"></i> Current Week</button></div>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="toggleWeeklyManual(true)" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white" style="background:var(--accent-color)"><i class="fa-solid fa-plus mr-1"></i> Manual Entry</button>
-                    <button type="button" onclick="renderWeekly()" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="border-color:var(--border-color);color:var(--text-main)"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
-                    <button type="button" onclick="exportWeeklyManualCsv()" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="border-color:var(--border-color);color:var(--text-main)"><i class="fa-solid fa-file-csv mr-1"></i> Export Manual Data</button>
-                    <button type="button" onclick="printMode('weekly')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white sm:ml-auto" style="background:var(--accent-color)"><i class="fa-solid fa-file-pdf mr-1"></i> Print / Save Weekly PDF</button>
-                </div>
-                <div id="weeklySyncNote" class="text-xs rounded-xl p-3" style="background:var(--bg-main);color:var(--text-muted)"></div>
-            </div>
-            <div id="weeklyManualPanel" class="hidden neu-card rounded-2xl p-4 space-y-3 no-print">
-                <div class="flex items-center justify-between gap-2"><h3 class="font-extrabold">Manual Inspection Entry</h3><button type="button" onclick="toggleWeeklyManual(false)" class="text-xs font-bold px-3 py-1.5 rounded-lg border" style="border-color:var(--border-color)">Close</button></div>
-                <p class="text-xs" style="color:var(--text-muted)">Use only when a Daily Inspection record is unavailable. Manual records are stored separately and will not overwrite synced records.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div><label class="block text-[11px] font-bold uppercase mb-1">Date</label><input id="wmDate" type="date" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
-                    <div><label class="block text-[11px] font-bold uppercase mb-1">Shift</label><select id="wmShift" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"><option value="Day Shift">Day Shift</option><option value="Night Shift">Night Shift</option></select></div>
-                    <div><label class="block text-[11px] font-bold uppercase mb-1">Operator EPF / Name</label><input id="wmOperator" type="text" maxlength="120" placeholder="EPF / Operator name" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
-                    <div><label class="block text-[11px] font-bold uppercase mb-1">Inspection Time</label><input id="wmTime" type="time" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
-                    <div><label class="block text-[11px] font-bold uppercase mb-1">Hour Meter (HRS)</label><input id="wmHourMeter" type="number" min="0" step="0.1" placeholder="Optional" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"></div>
-                    <div><label for="wmSupervisor" class="block text-[11px] font-bold uppercase mb-1">Supervisor</label><select id="wmSupervisor" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"><option value="">Select supervisor</option></select></div>
-                </div>
-                <div><h4 class="text-sm font-bold mb-2">21 Inspection Checks</h4><div id="weeklyManualChecks" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div></div>
-                <div><label for="wmRemarks" class="block text-[11px] font-bold uppercase mb-1">Remarks / Defect Details</label><textarea id="wmRemarks" rows="2" maxlength="1500" class="w-full border rounded-xl px-3 py-2 text-sm" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)" placeholder="Required when any item is Fail"></textarea></div>
-                <div class="flex gap-2"><button type="button" onclick="saveWeeklyManual()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white" style="background:var(--accent-color)">Save Manual Entry</button><button type="button" onclick="resetWeeklyManual()" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="border-color:var(--border-color)">Clear</button></div>
-            </div>
-            <div id="weeklyScreenSummary" class="neu-card rounded-2xl p-4 no-print"></div>
-            <div id="weeklyPrintArea" class="bg-white text-black rounded-xl p-3 sm:p-5 overflow-x-auto"></div>
-        </section>
-
-        <!-- ===================================================================== -->
         <!-- VIEW 4: MONTHLY REPORT                                                -->
         <!-- ===================================================================== -->
         <section id="viewReport" class="hidden max-w-4xl mx-auto space-y-4">
@@ -976,8 +901,40 @@
     </main>
 
     <!-- ===================================================================== -->
-    <!-- Daily A4 Print interface removed by approved Phase 1 scope. -->
+    <!-- A4 PRINTABLE OFFICIAL SHEET MODAL                                     -->
+    <!-- ===================================================================== -->
+    <!-- PIN / dialog and photo viewer -->
+    <div class="overlay" id="modal"><div class="box" id="modalBox"></div></div>
+    <div class="overlay" id="viewer"><img id="big" alt="Defect photo"></div>
 
+    <div id="a4ModalBackdrop" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="neu-card rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl my-auto">
+            <div class="no-print px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--bg-main); border-color: var(--border-color);">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf" style="color: var(--accent-color);"></i>
+                    <span class="text-sm font-bold" style="color: var(--text-main);">Official A4 Forklift Pre-Check Sheet</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.print()"
+                        class="px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow" style="background-color: var(--accent-color);">
+                        <i class="fa-solid fa-print"></i> Print / Save PDF
+                    </button>
+                    <button type="button" onclick="closeA4Modal()"
+                        class="w-8 h-8 rounded-xl border flex items-center justify-center" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-muted);">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-4 sm:p-6 max-h-[80vh] overflow-y-auto bg-zinc-200">
+                <div id="a4PrintArea" class="bg-white text-black p-6 sm:p-8 rounded-lg shadow-md max-w-[210mm] mx-auto text-xs">
+                    <!-- Dynamic A4 Sheet injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
     <!-- JAVASCRIPT APP LOGIC                                                  -->
     <!-- ===================================================================== -->
     <script>
@@ -1185,6 +1142,78 @@
         
         // Chart.js Trend Chart
         
+        // A4 Printable Sheet Modal
+        function openA4ModalBase(id) {
+            const l = inspectionLogs.find(item => item.id === id);
+            if (!l) return;
+
+            const printArea = document.getElementById('a4PrintArea');
+            printArea.innerHTML = `
+                <div class="border-b-2 border-black pb-4 mb-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-base font-black uppercase">Lion Brewery (Biyagama)</h2>
+                        <p class="text-[11px] font-bold text-zinc-700">Forklift Daily Pre-Check Inspection Record</p>
+                    </div>
+                    <div class="text-right text-[11px]">
+                        <p><strong>Log ID:</strong> ${l.id}</p>
+                        <p><strong>Date:</strong> ${l.date}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 mb-4 text-[11px] border p-3 rounded bg-zinc-50">
+                    <div><strong>Forklift No:</strong> ${l.forkliftNo}</div>
+                    <div><strong>Owner:</strong> ${l.owner}</div>
+                    <div><strong>Model / Fuel:</strong> ${l.model}</div>
+                    <div><strong>Shift:</strong> ${l.shift}</div>
+                    <div><strong>Department:</strong> ${l.department}</div>
+                    <div><strong>Hour Meter:</strong> ${l.hourMeter} HRS</div>
+                    <div><strong>Operator:</strong> ${l.operator}</div>
+                    <div><strong>Supervisor:</strong> ${l.supervisor}</div>
+                </div>
+
+                <table class="w-full border-collapse border border-zinc-400 text-[10px] mb-4">
+                    <thead>
+                        <tr class="bg-zinc-200">
+                            <th class="border border-zinc-400 p-1.5 text-left">SN</th>
+                            <th class="border border-zinc-400 p-1.5 text-left">CHECKS (21 Points)</th>
+                            <th class="border border-zinc-400 p-1.5 text-center w-20">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${CHECKLIST_ITEMS.map((item, idx) => `
+                            <tr>
+                                <td class="border border-zinc-400 p-1 font-bold">${idx + 1}</td>
+                                <td class="border border-zinc-400 p-1">${item}</td>
+                                <td class="border border-zinc-400 p-1 text-center font-bold ${l.results[idx] === 'Fail' ? 'text-red-600 bg-red-50' : 'text-emerald-700'}">${l.results[idx] || 'Pass'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+
+                <div class="border border-zinc-400 p-3 rounded mb-4 text-[11px]">
+                    <p class="font-bold underline mb-1">REMARKS / DEFECT DETAILS:</p>
+                    <p class="italic text-zinc-800">${esc(l.remarks)}</p>
+                </div>
+
+                <div class="text-[10px] text-zinc-600 border-t pt-3 flex justify-between">
+                    <div>
+                        <p>*Note - Forklifts should be properly cleaned before and after operation</p>
+                        <p>Always maintain a speed of 5 KMH &#8226; Appropriate PPE & seat belt must be worn</p>
+                    </div>
+                    <div class="text-right font-bold text-black">
+                        <p>Digitally Verified via APK</p>
+                        <p>${l.supervisor}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('a4ModalBackdrop').classList.remove('hidden');
+        }
+
+        function closeA4Modal() {
+            document.getElementById('a4ModalBackdrop').classList.add('hidden');
+        }
+
         // CSV Export
         
         // Settings View
@@ -1581,9 +1610,9 @@ let fleet = defaultFleet(), deleteWindowHours = 24, pendingPhotos = {};
 function defaultFleet() { return Array.from({ length: 30 }, (_, i) => ({ unit: 'FL ' + String(i + 1).padStart(2, '0'), owner: '', model: '' })); }
 const LogDB = (() => {
   let dbp = null;
-  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('forklift_logs_db', 2); r.onupgradeneeded = () => { const d = r.result; if (!d.objectStoreNames.contains('logs')) d.createObjectStore('logs', { keyPath: 'id' }); if (!d.objectStoreNames.contains('weekly')) d.createObjectStore('weekly', { keyPath: 'id' }); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('Close other app tabs to finish the local database update.')); }));
-  const run = (store, mode, fn) => open().then(d => new Promise((res, rej) => { const t = d.transaction(store, mode), q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('Database transaction failed')); }));
-  return { all: () => run('logs','readonly', s => s.getAll()), put: l => run('logs','readwrite', s => s.put(l)), del: id => run('logs','readwrite', s => s.delete(id)), weeklyAll: () => run('weekly','readonly', s => s.getAll()), weeklyPut: r => run('weekly','readwrite', s => s.put(r)), weeklyDel: id => run('weekly','readwrite', s => s.delete(id)) };
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('forklift_logs_db', 1); r.onupgradeneeded = () => r.result.createObjectStore('logs', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const run = (mode, fn) => open().then(d => new Promise((res, rej) => { const t = d.transaction('logs', mode), q = fn(t.objectStore('logs')); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }));
+  return { all: () => run('readonly', s => s.getAll()), put: l => run('readwrite', s => s.put(l)), del: id => run('readwrite', s => s.delete(id)) };
 })();
 function saveLog(l) { LogDB.put(l).catch(() => showToast('Saving problem', 'This record could not be saved. Export a CSV backup now.', 'fa-triangle-exclamation')); }
 function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify({ appSettings, departmentEmployees, fleet, deleteWindowHours })); } catch (e) {} }
@@ -1611,10 +1640,10 @@ function sortFleet() { fleet.sort((a, b) => a.unit.localeCompare(b.unit, undefin
 
 /* ---- navigation ---- */
 function switchView(v) {
-  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], weekly: ['viewWeekly', 'navWeeklyBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'] };
+  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'] };
   Object.values(map).forEach(([s, b]) => { $(s).classList.add('hidden'); const btn = $(b); btn.style.color = 'var(--text-muted)'; btn.style.backgroundColor = 'transparent'; btn.classList.remove('text-white', 'shadow-md'); });
   const [s, b] = map[v]; $(s).classList.remove('hidden'); const btn = $(b); btn.style.backgroundColor = 'var(--accent-color)'; btn.style.color = ''; btn.classList.add('text-white', 'shadow-md');
-  if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'weekly') initWeeklyView(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView();
+  if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function printMode(name) { document.body.classList.add('print-' + name); window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
@@ -1715,7 +1744,7 @@ function renderDashboard() {
     const hasFail = failed(l), left = hoursLeft(l);
     const badge = hasFail && !l.defectResolved ? '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-500 border border-red-500/30">Defect Fail</span>' : '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">' + (hasFail ? 'Cleared' : 'All Pass') + '</span>';
     const del = left > 0 ? `<button type="button" onclick="deleteLog('${l.id}')" title="Delete (${Math.floor(left)} h left)" class="ml-2 w-8 h-8 rounded-xl bg-red-500/15 text-red-500 hover:bg-red-500/25"><i class="fa-solid fa-trash-can text-xs"></i></button>` : `<span title="Locked after ${deleteWindowHours} hours" class="ml-2 inline-flex w-8 h-8 items-center justify-center rounded-xl opacity-40" style="color: var(--text-muted);"><i class="fa-solid fa-lock text-xs"></i></span>`;
-    return `<tr class="hover:bg-white/5 transition-all"><td class="py-3.5 px-4"><p class="font-bold" style="color: var(--text-main);">${esc(l.date)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.shift.split(' ')[0])} Shift</p></td><td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${esc(l.forkliftNo)}</td><td class="py-3.5 px-4"><p class="font-semibold" style="color: var(--text-main);">${esc(l.owner)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.model)}</p></td><td class="py-3.5 px-4" style="color: var(--text-main);">${esc(l.department)}</td><td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${esc(l.operator)}</td><td class="py-3.5 px-4" style="color: var(--text-muted);">${esc(l.supervisor)}</td><td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${esc(l.hourMeter)} HRS</td><td class="py-3.5 px-4">${badge}</td><td class="py-3.5 px-4 text-right whitespace-nowrap">${del}</td></tr>`;
+    return `<tr class="hover:bg-white/5 transition-all"><td class="py-3.5 px-4"><p class="font-bold" style="color: var(--text-main);">${esc(l.date)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.shift.split(' ')[0])} Shift</p></td><td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${esc(l.forkliftNo)}</td><td class="py-3.5 px-4"><p class="font-semibold" style="color: var(--text-main);">${esc(l.owner)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.model)}</p></td><td class="py-3.5 px-4" style="color: var(--text-main);">${esc(l.department)}</td><td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${esc(l.operator)}</td><td class="py-3.5 px-4" style="color: var(--text-muted);">${esc(l.supervisor)}</td><td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${esc(l.hourMeter)} HRS</td><td class="py-3.5 px-4">${badge}</td><td class="py-3.5 px-4 text-right whitespace-nowrap"><button type="button" onclick="openA4Modal('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-file-pdf mr-1"></i> View Sheet</button>${del}</td></tr>`;
   }).join('') + (rows.length > 200 ? `<tr><td colspan="9" class="py-3 px-4 text-center text-[11px]" style="color: var(--text-muted);">Showing the latest 200 of ${rows.length}. Use the search box or export a CSV for the rest.</td></tr>` : '');
   renderTrendChart();
 }
@@ -1753,6 +1782,12 @@ async function deleteLog(id) {
   for (const p of Object.values(l.photos || {})) await Photos.del(p);
   try { await LogDB.del(id); } catch (e) {}
   inspectionLogs = inspectionLogs.filter(x => x !== l); renderDashboard(); showToast('Report deleted', id + ' was removed.', 'fa-trash-can');
+}
+function openA4Modal(id) {
+  openA4ModalBase(id); const l = inspectionLogs.find(x => x.id === id); if (!l) return; const area = $('a4PrintArea'), ph = Object.entries(l.photos || {}); let h = '';
+  if (ph.length) h += `<div class="mt-3 text-[11px]"><p class="font-bold underline mb-1">DEFECT PHOTOS:</p><div class="flex flex-wrap gap-2">${ph.map(([i, p]) => `<figure><img data-photo="${esc(p)}" class="w-40 h-32 object-cover border" alt=""><figcaption class="text-[10px]">${esc(CHECKLIST_ITEMS[i])}</figcaption></figure>`).join('')}</div></div>`;
+  if (l.defectResolved && l.clearedBy) h += `<p class="mt-2 text-[11px]"><strong>Defect cleared by:</strong> ${esc(l.clearedBy)} &mdash; ${esc(l.clearAction)} (${new Date(l.clearedAt).toLocaleString()})</p>`;
+  area.insertAdjacentHTML('beforeend', h); hydratePhotos(area);
 }
 async function exportToCSV() {
   const p = Period.active(), v = await ask('Export CSV', [{ id: 'scope', label: 'Which records', type: 'select', options: [`Reporting month (${p.month} ${p.year})`, 'All records'] }], { ok: 'Download' }); if (!v) return;
@@ -1863,96 +1898,6 @@ function renderReport() {
 }
 
 
-
-/* ---- weekly checklist: live daily-log aggregation + separate manual records ---- */
-let weeklyManualRecords = [];
-const WEEK_DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const WEEK_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-function dateFromParts(y,m,d) { const x = new Date(y, m-1, d); return localDate(x); }
-function mondayOf(value) {
-  const a = (value || localDate()).split('-').map(Number), d = new Date(a[0], a[1]-1, a[2]);
-  const offset = (d.getDay() + 6) % 7; d.setDate(d.getDate() - offset); return localDate(d);
-}
-function weekDates(start) { const a = start.split('-').map(Number), d = new Date(a[0],a[1]-1,a[2]); return Array.from({length:7},(_,i)=>{const x=new Date(d);x.setDate(d.getDate()+i);return localDate(x);}); }
-function fmtWeekDate(v) { const a=v.split('-').map(Number); return new Date(a[0],a[1]-1,a[2]).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}); }
-function initWeeklyView() {
-  const sel=$('weeklyForklift'), keep=sel.value;
-  sel.innerHTML=fleet.map(f=>`<option value="${esc(f.unit)}">${esc(f.unit)}${f.owner?' · '+esc(f.owner):''}</option>`).join('');
-  if(keep && fleetNames().includes(keep)) sel.value=keep;
-  if(!$('weeklyStart').value) $('weeklyStart').value=mondayOf(localDate()); else $('weeklyStart').value=mondayOf($('weeklyStart').value);
-  $('wmDate').value=$('weeklyStart').value; $('wmTime').value=new Date().toTimeString().slice(0,5);
-  const supervisorSelect=$('wmSupervisor');
-  if(supervisorSelect){const keepSupervisor=supervisorSelect.value;supervisorSelect.innerHTML='<option value="">Select supervisor</option>'+(appSettings.supervisors||[]).map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join('');if(keepSupervisor)supervisorSelect.value=keepSupervisor;}
-  $('weeklyManualChecks').innerHTML=CHECKLIST_ITEMS.map((item,i)=>`<div class="flex items-center gap-2 border rounded-xl p-2" style="border-color:var(--border-color)"><label class="text-xs font-semibold flex-1">${esc(item)}</label><select id="wmCheck${i}" class="border rounded-lg px-2 py-1.5 text-xs" style="background:var(--bg-main);border-color:var(--border-color);color:var(--text-main)"><option value="">Select</option><option value="Pass">Pass</option><option value="Fail">Fail</option><option value="N/A">N/A</option></select></div>`).join('');
-  LogDB.weeklyAll().then(rows=>{weeklyManualRecords=rows||[];renderWeekly();}).catch(e=>{weeklyManualRecords=[];renderWeekly();showToast('Weekly storage unavailable',e.message||'Manual entries cannot be loaded.','fa-triangle-exclamation');});
-}
-function normalizeWeeklyDate(){const el=$('weeklyStart');if(el.value)el.value=mondayOf(el.value);}
-function setCurrentWeeklyWeek(){ $('weeklyStart').value=mondayOf(localDate()); $('wmDate').value=$('weeklyStart').value; renderWeekly(); }
-function weeklySources(unit, dates) {
-  const auto=inspectionLogs.filter(l=>l.source!=='manual' && l.forkliftNo===unit && dates.includes(l.date));
-  const manualById=new Map();
-  weeklyManualRecords.filter(l=>l.forkliftNo===unit&&dates.includes(l.date)).forEach(l=>manualById.set(l.id,l));
-  inspectionLogs.filter(l=>l.source==='manual'&&l.forkliftNo===unit&&dates.includes(l.date)).forEach(l=>manualById.set(l.id,l));
-  const manual=[...manualById.values()];
-  return {auto,manual,all:auto.concat(manual).sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(a.createdAt||0)-(b.createdAt||0))};
-}
-function shiftShort(s){return (s||'').startsWith('Night')?'N':'D';}
-function statusShort(v){return v==='Pass'?'P':v==='Fail'?'F':v==='N/A'?'N/A':'—';}
-function weeklyCell(records, idx) {
-  if(!records.length)return '<span style="color:#999">—</span>';
-  return records.map(r=>{const v=(r.results||{})[idx]||'';const cls=v==='Pass'?'weekly-pass':v==='Fail'?'weekly-fail':v==='N/A'?'weekly-na':'';return `<span class="weekly-status ${cls}">${statusShort(v)}${r.source==='manual'?'*':''}</span>`;}).join('');
-}
-function weeklyDayRecords(all,date){return all.filter(r=>r.date===date);}
-function weeklyMetaText(records,field){const vals=[...new Set(records.map(r=>r[field]).filter(v=>v!==undefined&&v!==null&&v!==''))];return vals.length?vals.join(' / '):'—';}
-function weeklyTimeText(records){const vals=[...new Set(records.map(r=>r.time||(r.createdAt?new Date(r.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'')).filter(Boolean))];return vals.length?vals.join(' / '):'—';}
-function renderWeekly() {
-  if(!$('weeklyPrintArea'))return;
-  const unit=$('weeklyForklift').value, start=mondayOf($('weeklyStart').value||localDate()), dates=weekDates(start), f=findUnit(unit), src=weeklySources(unit,dates), all=src.all;
-  const end=dates[6], dayRecords=dates.map(d=>weeklyDayRecords(all,d));
-  const loggedDays=dayRecords.filter(x=>x.length).length, autoCount=src.auto.length, manualCount=src.manual.length;
-  $('weeklySyncNote').textContent=`${autoCount} Daily Inspection record(s) synced · ${manualCount} manual record(s) · ${7-loggedDays} day(s) without a record. Manual entries are marked with * in the printed checklist.`;
-  $('weeklyScreenSummary').innerHTML=`<div class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div><div class="text-2xl font-extrabold">${loggedDays}/7</div><div class="text-xs" style="color:var(--text-muted)">Days with records</div></div><div><div class="text-2xl font-extrabold">${autoCount}</div><div class="text-xs" style="color:var(--text-muted)">Auto-synced</div></div><div><div class="text-2xl font-extrabold">${manualCount}</div><div class="text-xs" style="color:var(--text-muted)">Manual records</div></div><div><div class="text-2xl font-extrabold" style="color:${all.some(r=>Object.values(r.results||{}).includes('Fail'))?'#e5484d':'#269c70'}">${all.filter(r=>Object.values(r.results||{}).includes('Fail')).length}</div><div class="text-xs" style="color:var(--text-muted)">Records with Fail</div></div></div>`;
-  const owner=f&&f.owner||((all[0]&&all[0].owner)||'—');
-  let h=`<div class="min-w-[900px]"><div class="text-center mb-3"><div class="text-lg font-black underline">FORKLIFT PRE-CHECK LIST</div><div class="text-xs font-bold mt-1">LION BREWERY (BIYAGAMA)</div><div class="text-[10px] mt-1">WEEKLY INSPECTION RECORD · MONDAY TO SUNDAY</div></div><div class="grid grid-cols-2 gap-2 text-[10px] mb-3"><div><b>FORKLIFT NO:</b> ${esc(unit||'—')}</div><div><b>FORKLIFT OWNER:</b> ${esc(owner)}</div><div><b>WEEK START:</b> ${esc(fmtWeekDate(start))}</div><div><b>WEEK END:</b> ${esc(fmtWeekDate(end))}</div></div>`;
-  h+='<table class="weekly-grid"><thead><tr><th class="sn">SN</th><th class="check-name">CHECKS (21 POINTS)</th>'+WEEK_SHORT.map((d,i)=>`<th>${d}<br><span style="font-weight:400">${dates[i].slice(5)}</span></th>`).join('')+'</tr></thead><tbody>';
-  CHECKLIST_ITEMS.forEach((item,i)=>{h+=`<tr><td class="sn">${String(i+1).padStart(2,'0')}</td><td class="check-name">${esc(item.replace(/^\d+\.\s*/,''))}</td>`+dayRecords.map(rs=>`<td class="day-cell">${weeklyCell(rs,i)}</td>`).join('')+'</tr>';});
-  h+='</tbody></table><div class="text-[9px] font-bold mt-2">* Manual entry &nbsp; D = Day Shift &nbsp; N = Night Shift &nbsp; P = Pass &nbsp; F = Fail &nbsp; N/A = Not Applicable</div>';
-  h+='<div class="weekly-meta">'+dates.map((d,i)=>{const rs=dayRecords[i];return `<div><b>${WEEK_SHORT[i]} · ${d}</b><br><b>Operator:</b> ${esc(weeklyMetaText(rs,'operator'))}<br><b>Supervisor:</b> ${esc(weeklyMetaText(rs,'supervisor'))}<br><b>Shift:</b> ${esc(weeklyMetaText(rs,'shift'))}<br><b>Time:</b> ${esc(weeklyTimeText(rs))}<br><b>Hour Meter:</b> ${esc(weeklyMetaText(rs,'hourMeter'))}</div>`;}).join('')+'</div>';
-  h+='<div class="mt-2 border p-2 text-[9px]" style="border-color:#888"><b>REMARKS / DEFECT DETAILS</b><div class="grid grid-cols-7 gap-1 mt-1">'+dates.map((d,i)=>`<div class="border-r pr-1" style="border-color:#bbb"><b>${WEEK_SHORT[i]}:</b> ${esc(dayRecords[i].map(r=>r.remarks||'').filter(x=>x&&x!=='No remarks provided.').join(' / ')||'—')}</div>`).join('')+'</div></div>';
-  h+='<div class="mt-2 text-[8px] leading-relaxed border-t pt-2" style="border-color:#999"><b>SAFETY NOTES:</b> Forklifts should be properly cleaned before and after operation. Always maintain a speed of 5 KMH. Appropriate PPE and seat belt must be worn while on duty.</div>';
-  h+='<div class="mt-2 text-right text-[8px]">Generated: '+esc(localDate())+' · Digital record · No signatures required</div></div>';
-  $('weeklyPrintArea').innerHTML=h;
-}
-function toggleWeeklyManual(show){$('weeklyManualPanel').classList.toggle('hidden',!show);if(show){const start=mondayOf($('weeklyStart').value||localDate());$('wmDate').value=start;window.scrollTo({top:$('weeklyManualPanel').offsetTop-20,behavior:'smooth'});}}
-function resetWeeklyManual(){['wmOperator','wmHourMeter','wmRemarks','wmSupervisor'].forEach(id=>{if($(id))$(id).value='';});$('wmDate').value=mondayOf($('weeklyStart').value||localDate());$('wmTime').value=new Date().toTimeString().slice(0,5);CHECKLIST_ITEMS.forEach((_,i)=>$('wmCheck'+i).value='');}
-async function saveWeeklyManual(){
-  const unit=$('weeklyForklift').value,date=$('wmDate').value,shift=$('wmShift').value,operator=$('wmOperator').value.trim(),supervisor=$('wmSupervisor').value.trim(),time=$('wmTime').value,remarks=$('wmRemarks').value.trim(),hourMeter=parseFloat($('wmHourMeter').value)||0;
-  const start=mondayOf($('weeklyStart').value||localDate()),dates=weekDates(start);
-  if(!unit||!dates.includes(date)){showToast('Check date','Choose a date inside the selected Monday–Sunday week.','fa-triangle-exclamation');return;}
-  if(!operator){showToast('Operator required','Enter the operator EPF number and/or name.','fa-triangle-exclamation');return;}
-  if(!supervisor){showToast('Supervisor required','Select the supervisor for this manual inspection.','fa-triangle-exclamation');$('wmSupervisor').focus();return;}
-  const results={};let missing=[],fails=[];CHECKLIST_ITEMS.forEach((_,i)=>{const v=$('wmCheck'+i).value;if(!v)missing.push(i+1);else{results[i]=v;if(v==='Fail')fails.push(i);}});
-  if(missing.length){showToast('Checklist incomplete',`Select a status for all 21 items. Missing: ${missing.join(', ')}`,'fa-triangle-exclamation');return;}
-  if(fails.length&&!remarks){showToast('Remarks required','Add defect details when any check is marked Fail.','fa-triangle-exclamation');$('wmRemarks').focus();return;}
-  const sameManual=weeklyManualRecords.some(r=>r.forkliftNo===unit&&r.date===date&&shiftShort(r.shift)===shiftShort(shift));
-  if(sameManual){showToast('Manual record exists','A manual record already exists for this forklift, date and shift. It has not been overwritten.','fa-triangle-exclamation');return;}
-  const synced=inspectionLogs.some(r=>r.forkliftNo===unit&&r.date===date&&shiftShort(r.shift)===shiftShort(shift));
-  if(synced){showToast('Daily record already exists','Use the existing Daily Inspection record. Manual entry is only for a missing date/shift and will not create duplicates.','fa-triangle-exclamation');return;}
-  const record={id:'WKM-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),source:'manual',date,forkliftNo:unit,owner:(findUnit(unit)||{}).owner||'',shift,operator,time,hourMeter,department:'Weekly Manual Entry',supervisor,results,remarks:remarks||'No remarks provided.',photos:{},defectResolved:false,createdAt:Date.now()};
-  try{await LogDB.put(record);try{await LogDB.weeklyPut(record);}catch(storeError){await LogDB.del(record.id);throw storeError;}inspectionLogs.unshift(record);inspectionLogs.sort(byNewest);weeklyManualRecords.push(record);renderWeekly();toggleWeeklyManual(false);resetWeeklyManual();showToast(Safety.criticalFails(record).length?'DO NOT OPERATE':'Manual entry saved',Safety.criticalFails(record).length?`${unit} has a critical failure and is locked.`:`${unit} · ${date} · ${shift}`,'fa-circle-check');}
-  catch(e){showToast('Save failed','The manual entry could not be saved to both inspection and weekly records. Please retry.','fa-triangle-exclamation');}
-}
-
-function exportWeeklyManualCsv(){
-  const manualById=new Map();weeklyManualRecords.forEach(r=>manualById.set(r.id,r));inspectionLogs.filter(r=>r.source==='manual').forEach(r=>manualById.set(r.id,r));
-  const manualRows=[...manualById.values()];
-  if(!manualRows.length){showToast('No manual records','There are no saved Weekly Manual Entries to export.','fa-file-csv');return;}
-  const headers=['Record ID','Date','Forklift No','Owner','Shift','Operator EPF / Name','Time','Hour Meter','Source',...CHECKLIST_ITEMS,'Remarks'];
-  const cell=v=>{let x=String(v==null?'':v);if(/^[=+@\-\t\r]/.test(x))x="'"+x;return '"'+x.replace(/"/g,'""')+'"';};
-  const rows=[headers,...manualRows.sort((a,b)=>(a.date||'').localeCompare(b.date||'')).map(r=>[r.id,r.date,r.forkliftNo,r.owner,r.shift,r.operator,r.time,r.hourMeter,'Manual',...CHECKLIST_ITEMS.map((_,i)=>(r.results||{})[i]||''),r.remarks])];
-  Csv.download('\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n'),'Lion_Brewery_Weekly_Manual_Entries.csv');
-  showToast('Manual data exported',`${manualRows.length} record(s) exported. Daily Auto Sync records remain available in the existing Daily CSV export.`,'fa-file-csv');
-}
 
 /* ---- QR labels ---- */
 const QR_SIZES = { '2x3': { cols: 2, rows: 3, lw: 95, lh: 90 }, '3x4': { cols: 3, rows: 4, lw: 63, lh: 66 }, '4x5': { cols: 4, rows: 5, lw: 47, lh: 54 } };
