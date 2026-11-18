@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Secure default: no access until Phase 2 defines and tests staff roles,
+    // public QR token reads, and sanitized public report projections.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

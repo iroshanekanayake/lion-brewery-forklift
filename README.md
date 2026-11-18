@@ -28,3 +28,8 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 - Do not clear the browser's site data, or the saved reports are lost.
 - The PIN keeps honest mistakes out. It is not strong security because the app has no server.
 - To release an update, change `VERSION` in service-worker.js (for example "v6").
+
+
+## QR Report Viewer — Phase 1
+
+See `FIREBASE_PHASE1_ARCHITECTURE.md` and `FIREBASE_SETUP_CHECKLIST.md`. The Daily A4 Print / Save PDF interface has been removed as requested; weekly/monthly reporting, QR label printing, CSV export, inspection forms, local IndexedDB records, settings and fleet data are retained. Firebase cloud sync and the public QR history viewer are not activated yet because this source ZIP contains no Firebase project configuration or verified staff-authentication setup. Firestore rules are deliberately deny-all until Phase 2 security rules are configured and tested.

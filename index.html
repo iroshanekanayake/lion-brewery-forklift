@@ -129,80 +129,6 @@
             margin: 10mm;
         }
 
-        @media print {
-            html, body {
-                width: 100% !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #ffffff !important;
-            }
-            body * {
-                visibility: hidden;
-            }
-            #a4ModalBackdrop {
-                display: block !important;
-                position: static !important;
-                inset: auto !important;
-                width: 100% !important;
-                height: auto !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                overflow: visible !important;
-                background: #ffffff !important;
-                backdrop-filter: none !important;
-            }
-            #a4ModalBackdrop > .neu-card,
-            #a4ModalBackdrop .max-h-\[80vh\] {
-                display: block !important;
-                position: static !important;
-                width: 100% !important;
-                max-width: none !important;
-                max-height: none !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                border: 0 !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                background: #ffffff !important;
-            }
-            #a4PrintArea, #a4PrintArea * {
-                visibility: visible !important;
-            }
-            #a4PrintArea {
-                position: static !important;
-                display: block !important;
-                left: auto !important;
-                top: auto !important;
-                width: 100% !important;
-                max-width: none !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 auto !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #ffffff !important;
-                color: #000000 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-                break-inside: auto !important;
-                page-break-inside: auto !important;
-            }
-            #a4PrintArea table,
-            #a4PrintArea tr,
-            #a4PrintArea .border,
-            #a4PrintArea figure {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-
         /* ---- v2: dialogs, report, QR labels, print modes ---- */
         .overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; padding:16px; z-index:70; }
         .overlay.show { display:flex; }
@@ -260,7 +186,6 @@
             body.print-weekly * , body.print-weekly *::before, body.print-weekly *::after { visibility:visible !important; }
             body.print-weekly > * { display:none !important; }
             body.print-weekly > main { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
-            body.print-weekly #a4ModalBackdrop { display:none !important; }
             body.print-weekly main > section:not(#viewWeekly) { display:none !important; }
             body.print-weekly #viewWeekly { display:block !important; position:static !important; width:auto !important; max-width:none !important; min-height:0 !important; height:auto !important; margin:0 !important; padding:0 !important; overflow:visible !important; }
             body.print-weekly #viewWeekly > * { display:none !important; }
@@ -291,9 +216,6 @@
             body.print-report #reportBody .bad { color:#b00020; } body.print-report #reportBody .good { color:#1b7a4b; } body.print-report #reportBody .amber { color:#9a6700; }
             body.print-report #reportBody .sign { display:grid; } body.print-report #reportBody table { min-width:0; } body.print-report #reportBody tr, body.print-report #reportBody .kpi { break-inside:avoid; }
             body.print-report #reportBody .bar { background:#ddd; }
-            /* Monthly Summary PDF must not include the separate Daily A4 modal. */
-            body.print-report #a4ModalBackdrop,
-            body.print-report #a4ModalBackdrop *,
             body.print-report #weeklyPrintArea,
             body.print-report #qrSheet,
             body.print-report #modal,
@@ -599,7 +521,7 @@
                 <div class="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="border-color: var(--border-color);">
                     <div>
                         <h3 class="text-base font-bold" style="color: var(--text-main);">Recent Pre-Check Inspection Logs</h3>
-                        <p class="text-xs" style="color: var(--text-muted);">Click "View Sheet" on any entry to inspect or print the official A4 Forklift Pre-Check Sheet</p>
+                        <p class="text-xs" style="color: var(--text-muted);">Daily inspection records are retained here. Weekly and monthly reports remain available in their report sections.</p>
                     </div>
                     <div class="relative w-full sm:w-64">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-muted);"></i>
@@ -1054,40 +976,8 @@
     </main>
 
     <!-- ===================================================================== -->
-    <!-- A4 PRINTABLE OFFICIAL SHEET MODAL                                     -->
-    <!-- ===================================================================== -->
-    <!-- PIN / dialog and photo viewer -->
-    <div class="overlay" id="modal"><div class="box" id="modalBox"></div></div>
-    <div class="overlay" id="viewer"><img id="big" alt="Defect photo"></div>
+    <!-- Daily A4 Print interface removed by approved Phase 1 scope. -->
 
-    <div id="a4ModalBackdrop" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="neu-card rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl my-auto">
-            <div class="no-print px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-file-pdf" style="color: var(--accent-color);"></i>
-                    <span class="text-sm font-bold" style="color: var(--text-main);">Official A4 Forklift Pre-Check Sheet</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="window.print()"
-                        class="px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow" style="background-color: var(--accent-color);">
-                        <i class="fa-solid fa-print"></i> Print / Save PDF
-                    </button>
-                    <button type="button" onclick="closeA4Modal()"
-                        class="w-8 h-8 rounded-xl border flex items-center justify-center" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-muted);">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-6 max-h-[80vh] overflow-y-auto bg-zinc-200">
-                <div id="a4PrintArea" class="bg-white text-black p-6 sm:p-8 rounded-lg shadow-md max-w-[210mm] mx-auto text-xs">
-                    <!-- Dynamic A4 Sheet injected via JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===================================================================== -->
     <!-- JAVASCRIPT APP LOGIC                                                  -->
     <!-- ===================================================================== -->
     <script>
@@ -1295,78 +1185,6 @@
         
         // Chart.js Trend Chart
         
-        // A4 Printable Sheet Modal
-        function openA4ModalBase(id) {
-            const l = inspectionLogs.find(item => item.id === id);
-            if (!l) return;
-
-            const printArea = document.getElementById('a4PrintArea');
-            printArea.innerHTML = `
-                <div class="border-b-2 border-black pb-4 mb-4 flex items-center justify-between">
-                    <div>
-                        <h2 class="text-base font-black uppercase">Lion Brewery (Biyagama)</h2>
-                        <p class="text-[11px] font-bold text-zinc-700">Forklift Daily Pre-Check Inspection Record</p>
-                    </div>
-                    <div class="text-right text-[11px]">
-                        <p><strong>Log ID:</strong> ${l.id}</p>
-                        <p><strong>Date:</strong> ${l.date}</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-x-4 gap-y-2 mb-4 text-[11px] border p-3 rounded bg-zinc-50">
-                    <div><strong>Forklift No:</strong> ${l.forkliftNo}</div>
-                    <div><strong>Owner:</strong> ${l.owner}</div>
-                    <div><strong>Model / Fuel:</strong> ${l.model}</div>
-                    <div><strong>Shift:</strong> ${l.shift}</div>
-                    <div><strong>Department:</strong> ${l.department}</div>
-                    <div><strong>Hour Meter:</strong> ${l.hourMeter} HRS</div>
-                    <div><strong>Operator:</strong> ${l.operator}</div>
-                    <div><strong>Supervisor:</strong> ${l.supervisor}</div>
-                </div>
-
-                <table class="w-full border-collapse border border-zinc-400 text-[10px] mb-4">
-                    <thead>
-                        <tr class="bg-zinc-200">
-                            <th class="border border-zinc-400 p-1.5 text-left">SN</th>
-                            <th class="border border-zinc-400 p-1.5 text-left">CHECKS (21 Points)</th>
-                            <th class="border border-zinc-400 p-1.5 text-center w-20">STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${CHECKLIST_ITEMS.map((item, idx) => `
-                            <tr>
-                                <td class="border border-zinc-400 p-1 font-bold">${idx + 1}</td>
-                                <td class="border border-zinc-400 p-1">${item}</td>
-                                <td class="border border-zinc-400 p-1 text-center font-bold ${l.results[idx] === 'Fail' ? 'text-red-600 bg-red-50' : 'text-emerald-700'}">${l.results[idx] || 'Pass'}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-
-                <div class="border border-zinc-400 p-3 rounded mb-4 text-[11px]">
-                    <p class="font-bold underline mb-1">REMARKS / DEFECT DETAILS:</p>
-                    <p class="italic text-zinc-800">${esc(l.remarks)}</p>
-                </div>
-
-                <div class="text-[10px] text-zinc-600 border-t pt-3 flex justify-between">
-                    <div>
-                        <p>*Note - Forklifts should be properly cleaned before and after operation</p>
-                        <p>Always maintain a speed of 5 KMH &#8226; Appropriate PPE & seat belt must be worn</p>
-                    </div>
-                    <div class="text-right font-bold text-black">
-                        <p>Digitally Verified via APK</p>
-                        <p>${l.supervisor}</p>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('a4ModalBackdrop').classList.remove('hidden');
-        }
-
-        function closeA4Modal() {
-            document.getElementById('a4ModalBackdrop').classList.add('hidden');
-        }
-
         // CSV Export
         
         // Settings View
@@ -1897,7 +1715,7 @@ function renderDashboard() {
     const hasFail = failed(l), left = hoursLeft(l);
     const badge = hasFail && !l.defectResolved ? '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-500 border border-red-500/30">Defect Fail</span>' : '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">' + (hasFail ? 'Cleared' : 'All Pass') + '</span>';
     const del = left > 0 ? `<button type="button" onclick="deleteLog('${l.id}')" title="Delete (${Math.floor(left)} h left)" class="ml-2 w-8 h-8 rounded-xl bg-red-500/15 text-red-500 hover:bg-red-500/25"><i class="fa-solid fa-trash-can text-xs"></i></button>` : `<span title="Locked after ${deleteWindowHours} hours" class="ml-2 inline-flex w-8 h-8 items-center justify-center rounded-xl opacity-40" style="color: var(--text-muted);"><i class="fa-solid fa-lock text-xs"></i></span>`;
-    return `<tr class="hover:bg-white/5 transition-all"><td class="py-3.5 px-4"><p class="font-bold" style="color: var(--text-main);">${esc(l.date)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.shift.split(' ')[0])} Shift</p></td><td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${esc(l.forkliftNo)}</td><td class="py-3.5 px-4"><p class="font-semibold" style="color: var(--text-main);">${esc(l.owner)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.model)}</p></td><td class="py-3.5 px-4" style="color: var(--text-main);">${esc(l.department)}</td><td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${esc(l.operator)}</td><td class="py-3.5 px-4" style="color: var(--text-muted);">${esc(l.supervisor)}</td><td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${esc(l.hourMeter)} HRS</td><td class="py-3.5 px-4">${badge}</td><td class="py-3.5 px-4 text-right whitespace-nowrap"><button type="button" onclick="openA4Modal('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-file-pdf mr-1"></i> View Sheet</button>${del}</td></tr>`;
+    return `<tr class="hover:bg-white/5 transition-all"><td class="py-3.5 px-4"><p class="font-bold" style="color: var(--text-main);">${esc(l.date)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.shift.split(' ')[0])} Shift</p></td><td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${esc(l.forkliftNo)}</td><td class="py-3.5 px-4"><p class="font-semibold" style="color: var(--text-main);">${esc(l.owner)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.model)}</p></td><td class="py-3.5 px-4" style="color: var(--text-main);">${esc(l.department)}</td><td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${esc(l.operator)}</td><td class="py-3.5 px-4" style="color: var(--text-muted);">${esc(l.supervisor)}</td><td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${esc(l.hourMeter)} HRS</td><td class="py-3.5 px-4">${badge}</td><td class="py-3.5 px-4 text-right whitespace-nowrap">${del}</td></tr>`;
   }).join('') + (rows.length > 200 ? `<tr><td colspan="9" class="py-3 px-4 text-center text-[11px]" style="color: var(--text-muted);">Showing the latest 200 of ${rows.length}. Use the search box or export a CSV for the rest.</td></tr>` : '');
   renderTrendChart();
 }
@@ -1935,12 +1753,6 @@ async function deleteLog(id) {
   for (const p of Object.values(l.photos || {})) await Photos.del(p);
   try { await LogDB.del(id); } catch (e) {}
   inspectionLogs = inspectionLogs.filter(x => x !== l); renderDashboard(); showToast('Report deleted', id + ' was removed.', 'fa-trash-can');
-}
-function openA4Modal(id) {
-  openA4ModalBase(id); const l = inspectionLogs.find(x => x.id === id); if (!l) return; const area = $('a4PrintArea'), ph = Object.entries(l.photos || {}); let h = '';
-  if (ph.length) h += `<div class="mt-3 text-[11px]"><p class="font-bold underline mb-1">DEFECT PHOTOS:</p><div class="flex flex-wrap gap-2">${ph.map(([i, p]) => `<figure><img data-photo="${esc(p)}" class="w-40 h-32 object-cover border" alt=""><figcaption class="text-[10px]">${esc(CHECKLIST_ITEMS[i])}</figcaption></figure>`).join('')}</div></div>`;
-  if (l.defectResolved && l.clearedBy) h += `<p class="mt-2 text-[11px]"><strong>Defect cleared by:</strong> ${esc(l.clearedBy)} &mdash; ${esc(l.clearAction)} (${new Date(l.clearedAt).toLocaleString()})</p>`;
-  area.insertAdjacentHTML('beforeend', h); hydratePhotos(area);
 }
 async function exportToCSV() {
   const p = Period.active(), v = await ask('Export CSV', [{ id: 'scope', label: 'Which records', type: 'select', options: [`Reporting month (${p.month} ${p.year})`, 'All records'] }], { ok: 'Download' }); if (!v) return;
