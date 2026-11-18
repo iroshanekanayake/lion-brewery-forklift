@@ -124,22 +124,79 @@
             background: var(--accent-color);
         }
 
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
         @media print {
+            html, body {
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+            }
             body * {
                 visibility: hidden;
             }
+            #a4ModalBackdrop {
+                display: block !important;
+                position: static !important;
+                inset: auto !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                backdrop-filter: none !important;
+            }
+            #a4ModalBackdrop > .neu-card,
+            #a4ModalBackdrop .max-h-\[80vh\] {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                max-width: none !important;
+                max-height: none !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: #ffffff !important;
+            }
             #a4PrintArea, #a4PrintArea * {
-                visibility: visible;
+                visibility: visible !important;
             }
             #a4PrintArea {
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 100%;
+                position: static !important;
+                display: block !important;
+                left: auto !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: none !important;
+                min-height: 0 !important;
+                height: auto !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                overflow: visible !important;
                 background: #ffffff !important;
                 color: #000000 !important;
                 box-shadow: none !important;
-                padding: 16px !important;
+                border-radius: 0 !important;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
+            }
+            #a4PrintArea table,
+            #a4PrintArea tr,
+            #a4PrintArea .border,
+            #a4PrintArea figure {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
             .no-print {
                 display: none !important;
@@ -706,7 +763,8 @@
                     </div>
 
                     <label class="flex items-center gap-2 text-xs font-bold" style="color: var(--text-main);"><input type="checkbox" id="settingAutoPeriod" onchange="onAutoPeriodChange()" class="w-4 h-4"> Follow today's date automatically (reporting year and month)</label>
-                    \1 class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
+                    <div>
+                        <label for="settingYear" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
                             <select id="settingYear" class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
                                 <option value="2025">2025</option>
                                 <option value="2026" selected>2026</option>
