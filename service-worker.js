@@ -3,7 +3,7 @@
    - own files (icons, manifest): cache first, refreshed in the background
    - CDN files (Tailwind, Chart.js, Font Awesome, Inter): saved on first visit so the app works offline
    To release an update, change VERSION below. */
-const VERSION = "v7";
+const VERSION = "v5";
 const SHELL_CACHE = `forklift-shell-${VERSION}`;
 const CDN_CACHE = "forklift-cdn-v1";
 const SCOPE = self.registration.scope;
@@ -11,12 +11,10 @@ const SCOPE = self.registration.scope;
 const SHELL = ["./", "index.html", "manifest.json", "app-icon-192.png", "app-icon-512.png",
                "app-icon-maskable-192.png", "app-icon-maskable-512.png", "favicon-32.png"].map(p => new URL(p, SCOPE).href);
 
-const CDN_HOSTS = ["cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com"];
+const CDN_HOSTS = ["cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 const CDN_PRECACHE = [
   "https://cdn.tailwindcss.com",
   "https://cdn.jsdelivr.net/npm/chart.js",
-  "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js",
-  "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js",
   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
   "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
 ];

@@ -145,63 +145,61 @@
                 display: none !important;
             }
         }
-    
-/* Soft embossed login gate */
-.login-gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto;background:#e8edf5;background-image:radial-gradient(circle at 15% 18%,#f9fbff 0,transparent 34%),radial-gradient(circle at 88% 82%,#d8e1ef 0,transparent 35%);color:#263247}
-.login-shell{width:min(100%,440px);padding:34px 30px 28px;border-radius:34px;background:linear-gradient(145deg,#edf2fa,#e2e8f2);box-shadow:16px 16px 34px #c5cedb,-16px -16px 34px #fff;border:1px solid rgba(255,255,255,.72);text-align:center}
-.login-emblem{width:88px;height:88px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;border-radius:28px;color:#2563a6;font-size:30px;background:linear-gradient(145deg,#f7faff,#e1e8f2);box-shadow:9px 9px 18px #c7d0dd,-9px -9px 18px #fff}
-.login-title{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.8px;color:#202b3d}
-.login-subtitle{font-size:13px;color:#718096;margin-top:9px;margin-bottom:28px}
-.login-field{position:relative;margin:15px 0;text-align:left}
-.login-field label{display:block;font-size:11px;font-weight:700;color:#47729f;margin:0 0 7px 12px}
-.login-field input{width:100%;height:56px;padding:0 17px;border:1px solid rgba(255,255,255,.8);outline:none;border-radius:17px;background:#e9eef6;color:#263247;font-size:14px;box-shadow:inset 5px 5px 10px #cbd3df,inset -5px -5px 10px #fff}
-.login-field input:focus{box-shadow:inset 3px 3px 7px #cbd3df,inset -3px -3px 7px #fff,0 0 0 3px rgba(45,121,190,.12)}
-.login-password-wrap{position:relative}.login-password-wrap input{padding-right:52px}
-.login-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;border-radius:11px;background:transparent;color:#718096}
-.login-primary{width:100%;height:58px;margin-top:20px;border:0;border-radius:18px;font-weight:800;letter-spacing:.5px;color:#23639d;background:linear-gradient(145deg,#f4f8ff,#e1e8f2);box-shadow:8px 8px 17px #c6cfdd,-8px -8px 17px #fff;transition:transform .18s,box-shadow .18s}
-.login-primary:active{transform:translateY(2px);box-shadow:inset 5px 5px 10px #c6cfdd,inset -5px -5px 10px #fff}
-.login-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:15px 2px 0;font-size:12px;color:#718096}
-.login-meta button,.login-switch button{color:#286da8;font-weight:800}
-.login-check{display:flex;align-items:center;gap:8px}.login-check input{accent-color:#2875b6;width:16px;height:16px}
-.login-switch{margin-top:27px;font-size:13px;color:#718096}.login-error{min-height:18px;margin-top:10px;font-size:12px;color:#c24145;font-weight:600}
-.login-foot{margin-top:22px;font-size:10px;letter-spacing:1.4px;color:#9aa7b8;font-weight:700}.login-hidden{display:none!important}
-@media(max-width:420px){.login-shell{padding:28px 22px 24px;border-radius:29px}.login-title{font-size:25px}.login-emblem{width:78px;height:78px}}
 
-    
-.login-or{display:flex;align-items:center;gap:12px;margin:20px 0 14px;color:#91a0b3;font-size:10px;font-weight:800;letter-spacing:1.5px}
-.login-or:before,.login-or:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#c5cfdd,transparent)}
-.login-google{width:100%;height:54px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid rgba(255,255,255,.9);border-radius:17px;background:linear-gradient(145deg,#f7faff,#e2e9f3);color:#34445b;font-size:13px;font-weight:800;box-shadow:7px 7px 15px #c8d1df,-7px -7px 15px #fff;transition:transform .18s,box-shadow .18s}
-.login-google i{font-size:17px;color:#4285f4}.login-google:active{transform:translateY(2px);box-shadow:inset 4px 4px 8px #c8d1df,inset -4px -4px 8px #fff}
-.login-google:disabled{opacity:.6;cursor:wait}
-.login-account-chip{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--border-color);border-radius:12px;background:var(--bg-main);color:var(--text-muted);font-size:11px;max-width:220px}
-.login-account-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.login-logout{border:1px solid var(--border-color);border-radius:10px;padding:7px 10px;color:var(--text-main);font-size:11px;font-weight:800}
+        /* ---- v2: dialogs, report, QR labels, print modes ---- */
+        .overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; align-items:center; justify-content:center; padding:16px; z-index:70; }
+        .overlay.show { display:flex; }
+        #modalBox { background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color); border-radius:16px; padding:16px; width:100%; max-width:360px; max-height:90vh; overflow-y:auto; }
+        #modalBox h3 { margin:0 0 4px; font-size:17px; font-weight:800; }
+        #modalBox .mute { color:var(--text-muted); font-size:13px; }
+        #modalBox label.f { display:block; font-size:13px; color:var(--text-muted); margin:10px 0 4px; }
+        #modalBox input, #modalBox select, #modalBox textarea { width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-main); color:var(--text-main); font:inherit; }
+        #modalBox button { padding:10px 14px; border:0; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; }
+        #modalBox .primary { background:var(--accent-color); color:#fff; width:100%; } #modalBox .ghost { background:transparent; color:var(--text-main); border:1px solid var(--border-color); }
+        #modalBox .danger { background:#ef4444; color:#fff; } #modalBox .btnrow { display:flex; gap:8px; margin-top:12px; } #modalBox .btnrow button { flex:1; }
+        #modalBox .err { color:#ef4444; font-size:13px; min-height:18px; margin-top:8px; }
+        #modalBox .linkbtn { background:none; color:var(--text-muted); text-decoration:underline; padding:8px 0 0; width:100%; }
+        #modalBox .recovery { font:700 22px/1.3 ui-monospace,Consolas,monospace; letter-spacing:2px; text-align:center; padding:14px; border:1px dashed var(--accent-color); border-radius:10px; margin:12px 0; color:var(--accent-color); }
+        #big { max-width:100%; max-height:88vh; border-radius:10px; }
 
-</style>
+        #reportBody { --line:var(--border-color); --mute:var(--text-muted); --ok:#2fb87a; --bad:#e5484d; --warn:#e8a317; }
+        #reportBody h1 { font-size:20px; font-weight:800; } #reportBody .mute { color:var(--mute); font-size:13px; }
+        #reportBody .kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0 4px; }
+        #reportBody .kpi { border:1px solid var(--line); border-radius:10px; padding:8px 10px; } #reportBody .kpi b { display:block; font-size:22px; line-height:1.2; } #reportBody .kpi span { font-size:12px; color:var(--mute); }
+        #reportBody h2 { font-size:15px; font-weight:800; margin:18px 0 6px; } #reportBody .wrap { overflow-x:auto; }
+        #reportBody table { width:100%; border-collapse:collapse; font-size:13px; min-width:420px; }
+        #reportBody th, #reportBody td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; } #reportBody th { color:var(--mute); font-weight:600; }
+        #reportBody td.n, #reportBody th.n { text-align:right; white-space:nowrap; }
+        #reportBody .bar { height:6px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:3px; min-width:50px; } #reportBody .bar i { display:block; height:100%; background:var(--ok); }
+        #reportBody .bad { color:var(--bad); font-weight:700; } #reportBody .good { color:var(--ok); font-weight:700; } #reportBody .amber { color:var(--warn); font-weight:700; }
+        #reportBody .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; } #reportBody .chip { padding:2px 9px; border:1px solid var(--line); border-radius:99px; font-size:12px; }
+        #reportBody .sign { display:none; grid-template-columns:1fr 1fr; gap:24px; margin-top:28px; font-size:13px; } #reportBody .sign div { border-top:1px solid var(--mute); padding-top:4px; color:var(--mute); }
+
+        .qrsheet { display:grid; grid-template-columns:repeat(var(--cols,3), 1fr); gap:10px; }
+        .qrl { container-type:inline-size; background:#fff; color:#111; border:1.5px dashed #888; border-radius:6px; overflow:hidden; aspect-ratio:var(--lw,63) / var(--lh,66); display:flex; flex-direction:column; break-inside:avoid; }
+        .qrl .band { background:#111; color:#fff; text-align:center; font-weight:800; font-size:5.2cqw; letter-spacing:.05em; padding:2.4cqw 1cqw; line-height:1.2; border-bottom:1.6cqw solid #ff7a1a; }
+        .qrl .band small { display:block; font-weight:600; font-size:4.2cqw; color:#ffb274; letter-spacing:.12em; }
+        .qrl .num { text-align:center; font-weight:900; font-size:17cqw; line-height:1.05; margin-top:2cqw; white-space:nowrap; }
+        .qrl .qr { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:1cqw 8cqw; } .qrl .qr svg { height:100%; max-width:100%; aspect-ratio:1; }
+        .qrl .foot { text-align:center; font-weight:700; font-size:4.6cqw; padding:0 2cqw 2.6cqw; }
+
+        @media print {
+            body.print-report header, body.print-report main > section:not(#viewReport), body.print-report #toastBanner,
+            body.print-qr header, body.print-qr main > section:not(#viewQr), body.print-qr #toastBanner { display: none !important; }
+            body.print-report *, body.print-qr * { visibility: visible !important; }
+            body.print-report, body.print-qr { background: #fff !important; color: #000 !important; }
+            body.print-report main, body.print-qr main { padding: 0 !important; max-width: none !important; }
+            body.print-report .neu-card, body.print-qr .neu-card { background: #fff !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+            body.print-report #reportBody { color: #000 !important; --line:#bbb; --mute:#444; font-size: 11pt; }
+            body.print-report #reportBody .bad { color:#b00020; } body.print-report #reportBody .good { color:#1b7a4b; } body.print-report #reportBody .amber { color:#9a6700; }
+            body.print-report #reportBody .sign { display:grid; } body.print-report #reportBody table { min-width:0; } body.print-report #reportBody tr, body.print-report #reportBody .kpi { break-inside:avoid; }
+            body.print-report #reportBody .bar { background:#ddd; }
+            body.print-qr .qrsheet { grid-template-columns:repeat(var(--cols), calc(var(--lw) * 1mm)); gap:0; justify-content:center; }
+            body.print-qr .qrl { width:calc(var(--lw) * 1mm); height:calc(var(--lh) * 1mm); aspect-ratio:auto; border-radius:0; border:1px dashed #999; }
+        }
+    </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
-
-
-    <section id="loginGate" class="login-gate" aria-label="Application login">
-      <div class="login-shell">
-        <div class="login-emblem"><i class="fa-solid fa-shield-halved"></i></div>
-        <div class="login-title" id="loginHeading">Welcome Back</div>
-        <p class="login-subtitle" id="loginSubtitle">Sign in to continue to your safety dashboard</p>
-        <form id="localLoginForm" onsubmit="handleLocalAuth(event)">
-          <div class="login-field"><label for="loginEmail">EMAIL ADDRESS</label><input id="loginEmail" type="email" autocomplete="username" placeholder="Enter your email" required></div>
-          <div class="login-field"><label for="loginPassword">PASSWORD</label><div class="login-password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="6" required><button class="login-eye" type="button" onclick="toggleLoginPassword()" aria-label="Show or hide password"><i id="loginEyeIcon" class="fa-solid fa-eye"></i></button></div></div>
-          <div class="login-meta"><label class="login-check"><input id="rememberLogin" type="checkbox"> Remember me</label><button type="button" id="forgotPasswordBtn" onclick="handleForgotPassword()">Forgot Password?</button></div>
-          <div id="loginError" class="login-error" role="status" aria-live="polite"></div>
-          <button class="login-primary" id="loginSubmitBtn" type="submit">LOGIN</button>
-        </form>
-        <div class="login-or"><span>OR</span></div>
-        <button class="login-google" id="googleLoginBtn" type="button" onclick="signInWithGoogle()">
-          <i class="fa-brands fa-google"></i><span>Continue with Google</span>
-        </button>
-        <div class="login-switch" id="loginSwitchText">Don't have an account? <button type="button" onclick="setAuthMode('signup')">Create Account</button></div>
-        <div class="login-foot">LION BREWERY · BIYAGAMA · HSE SYSTEM</div>
-      </div>
-    </section>
 
     <!-- Toast Notification Banner -->
     <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-4 opacity-0">
@@ -250,12 +248,6 @@
                     </select>
                 </div>
 
-                <div class="login-account-chip" id="headerAuthChip" style="display:none;">
-                    <i class="fa-solid fa-user-shield" style="color:var(--accent-color);"></i>
-                    <span id="headerAuthEmail"></span>
-                    <button class="login-logout" type="button" onclick="signOutCurrentUser()">Logout</button>
-                </div>
-
                 <!-- Primary View Navigation -->
                 <nav class="flex items-center gap-2 p-1.5 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-color);">
                     <button type="button" id="navDashboardBtn" onclick="switchView('dashboard')"
@@ -267,6 +259,11 @@
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <span class="hidden sm:inline">Operator APK</span>
+                    </button>
+                    <button type="button" id="navReportBtn" onclick="switchView('report')" title="Monthly Report"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
+                        <i class="fa-solid fa-file-lines"></i>
+                        <span class="hidden sm:inline">Report</span>
                     </button>
                     <button type="button" id="navSettingsBtn" onclick="switchView('settings')" title="System Settings"
                         class="flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
@@ -293,7 +290,7 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Feed
                         </span>
                     </h2>
-                    <p class="text-xs mt-0.5" style="color: var(--text-muted);">Real-time forklift pre-check compliance, shift logs, and defect resolution across FL 01 &#8211; FL 30.</p>
+                    <p class="text-xs mt-0.5" style="color: var(--text-muted);">Real-time forklift pre-check compliance, shift logs, and defect resolution across the whole fleet.</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
@@ -329,6 +326,8 @@
                 </div>
             </div>
 
+            <div id="lockPanel" class="space-y-4"></div>
+
             <!-- 4 KPI Cards Row -->
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                 <div class="rounded-2xl p-5 shadow-xl border relative overflow-hidden text-white" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover)); border-color: var(--border-color);">
@@ -353,7 +352,7 @@
                             <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Active Fleet Checked</p>
                             <div class="flex items-baseline gap-2 mt-2">
                                 <h3 id="kpiActiveFleet" class="text-3xl font-extrabold" style="color: var(--text-main);">0</h3>
-                                <span class="text-sm font-semibold" style="color: var(--text-muted);">/ 30 Units</span>
+                                <span id="kpiFleetTotal" class="text-sm font-semibold" style="color: var(--text-muted);">/ 30 Units</span>
                             </div>
                         </div>
                         <div class="w-11 h-11 rounded-2xl bg-blue-500/15 text-blue-400 border border-blue-500/20 flex items-center justify-center text-lg">
@@ -387,7 +386,7 @@
                 <div class="neu-card rounded-2xl p-5">
                     <div class="flex items-start justify-between">
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Cumulative Meter Reading</p>
+                            <p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Average Meter (per forklift)</p>
                             <div class="flex items-baseline gap-1.5 mt-2">
                                 <h3 id="kpiRunningHours" class="text-3xl font-extrabold" style="color: var(--text-main);">0</h3>
                                 <span class="text-sm font-bold" style="color: var(--accent-color);">HRS</span>
@@ -460,20 +459,7 @@
 
                     <div class="pt-3 border-t" style="border-color: var(--border-color);">
                         <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: var(--text-muted);">Forklift Owner Breakdown</p>
-                        <div class="grid grid-cols-3 gap-2.5 text-center">
-                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Winwill</p>
-                                <p id="ownerWinwillCount" class="text-lg font-extrabold mt-0.5" style="color: var(--accent-color);">0</p>
-                            </div>
-                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Tasma</p>
-                                <p id="ownerTasmaCount" class="text-lg font-extrabold text-emerald-500 mt-0.5">0</p>
-                            </div>
-                            <div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                                <p class="text-[11px] font-semibold" style="color: var(--text-muted);">Other</p>
-                                <p id="ownerOtherCount" class="text-lg font-extrabold text-blue-500 mt-0.5">0</p>
-                            </div>
-                        </div>
+                        <div id="ownerBreakdownGrid" class="grid grid-cols-3 gap-2.5 text-center"></div>
                     </div>
                 </div>
             </div>
@@ -569,9 +555,10 @@
                             <label for="formForkliftNo" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
                                 Forklift Number: *
                             </label>
-                            <select id="formForkliftNo" required
+                            <select id="formForkliftNo" onchange="onForkliftChange()" required
                                 class="w-full border rounded-xl px-3.5 py-3 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
                             </select>
+                            <div id="forkliftLockWarn"></div>
                         </div>
 
                         <div>
@@ -670,7 +657,7 @@
 
                     <div>
                         <label for="formRemarks" class="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style="color: var(--accent-color);">
-                            Remarks / Defect Details:
+                            Remarks / Defect Details (required if any item is Fail):
                         </label>
                         <textarea id="formRemarks" rows="5"
                             placeholder="Describe any mechanical defects, oil leakages, tire wear, light failures, or operational remarks in detail..."
@@ -718,9 +705,8 @@
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="settingYear" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
+                    <label class="flex items-center gap-2 text-xs font-bold" style="color: var(--text-main);"><input type="checkbox" id="settingAutoPeriod" onchange="onAutoPeriodChange()" class="w-4 h-4"> Follow today's date automatically (reporting year and month)</label>
+                    \1 class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Active Reporting Year</label>
                             <select id="settingYear" class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
                                 <option value="2025">2025</option>
                                 <option value="2026" selected>2026</option>
@@ -781,6 +767,11 @@
                             class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
                     </div>
 
+                    <div>
+                        <label for="settingDeleteHours" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Hours a report can be deleted after saving</label>
+                        <input type="number" min="1" id="settingDeleteHours" class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                    </div>
+
                     <div class="pt-2 flex justify-end gap-3">
                         <button type="button" onclick="switchView('dashboard')"
                             class="px-5 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
@@ -792,6 +783,45 @@
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- Supervisor PIN -->
+            <div class="neu-card rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base font-extrabold flex items-center gap-2" style="color: var(--text-main);"><i class="fa-solid fa-lock" style="color: var(--accent-color);"></i><span>Supervisor PIN</span> <span id="pinState" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold"></span></h3>
+                        <p id="pinNote" class="text-xs mt-0.5" style="color: var(--text-muted);"></p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button type="button" onclick="lockNow()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Lock now</button>
+                        <button type="button" onclick="changePin()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Change PIN</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forklift Fleet -->
+            <div class="neu-card rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
+                <div>
+                    <h3 class="text-base font-extrabold flex items-center gap-2" style="color: var(--text-main);"><i class="fa-solid fa-truck-ramp-box" style="color: var(--accent-color);"></i><span>Forklift Fleet (<span id="fleetCount">0</span> units)</span></h3>
+                    <p class="text-xs mt-0.5" style="color: var(--text-muted);">Add any forklift number or name. Owner and model are filled in automatically on the inspection form.</p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+                    <input type="text" id="newFleetName" placeholder="New forklift, e.g. FL 31" class="sm:col-span-2 border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                    <select id="newFleetOwner" class="border rounded-xl px-2.5 py-2.5 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select>
+                    <select id="newFleetModel" class="border rounded-xl px-2.5 py-2.5 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select>
+                </div>
+                <div class="flex flex-wrap gap-2 items-center">
+                    <button type="button" onclick="addFleetUnit()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-plus mr-1"></i> Add forklift</button>
+                    <span class="text-xs" style="color: var(--text-muted);">or add many:</span>
+                    <input type="text" id="rangePrefix" value="FL " class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="Name prefix">
+                    <input type="number" id="rangeFrom" value="31" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="From">
+                    <span class="text-xs" style="color: var(--text-muted);">to</span>
+                    <input type="number" id="rangeTo" value="75" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="To">
+                    <button type="button" onclick="addFleetRange()" class="px-3 py-2 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Add range</button>
+                </div>
+                <input type="text" id="fleetSearch" oninput="renderFleetManagement()" placeholder="Search the list..." class="w-full border rounded-xl px-3.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                <div id="fleetList" class="border rounded-2xl max-h-72 overflow-y-auto" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
+                <button type="button" onclick="switchView('qr')" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-qrcode mr-1"></i> Open QR label sheet</button>
             </div>
 
             <!-- Employee Management Card -->
@@ -834,11 +864,49 @@
             </div>
         </section>
 
+<!-- ===================================================================== -->
+        <!-- VIEW 4: MONTHLY REPORT                                                -->
+        <!-- ===================================================================== -->
+        <section id="viewReport" class="hidden max-w-4xl mx-auto space-y-4">
+            <div class="neu-card rounded-2xl p-4 no-print flex flex-wrap items-end gap-3">
+                <div><label for="rptYear" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">Year</label><select id="rptYear" onchange="renderReport()" class="border rounded-xl px-3 py-2 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
+                <div><label for="rptMonth" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">Month</label><select id="rptMonth" onchange="renderReport()" class="border rounded-xl px-3 py-2 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
+                <button type="button" onclick="printMode('report')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow ml-auto" style="background-color: var(--accent-color);"><i class="fa-solid fa-print mr-1"></i> Print / Save as PDF</button>
+            </div>
+            <div id="reportBody" class="neu-card rounded-2xl p-5"></div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 5: QR LABELS                                                     -->
+        <!-- ===================================================================== -->
+        <section id="viewQr" class="hidden max-w-4xl mx-auto space-y-4">
+            <div class="neu-card rounded-2xl p-4 no-print space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                    <div><h2 class="text-base font-extrabold" style="color: var(--text-main);"><i class="fa-solid fa-qrcode mr-1" style="color: var(--accent-color);"></i> QR labels for forklifts</h2>
+                    <p class="text-xs" style="color: var(--text-muted);">Print, laminate and stick one on each forklift. Scanning opens this app with that forklift already chosen.</p></div>
+                    <button type="button" onclick="switchView('settings')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border shrink-0" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Back</button>
+                </div>
+                <div><label for="qrBase" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">App address (the link of this app)</label><input type="text" id="qrBase" oninput="renderQr()" inputmode="url" autocomplete="off" spellcheck="false" class="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"><div id="qrNote" class="text-xs mt-1"></div></div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div><label for="qrFrom" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">From</label><select id="qrFrom" onchange="renderQr()" class="w-full border rounded-xl px-2 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
+                    <div><label for="qrTo" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">To</label><select id="qrTo" onchange="renderQr()" class="w-full border rounded-xl px-2 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
+                    <div><label for="qrSize" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">Size</label><select id="qrSize" onchange="renderQr()" class="w-full border rounded-xl px-2 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"><option value="2x3">6 per A4 (large)</option><option value="3x4" selected>12 per A4 (medium)</option><option value="4x5">20 per A4 (small)</option></select></div>
+                </div>
+                <button type="button" onclick="printMode('qr')" class="w-full py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-print mr-1"></i> Print / Save as PDF</button>
+                <p id="qrCount" class="text-[11px]" style="color: var(--text-muted);"></p>
+            </div>
+            <div id="qrSheet" class="qrsheet"></div>
+        </section>
+
     </main>
 
     <!-- ===================================================================== -->
     <!-- A4 PRINTABLE OFFICIAL SHEET MODAL                                     -->
     <!-- ===================================================================== -->
+    <!-- PIN / dialog and photo viewer -->
+    <div class="overlay" id="modal"><div class="box" id="modalBox"></div></div>
+    <div class="overlay" id="viewer"><img id="big" alt="Defect photo"></div>
+
     <div id="a4ModalBackdrop" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
         <div class="neu-card rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl my-auto">
             <div class="no-print px-6 py-4 border-b flex items-center justify-between" style="background-color: var(--bg-main); border-color: var(--border-color);">
@@ -869,8 +937,6 @@
     <!-- ===================================================================== -->
     <!-- JAVASCRIPT APP LOGIC                                                  -->
     <!-- ===================================================================== -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script>
         // 1. Employee Directory
         let departmentEmployees = {
@@ -937,12 +1003,7 @@
             "21. Workability of handles & locks are satisfactory"
         ];
 
-        const FLEET_UNITS = Array.from({ length: 30 }, (_, i) => {
-            const num = String(i + 1).padStart(2, '0');
-            return `FL ${num}`;
-        });
-
-        let appSettings = {
+                let appSettings = {
             year: "2026",
             month: "November",
             departments: Object.keys(departmentEmployees),
@@ -960,12 +1021,20 @@
         let currentTimeFilter = "daily";
         let trendChartInstance = null;
 
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = localDate();
+
+        function buildDefaultResults(failedIndices = []) {
+            const res = {};
+            CHECKLIST_ITEMS.forEach((item, idx) => {
+                res[idx] = failedIndices.includes(idx) ? "Fail" : "Pass";
+            });
+            return res;
+        }
 
         let inspectionLogs = [];
 
         // Theme Switcher
-        function changeTheme(themeName) {
+        function changeTheme(themeName, quiet) {
             document.body.classList.remove('theme-sky-neumorphism', 'theme-official-corporate');
             if (themeName === 'sky-neumorphism') {
                 document.body.classList.add('theme-sky-neumorphism');
@@ -977,54 +1046,11 @@
             if (headerSelect) headerSelect.value = themeName;
             if (settingSelect) settingSelect.value = themeName;
             localStorage.setItem('lion_brewery_theme', themeName);
-            showToast("Theme Updated", `Switched to ${themeName.replace('-', ' ')}`, "fa-palette");
+            if (!quiet) showToast("Theme Updated", `Switched to ${themeName.replace('-', ' ')}`, "fa-palette");
         }
 
         // View Switching
-        function switchView(viewName) {
-            const vDash = document.getElementById('viewDashboard');
-            const vApk = document.getElementById('viewApk');
-            const vSet = document.getElementById('viewSettings');
-
-            const btnDash = document.getElementById('navDashboardBtn');
-            const btnApk = document.getElementById('navApkBtn');
-            const btnSet = document.getElementById('navSettingsBtn');
-
-            vDash.classList.add('hidden');
-            vApk.classList.add('hidden');
-            vSet.classList.add('hidden');
-
-            btnDash.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all";
-            btnDash.style.color = "var(--text-muted)";
-            btnDash.style.backgroundColor = "transparent";
-
-            btnApk.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all";
-            btnApk.style.color = "var(--text-muted)";
-            btnApk.style.backgroundColor = "transparent";
-
-            btnSet.className = "flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all";
-            btnSet.style.color = "var(--text-muted)";
-            btnSet.style.backgroundColor = "transparent";
-
-            if (viewName === 'dashboard') {
-                vDash.classList.remove('hidden');
-                btnDash.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
-                btnDash.style.backgroundColor = "var(--accent-color)";
-                renderDashboard();
-            } else if (viewName === 'apk') {
-                vApk.classList.remove('hidden');
-                btnApk.className = "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
-                btnApk.style.backgroundColor = "var(--accent-color)";
-                initApkForm();
-            } else if (viewName === 'settings') {
-                vSet.classList.remove('hidden');
-                btnSet.className = "flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md";
-                btnSet.style.backgroundColor = "var(--accent-color)";
-                initSettingsView();
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
+        
         // Toast Notification
         function showToast(title, message, iconClass = "fa-circle-check") {
             const banner = document.getElementById('toastBanner');
@@ -1044,51 +1070,7 @@
         }
 
         // Initialize APK Form Controls
-        function initApkForm() {
-            // Forklift numbers
-            const fSelect = document.getElementById('formForkliftNo');
-            fSelect.innerHTML = FLEET_UNITS.map(f => `<option value="${f}">${f}</option>`).join('');
-
-            // Inspection Date
-            document.getElementById('formInspectionDate').value = todayStr;
-
-            // Owners Pills
-            const ownerGroup = document.getElementById('ownerPillGroup');
-            ownerGroup.innerHTML = appSettings.owners.map(o => `
-                <button type="button" onclick="selectOwner('${o}')"
-                    class="py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${selectedOwner === o ? 'text-white shadow' : ''}"
-                    style="${selectedOwner === o ? 'background-color: var(--accent-color); border-color: var(--accent-color);' : 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);'}">
-                    ${o}
-                </button>
-            `).join('');
-
-            // Model Pills
-            const modelGroup = document.getElementById('modelPillGroup');
-            modelGroup.innerHTML = appSettings.models.map(m => `
-                <button type="button" onclick="selectModel('${m}')"
-                    class="py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${selectedModel === m ? 'text-white shadow' : ''}"
-                    style="${selectedModel === m ? 'background-color: var(--accent-color); border-color: var(--accent-color);' : 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);'}">
-                    ${m}
-                </button>
-            `).join('');
-
-            // Departments
-            const dSelect = document.getElementById('formDepartment');
-            dSelect.innerHTML = appSettings.departments.map(d => `<option value="${d}">${d}</option>`).join('');
-
-            // Supervisors
-            const sSelect = document.getElementById('formSupervisor');
-            sSelect.innerHTML = appSettings.supervisors.map(s => `<option value="${s}">${s}</option>`).join('');
-
-            // Init checklist responses to Pass
-            CHECKLIST_ITEMS.forEach((_, idx) => {
-                if (!checklistResponses[idx]) checklistResponses[idx] = "Pass";
-            });
-
-            onDepartmentChange();
-            renderChecklistItems();
-        }
-
+        
         function selectOwner(o) {
             selectedOwner = o;
             initApkForm();
@@ -1108,7 +1090,7 @@
                 : `<option value="">No Operators Found</option>`;
         }
 
-        function renderChecklistItems() {
+        function renderChecklistItemsBase() {
             const container = document.getElementById('checklistItemsContainer');
             container.innerHTML = CHECKLIST_ITEMS.map((label, idx) => {
                 const val = checklistResponses[idx] || "Pass";
@@ -1134,45 +1116,10 @@
             }).join('');
         }
 
-        function setCheckStatus(idx, status) {
-            checklistResponses[idx] = status;
-            renderChecklistItems();
-        }
-
-        function markAllChecklistPass() {
-            CHECKLIST_ITEMS.forEach((_, idx) => {
-                checklistResponses[idx] = "Pass";
-            });
-            renderChecklistItems();
-            showToast("Checklist Updated", "All 21 items marked as Pass.", "fa-check-double");
-        }
-
+        
+        
         // Form Submit
-        function handlePreCheckSubmit(e) {
-            e.preventDefault();
-            const newLog = {
-                id: `CHK-${Math.floor(1000 + Math.random() * 9000)}`,
-                date: document.getElementById('formInspectionDate').value,
-                forkliftNo: document.getElementById('formForkliftNo').value,
-                owner: selectedOwner,
-                model: selectedModel,
-                shift: document.getElementById('formShiftTime').value,
-                hourMeter: parseFloat(document.getElementById('formHourMeter').value) || 0,
-                department: document.getElementById('formDepartment').value,
-                operator: document.getElementById('formOperator').value,
-                supervisor: document.getElementById('formSupervisor').value,
-                results: { ...checklistResponses },
-                remarks: document.getElementById('formRemarks').value || "No remarks provided.",
-                defectResolved: false
-            };
-
-            inspectionLogs.unshift(newLog);
-            showToast("Inspection Submitted", `${newLog.forkliftNo} checklist successfully recorded!`, "fa-circle-check");
-            document.getElementById('preCheckForm').reset();
-            checklistResponses = {};
-            switchView('dashboard');
-        }
-
+        
         // Dashboard Analytics & Rendering
         function setTimeFilter(f) {
             currentTimeFilter = f;
@@ -1191,202 +1138,12 @@
             renderDashboard();
         }
 
-        function renderDashboard() {
-            const searchVal = (document.getElementById('logSearchInput').value || "").toLowerCase();
-            const filteredLogs = inspectionLogs.filter(l => 
-                l.forkliftNo.toLowerCase().includes(searchVal) ||
-                l.operator.toLowerCase().includes(searchVal) ||
-                l.department.toLowerCase().includes(searchVal)
-            );
-
-            // KPIs
-            document.getElementById('kpiTotalInspections').textContent = inspectionLogs.length;
-            const uniqueFleet = new Set(inspectionLogs.map(l => l.forkliftNo)).size;
-            document.getElementById('kpiActiveFleet').textContent = uniqueFleet;
-            const pct = Math.round((uniqueFleet / 30) * 100);
-            document.getElementById('kpiFleetProgressBar').style.width = `${pct}%`;
-            document.getElementById('kpiFleetPct').textContent = `${pct}% of FL 01&#8211;FL 30 inspected`;
-
-            let openDefectsCount = 0;
-            inspectionLogs.forEach(l => {
-                Object.values(l.results).forEach(v => {
-                    if (v === 'Fail' && !l.defectResolved) openDefectsCount++;
-                });
-            });
-            document.getElementById('kpiDefects').textContent = openDefectsCount;
-            document.getElementById('openIssuesBadge').textContent = `${openDefectsCount} Active Defects`;
-
-            const totalHrs = inspectionLogs.reduce((acc, curr) => acc + (curr.hourMeter || 0), 0);
-            document.getElementById('kpiRunningHours').textContent = totalHrs.toLocaleString();
-
-            // Shift & Owner breakdown
-            const dayShiftCount = inspectionLogs.filter(l => l.shift.includes('Day')).length;
-            const nightShiftCount = inspectionLogs.filter(l => l.shift.includes('Night')).length;
-            document.getElementById('dayShiftCount').textContent = dayShiftCount;
-            document.getElementById('nightShiftCount').textContent = nightShiftCount;
-            const totalShifts = (dayShiftCount + nightShiftCount) || 1;
-            document.getElementById('dayShiftBar').style.width = `${Math.round((dayShiftCount / totalShifts) * 100)}%`;
-            document.getElementById('nightShiftBar').style.width = `${Math.round((nightShiftCount / totalShifts) * 100)}%`;
-
-            let winCount = inspectionLogs.filter(l => l.owner === 'Winwill').length;
-            let tasCount = inspectionLogs.filter(l => l.owner === 'Tasma').length;
-            let othCount = inspectionLogs.filter(l => l.owner === 'Other').length;
-            document.getElementById('ownerWinwillCount').textContent = winCount;
-            document.getElementById('ownerTasmaCount').textContent = tasCount;
-            document.getElementById('ownerOtherCount').textContent = othCount;
-
-            // Kanban Defect Cards
-            const kanbanContainer = document.getElementById('kanbanDefectGrid');
-            const failedLogs = inspectionLogs.filter(l => Object.values(l.results).includes('Fail'));
-            if (failedLogs.length === 0) {
-                kanbanContainer.innerHTML = `
-                    <div class="col-span-full py-8 text-center text-xs" style="color: var(--text-muted);">
-                        <i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2"></i>
-                        <p>No active forklift mechanical defects reported. All units safe for operation!</p>
-                    </div>
-                `;
-            } else {
-                kanbanContainer.innerHTML = failedLogs.map(l => `
-                    <div class="border rounded-2xl p-4 space-y-3" style="background-color: var(--bg-main); border-color: var(--border-color);">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/15 text-red-500 border border-red-500/30">
-                                ${l.forkliftNo} &bull; Defect Alert
-                            </span>
-                            <span class="text-[11px]" style="color: var(--text-muted);">${l.date}</span>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold" style="color: var(--text-main);">${l.operator} (${l.department})</p>
-                            <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-muted);">${l.remarks}</p>
-                        </div>
-                        <div class="flex items-center justify-between pt-2 border-t" style="border-color: var(--border-color);">
-                            <span class="text-[11px] font-semibold ${l.defectResolved ? 'text-emerald-500' : 'text-amber-500'}">
-                                ${l.defectResolved ? 'Cleared & Safe' : 'In Maintenance'}
-                            </span>
-                            <button type="button" onclick="toggleDefectResolution('${l.id}')"
-                                class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">
-                                ${l.defectResolved ? 'Re-open' : 'Mark Cleared'}
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            // Logs Table Body
-            const tbody = document.getElementById('logsTableBody');
-            tbody.innerHTML = filteredLogs.map(l => {
-                const hasFail = Object.values(l.results).includes('Fail');
-                const statusBadge = hasFail && !l.defectResolved
-                    ? `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-500 border border-red-500/30">Defect Fail</span>`
-                    : `<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">All Pass</span>`;
-
-                return `
-                    <tr class="hover:bg-white/5 transition-all">
-                        <td class="py-3.5 px-4">
-                            <p class="font-bold" style="color: var(--text-main);">${l.date}</p>
-                            <p class="text-[11px]" style="color: var(--text-muted);">${l.shift.split(' ')[0]} Shift</p>
-                        </td>
-                        <td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${l.forkliftNo}</td>
-                        <td class="py-3.5 px-4">
-                            <p class="font-semibold" style="color: var(--text-main);">${l.owner}</p>
-                            <p class="text-[11px]" style="color: var(--text-muted);">${l.model}</p>
-                        </td>
-                        <td class="py-3.5 px-4" style="color: var(--text-main);">${l.department}</td>
-                        <td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${l.operator}</td>
-                        <td class="py-3.5 px-4" style="color: var(--text-muted);">${l.supervisor}</td>
-                        <td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${l.hourMeter} HRS</td>
-                        <td class="py-3.5 px-4">${statusBadge}</td>
-                        <td class="py-3.5 px-4 text-right">
-                            <button type="button" onclick="openA4Modal('${l.id}')"
-                                class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);">
-                                <i class="fa-solid fa-file-pdf mr-1"></i> View Sheet
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-
-            renderTrendChart();
-        }
-
-        function toggleDefectResolution(id) {
-            const log = inspectionLogs.find(l => l.id === id);
-            if (log) {
-                log.defectResolved = !log.defectResolved;
-                renderDashboard();
-                showToast("Defect Status Updated", `Log ${id} marked as ${log.defectResolved ? 'Cleared' : 'Active'}`, "fa-wrench");
-            }
-        }
-
+        
+        
         // Chart.js Trend Chart
-        function renderTrendChart() {
-            const canvas = document.getElementById('safetyTrendChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (trendChartInstance) trendChartInstance.destroy();
-
-            // Build the last seven calendar days from actual inspection records only.
-            const dates = [];
-            const counts = [];
-            const averageMeters = [];
-            for (let i = 6; i >= 0; i--) {
-                const day = new Date();
-                day.setHours(0, 0, 0, 0);
-                day.setDate(day.getDate() - i);
-                const dateKey = [
-                    day.getFullYear(),
-                    String(day.getMonth() + 1).padStart(2, '0'),
-                    String(day.getDate()).padStart(2, '0')
-                ].join('-');
-                const dayLogs = inspectionLogs.filter(log => log.date === dateKey);
-                dates.push(day.toLocaleDateString(undefined, { weekday: 'short' }));
-                counts.push(dayLogs.length);
-                const meterValues = dayLogs
-                    .map(log => Number(log.hourMeter))
-                    .filter(value => Number.isFinite(value) && value > 0);
-                averageMeters.push(meterValues.length
-                    ? meterValues.reduce((sum, value) => sum + value, 0) / meterValues.length
-                    : null);
-            }
-
-            trendChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: dates,
-                    datasets: [
-                        {
-                            label: 'Inspections Count',
-                            data: counts,
-                            backgroundColor: '#ff5722',
-                            borderRadius: 8,
-                            barThickness: 20
-                        },
-                        {
-                            label: 'Avg Meter (HRS)',
-                            data: averageMeters,
-                            type: 'line',
-                            borderColor: '#fbbf24',
-                            borderWidth: 3,
-                            tension: 0.3,
-                            spanGaps: false,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 11 } } },
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', font: { size: 11 }, precision: 0 } },
-                        y1: { position: 'right', grid: { display: false }, ticks: { color: '#fbbf24', font: { size: 11 } } }
-                    }
-                }
-            });
-        }
-
+        
         // A4 Printable Sheet Modal
-        function openA4Modal(id) {
+        function openA4ModalBase(id) {
             const l = inspectionLogs.find(item => item.id === id);
             if (!l) return;
 
@@ -1435,7 +1192,7 @@
 
                 <div class="border border-zinc-400 p-3 rounded mb-4 text-[11px]">
                     <p class="font-bold underline mb-1">REMARKS / DEFECT DETAILS:</p>
-                    <p class="italic text-zinc-800">${l.remarks}</p>
+                    <p class="italic text-zinc-800">${esc(l.remarks)}</p>
                 </div>
 
                 <div class="text-[10px] text-zinc-600 border-t pt-3 flex justify-between">
@@ -1458,64 +1215,11 @@
         }
 
         // CSV Export
-        function exportToCSV() {
-            let csv = "ID,Date,Forklift,Owner,Model,Shift,HourMeter,Department,Operator,Supervisor,Remarks\n";
-            inspectionLogs.forEach(l => {
-                csv += `"${l.id}","${l.date}","${l.forkliftNo}","${l.owner}","${l.model}","${l.shift}","${l.hourMeter}","${l.department}","${l.operator}","${l.supervisor}","${l.remarks}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `Lion_Brewery_Forklift_Logs_${todayStr}.csv`);
-            a.click();
-            showToast("CSV Exported", "Inspection logs successfully downloaded.", "fa-file-csv");
-        }
-
+        
         // Settings View
-        function initSettingsView() {
-            document.getElementById('settingTheme').value = localStorage.getItem('lion_brewery_theme') || 'dark-coral';
-            document.getElementById('settingYear').value = appSettings.year;
-            document.getElementById('settingMonth').value = appSettings.month;
-            document.getElementById('settingDepartments').value = appSettings.departments.join(', ');
-            document.getElementById('settingModels').value = appSettings.models.join(', ');
-            document.getElementById('settingOwners').value = appSettings.owners.join(', ');
-            document.getElementById('settingSupervisors').value = appSettings.supervisors.join(', ');
-
-            const deptSelect = document.getElementById('mgmtDeptSelect');
-            deptSelect.innerHTML = appSettings.departments.map(d => `<option value="${d}">${d}</option>`).join('');
-            renderEmployeeManagementList();
-        }
-
-        function saveSystemSettings(e) {
-            e.preventDefault();
-            appSettings.year = document.getElementById('settingYear').value;
-            appSettings.month = document.getElementById('settingMonth').value;
-            appSettings.departments = document.getElementById('settingDepartments').value.split(',').map(s => s.trim()).filter(Boolean);
-            appSettings.models = document.getElementById('settingModels').value.split(',').map(s => s.trim()).filter(Boolean);
-            appSettings.owners = document.getElementById('settingOwners').value.split(',').map(s => s.trim()).filter(Boolean);
-            appSettings.supervisors = document.getElementById('settingSupervisors').value.split(',').map(s => s.trim()).filter(Boolean);
-
-            showToast("Settings Saved", "System configuration successfully updated.", "fa-floppy-disk");
-            switchView('dashboard');
-        }
-
-        function resetDefaultSettings() {
-            appSettings = {
-                year: "2026",
-                month: "November",
-                departments: Object.keys(departmentEmployees),
-                models: ["Gas", "Battery", "Diesel", "Petrol"],
-                owners: ["Winwill", "Tasma", "Other"],
-                supervisors: [
-                    "R.D. Sanjeewa Newil Rajapaksha",
-                    "R.M.A. Ajith Indralal Rajathewa"
-                ]
-            };
-            initSettingsView();
-            showToast("Reset Defaults", "Settings restored to factory defaults.", "fa-rotate-right");
-        }
-
+        
+        
+        
         // Employee Management in Settings
         function renderEmployeeManagementList() {
             const dept = document.getElementById('mgmtDeptSelect').value;
@@ -1538,7 +1242,7 @@
             `).join('');
         }
 
-        function addNewOperator() {
+        function addNewOperatorBase() {
             const dept = document.getElementById('mgmtDeptSelect').value;
             const input = document.getElementById('newOperatorInput');
             const name = input.value.trim();
@@ -1551,7 +1255,7 @@
             showToast("Operator Added", `${name} added to ${dept}`, "fa-user-plus");
         }
 
-        function removeOperator(dept, idx) {
+        function removeOperatorBase(dept, idx) {
             if (departmentEmployees[dept]) {
                 const removed = departmentEmployees[dept].splice(idx, 1);
                 renderEmployeeManagementList();
@@ -1559,178 +1263,675 @@
             }
         }
 
+        /* ====================================================================== */
+/* v2 ADDITIONS: saving, custom fleet, delete rule, PIN, photos, lock-out, */
+/* missed checks, monthly report, QR labels                               */
+/* ====================================================================== */
+function localDate(d) { d = d || new Date(); const p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const INPUT_CLS = 'border rounded-xl px-2.5 py-1.5 text-xs focus:outline-none';
+const INPUT_STY = 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);';
+
+/* ---- reporting period + CSV ---- */
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+const Period = (() => {
+  const KEY = 'forklift_period_v1';
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || { auto: true }; } catch (e) { return { auto: true }; } }
+  function save(p) { try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {} }
+  function active(now = new Date()) {
+    const p = load();
+    if (p.auto !== false || !p.year || !p.month) return { auto: true, year: String(now.getFullYear()), month: MONTHS[now.getMonth()] };
+    return { auto: false, year: String(p.year), month: p.month };
+  }
+  function yearOptions(logs, now = new Date()) {
+    const cur = now.getFullYear(); let min = cur - 1, max = cur + 1;
+    for (const l of logs) { const y = parseInt((l.date || '').slice(0, 4), 10); if (y) { min = Math.min(min, y); max = Math.max(max, y); } }
+    const out = []; for (let y = min; y <= max; y++) out.push(String(y)); return out;
+  }
+  return { active, save, yearOptions };
+})();
+
+const Csv = (() => {
+  function cell(v) {
+    if (v === null || v === undefined) return '';
+    let s = String(v);
+    if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = "'" + s;      // stop Excel running text as a formula
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+  const failed = l => Object.keys(l.results || {}).filter(i => l.results[i] === 'Fail').map(i => CHECKLIST_ITEMS[i].slice(0, 2));
+  function savedAt(l) { if (!l.createdAt) return ''; const d = new Date(l.createdAt), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+  function build(logs) {
+    const head = ['ID','Date','Saved at','Forklift','Owner','Model','Shift','Hour meter','Department','Operator','Supervisor','Overall','Failed items',
+                  ...CHECKLIST_ITEMS, 'Remarks','Defect resolved'];
+    const rows = [head].concat(logs.map(l => {
+      const f = failed(l);
+      return [l.id, l.date, savedAt(l), l.forkliftNo, l.owner, l.model, l.shift, l.hourMeter, l.department, l.operator, l.supervisor,
+              f.length ? 'FAIL' : 'PASS', f.join(' '),
+              ...CHECKLIST_ITEMS.map((_, i) => (l.results || {})[i] || ''), l.remarks, l.defectResolved ? 'Yes' : 'No'];
+    }));
+    return '\uFEFF' + rows.map(r => r.map(cell).join(',')).join('\r\n') + '\r\n';   // BOM so Excel reads Sinhala, CRLF for Windows
+  }
+  function inPeriod(logs, year, month) {
+    const prefix = `${year}-${String(MONTHS.indexOf(month) + 1).padStart(2, '0')}-`;
+    return logs.filter(l => (l.date || '').startsWith(prefix));
+  }
+  function download(csvText, filename) {
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  return { build, inPeriod, download };
+})();
+
+/* ---- critical failures, lock-out, missed checks ---- */
+const CRITICAL_ITEMS = [7, 8, 13, 18, 19];   // Horn, Safety belts, Brake check, Power steering, Hand brake (edit to match company policy)
+const Safety = (() => {
+  const failedIdx = l => Object.keys(l.results || {}).filter(i => l.results[i] === 'Fail').map(Number);
+  const criticalFails = l => failedIdx(l).filter(i => CRITICAL_ITEMS.includes(i));
+  const open = l => !l.defectResolved && failedIdx(l).length > 0;
+
+  function lockedUnits(logs) {            // forklifts with an uncleared critical Fail
+    const out = {};
+    for (const l of logs) if (!l.defectResolved && criticalFails(l).length) (out[l.forkliftNo] = out[l.forkliftNo] || []).push(l);
+    return out;
+  }
+  function status(logs, unit, seen) {      // seen = set of units checked this shift
+    if (logs.some(l => l.forkliftNo === unit && !l.defectResolved && criticalFails(l).length)) return 'locked';
+    if (logs.some(l => l.forkliftNo === unit && open(l))) return 'defect';
+    return seen.has(unit) ? 'ok' : 'unchecked';
+  }
+  function clearDefect(logs, id, by, action) {
+    const l = logs.find(x => x.id === id);
+    if (!l) return { ok: false, error: 'Record not found.' };
+    if (!by) return { ok: false, error: 'Choose who is clearing it.' };
+    if (!(action || '').trim()) return { ok: false, error: 'Write what was done to fix it.' };
+    l.defectResolved = true; l.clearedAt = Date.now(); l.clearedBy = by; l.clearAction = action.trim();
+    return { ok: true };
+  }
+  function currentShift(now = new Date()) {   // day 06:00-18:00, night 18:00-06:00 (after midnight belongs to the night that started yesterday)
+    const h = now.getHours(), p = n => String(n).padStart(2, '0'), fmt = d => `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+    if (h >= 6 && h < 18) return { key: 'D', date: fmt(now), label: 'Day shift' };
+    const d = new Date(now); if (h < 6) d.setDate(d.getDate() - 1);
+    return { key: 'N', date: fmt(d), label: 'Night shift' };
+  }
+  const shiftKeyOf = s => (s || '').startsWith('Night') ? 'N' : 'D';
+  function checkedThisShift(logs, now = new Date()) {
+    const sh = currentShift(now);
+    return new Set(logs.filter(l => l.date === sh.date && shiftKeyOf(l.shift) === sh.key).map(l => l.forkliftNo));
+  }
+  function missedUnits(logs, now = new Date()) {
+    const seen = checkedThisShift(logs, now);
+    return fleetNames().filter(u => !seen.has(u));
+  }
+  return { failedIdx, criticalFails, lockedUnits, status, clearDefect, currentShift, checkedThisShift, missedUnits, shiftKeyOf };
+})();
+
+/* ---- monthly report maths ---- */
+const Report = (() => {
+  const failedIdx = l => Object.keys(l.results || {}).filter(i => l.results[i] === 'Fail').map(Number);
+  const rate = (n, f) => n ? Math.round((n - f) / n * 100) : null;      // an inspection "passes" when none of its 21 items is Fail
+  function build(logs, year, month) {
+    const prefix = `${year}-${String(MONTHS.indexOf(month) + 1).padStart(2, '0')}-`;
+    const rows = logs.filter(l => (l.date || '').startsWith(prefix));
+    const owners = {}, units = {}, items = {};
+    let withFail = 0, critical = 0, open = 0, cleared = 0;
+    for (const l of rows) {
+      const f = failedIdx(l), bad = f.length > 0;
+      if (bad) withFail++;
+      if (f.some(i => CRITICAL_ITEMS.includes(i))) critical++;
+      if (bad) (l.defectResolved ? cleared++ : open++);
+      const o = owners[l.owner || 'Unknown'] = owners[l.owner || 'Unknown'] || { owner: l.owner || 'Unknown', n: 0, fail: 0, units: new Set() };
+      o.n++; if (bad) o.fail++; o.units.add(l.forkliftNo);
+      const u = units[l.forkliftNo] = units[l.forkliftNo] || { unit: l.forkliftNo, owner: l.owner || '', n: 0, fail: 0, last: null };
+      u.n++; if (bad) u.fail++; u.owner = l.owner || u.owner;
+      if (!u.last || l.date > u.last.date || (l.date === u.last.date && (l.createdAt || 0) > (u.last.createdAt || 0))) u.last = l;
+      for (const i of f) { const it = items[i] = items[i] || { idx: i, count: 0, units: {} }; it.count++; it.units[l.forkliftNo] = (it.units[l.forkliftNo] || 0) + 1; }
+    }
+    const unitList = Object.values(units).sort((a, b) => b.fail - a.fail || b.n - a.n || a.unit.localeCompare(b.unit));
+    const itemList = Object.values(items).sort((a, b) => b.count - a.count || a.idx - b.idx);
+    const repeats = [];
+    for (const it of itemList) for (const [unit, c] of Object.entries(it.units)) if (c >= 2) repeats.push({ unit, idx: it.idx, count: c });
+    repeats.sort((a, b) => b.count - a.count);
+    return { year, month, total: rows.length, withFail, critical, open, cleared, passRate: rate(rows.length, withFail),
+             owners: Object.values(owners).sort((a, b) => b.n - a.n), units: unitList, items: itemList, repeats,
+             notInspected: fleetNames().filter(u => !units[u]), rate };
+  }
+  return { build, failedIdx };
+})();
+
+/* ---- photos + supervisor PIN ---- */
+/* Photos live in IndexedDB (localStorage is too small for pictures). Each is shrunk to 900 px JPEG, about 60-120 KB. */
+const Photos = (() => {
+  const memory = new Map(); let dbp = null;
+  function db() {
+    if (!dbp) dbp = new Promise((res, rej) => {
+      try {
+        const r = indexedDB.open('forklift_photos_v1', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('p');
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+      } catch (e) { rej(e); }
+    });
+    return dbp;
+  }
+  const tx = (mode, fn) => db().then(d => new Promise((res, rej) => { const t = d.transaction('p', mode), s = t.objectStore('p'), q = fn(s); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }));
+  const newId = () => 'ph_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  async function put(dataUrl) { const id = newId(); try { await tx('readwrite', s => s.put(dataUrl, id)); } catch (e) { memory.set(id, dataUrl); } return id; }
+  async function get(id) { if (memory.has(id)) return memory.get(id); try { return (await tx('readonly', s => s.get(id))) || null; } catch (e) { return null; } }
+  async function del(id) { memory.delete(id); try { await tx('readwrite', s => s.delete(id)); } catch (e) {} }
+  function shrink(file, maxSide = 900, quality = 0.65) {
+    return new Promise((res, rej) => {
+      const img = new Image(), url = URL.createObjectURL(file);
+      img.onload = () => {
+        const k = Math.min(1, maxSide / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not read that picture.')); }; img.src = url;
+    });
+  }
+  return { put, get, del, shrink };
+})();
+
+/* A PIN in a static web app keeps honest people honest. It is not strong security (anyone with developer tools can bypass it). */
+const Pin = (() => {
+  const KEY = 'forklift_pin_v1', SESSION_MS = 5 * 60 * 1000, MAX_FAILS = 5, LOCK_MS = 60 * 1000;
+  let unlockedUntil = 0, mem = null;
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || mem; } catch (e) { return mem; } };
+  const save = d => { mem = d; try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
+  const rand = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, '0')).join('');
+  async function hash(text, salt) {
+    const data = new TextEncoder().encode(salt + ':' + text);
+    if (globalThis.crypto && crypto.subtle) return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', data)), b => b.toString(16).padStart(2, '0')).join('');
+    let h = 5381; for (const b of data) h = ((h << 5) + h + b) >>> 0; return 'x' + h.toString(16);      // fallback if the browser has no crypto.subtle
+  }
+  const validPin = p => /^\d{4}$/.test(p || '');
+  const code = () => { const a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from(crypto.getRandomValues(new Uint8Array(8)), b => a[b % a.length]).join('').replace(/(.{4})/, '$1-'); };
+  function throttle(d) { return d.lockUntil && Date.now() < d.lockUntil ? Math.ceil((d.lockUntil - Date.now()) / 1000) : 0; }
+  async function check(d, field, secret, salt) {
+    const wait = throttle(d); if (wait) return { ok: false, error: `Too many wrong tries. Wait ${wait} s.` };
+    if (await hash(secret, salt) === field) { d.fails = 0; d.lockUntil = 0; save(d); return { ok: true }; }
+    d.fails = (d.fails || 0) + 1;
+    if (d.fails >= MAX_FAILS) { d.fails = 0; d.lockUntil = Date.now() + LOCK_MS; save(d); return { ok: false, error: 'Too many wrong tries. Locked for 1 minute.' }; }
+    save(d); return { ok: false, error: `Wrong. ${MAX_FAILS - d.fails} tries left.` };
+  }
+  async function install(d, pin) { const rc = code(); d.salt = rand(8); d.hash = await hash(pin, d.salt); d.recSalt = rand(8); d.recHash = await hash(rc.replace('-', ''), d.recSalt); save(d); unlockedUntil = Date.now() + SESSION_MS; return rc; }
+  return {
+    isSet: () => !!(load() && load().hash),
+    isUnlocked: () => Date.now() < unlockedUntil,
+    minutesLeft: () => Math.max(0, Math.ceil((unlockedUntil - Date.now()) / 60000)),
+    lock: () => { unlockedUntil = 0; },
+    validPin,
+    async setup(pin) { if (!validPin(pin)) return { ok: false, error: 'The PIN must be 4 digits.' }; return { ok: true, recovery: await install({}, pin) }; },
+    async verify(pin) { const d = load(); const r = await check(d, d.hash, pin || '', d.salt); if (r.ok) unlockedUntil = Date.now() + SESSION_MS; return r; },
+    async change(oldPin, newPin) { const d = load(), r = await check(d, d.hash, oldPin || '', d.salt); if (!r.ok) return r; if (!validPin(newPin)) return { ok: false, error: 'The new PIN must be 4 digits.' }; return { ok: true, recovery: await install(d, newPin) }; },
+    async recover(rc, newPin) { const d = load(), r = await check(d, d.recHash, (rc || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), d.recSalt); if (!r.ok) return r; if (!validPin(newPin)) return { ok: false, error: 'The new PIN must be 4 digits.' }; return { ok: true, recovery: await install(d, newPin) }; }
+  };
+})();
+
+/* ---- generic dialog ---- */
+function ask(title, fields, o = {}) {
+  return new Promise(resolve => {
+    const f = fields.map(x => x.type === 'select'
+      ? `<label class="f" for="m_${x.id}">${esc(x.label)}</label><select id="m_${x.id}">${x.options.map(v => `<option>${esc(v)}</option>`).join('')}</select>`
+      : x.type === 'area' ? `<label class="f" for="m_${x.id}">${esc(x.label)}</label><textarea id="m_${x.id}" rows="2" placeholder="${esc(x.ph || '')}"></textarea>`
+      : `<label class="f" for="m_${x.id}">${esc(x.label)}</label><input id="m_${x.id}" ${x.numeric ? 'type="password" inputmode="numeric" maxlength="4" autocomplete="off"' : 'type="text" autocomplete="off"'}>`).join('');
+    $('modalBox').innerHTML = `<h3>${esc(title)}</h3>${o.note ? `<div class="mute">${esc(o.note)}</div>` : ''}${f}<div class="err">${esc(o.error || '')}</div>
+      <div class="btnrow"><button class="ghost" id="m_cancel">Cancel</button><button class="primary" style="margin:0" id="m_ok">${esc(o.ok || 'OK')}</button></div>${o.extra ? `<button class="linkbtn" id="m_extra">${esc(o.extra)}</button>` : ''}`;
+    $('modal').classList.add('show'); const first = $('modalBox').querySelector('input,textarea,select'); if (first) first.focus();
+    const done = v => { $('modal').classList.remove('show'); resolve(v); };
+    $('m_cancel').onclick = () => done(null);
+    $('m_ok').onclick = () => { const v = {}; fields.forEach(x => v[x.id] = $('m_' + x.id).value); done(v); };
+    if (o.extra) $('m_extra').onclick = () => done({ extra: true });
+  });
+}
+function recoveryBox(rc) { return new Promise(res => { $('modalBox').innerHTML = `<h3>Recovery code</h3><div class="mute">Write this down and keep it with the Safety Officer. It is shown only once and is the only way to reset a forgotten PIN.</div><div class="recovery">${esc(rc)}</div><button class="primary" style="margin:0" id="m_ok">I wrote it down</button>`; $('modal').classList.add('show'); $('m_ok').onclick = () => { $('modal').classList.remove('show'); res(); }; }); }
+
+async function newPinFlow(title, validate) {          // asks for a new PIN twice, runs validate(newPin) -> result
+  let error = '';
+  while (true) {
+    const v = await ask(title, [{ id: 'a', label: 'New 4-digit PIN', numeric: true }, { id: 'b', label: 'Repeat the PIN', numeric: true }], { error, ok: 'Save PIN' });
+    if (!v) return false;
+    if (!Pin.validPin(v.a)) { error = 'The PIN must be 4 digits.'; continue; }
+    if (v.a !== v.b) { error = 'The two PINs do not match.'; continue; }
+    const r = await validate(v.a); if (!r.ok) { error = r.error; continue; }
+    await recoveryBox(r.recovery); return true;
+  }
+}
+async function requireSupervisor() {
+  if (Pin.isUnlocked()) return true;
+  if (!Pin.isSet()) return newPinFlow('Create supervisor PIN', p => Pin.setup(p));
+  let error = '';
+  while (true) {
+    const v = await ask('Supervisor PIN', [{ id: 'pin', label: 'Enter your 4-digit PIN', numeric: true }], { error, extra: 'Forgot PIN?' });
+    if (!v) return false;
+    if (v.extra) {
+      let e2 = '';
+      while (true) {
+        const rv = await ask('Reset PIN', [{ id: 'rc', label: 'Recovery code' }], { error: e2, note: 'Enter the code you wrote down when the PIN was created.', ok: 'Continue' });
+        if (!rv) break;
+        const r = await Pin.recover(rv.rc, null);                    // first check the code only
+        if (r.ok === false && !/4 digits/.test(r.error)) { e2 = r.error; continue; }
+        const done = await newPinFlow('Choose a new PIN', p => Pin.recover(rv.rc, p));
+        if (done) return true; break;
+      }
+      continue;
+    }
+    const r = await Pin.verify(v.pin); if (r.ok) return true; error = r.error;
+  }
+}
 
 
-        // Firebase Authentication for Lion Brewery App
-        const firebaseConfig = {
-            apiKey: "AIzaSyBzgqcp5zM_Ny95DGqlMwUikiG49zQ_LVw",
-            authDomain: "lion-brewery-app.firebaseapp.com",
-            projectId: "lion-brewery-app",
-            storageBucket: "lion-brewery-app.firebasestorage.app",
-            messagingSenderId: "770106674062",
-            appId: "1:770106674062:web:7778041fecde71bbb1f2df"
-        };
-        const firebaseApp = firebase.initializeApp(firebaseConfig);
-        const firebaseAuth = firebaseApp.auth();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        googleProvider.setCustomParameters({ prompt: 'select_account' });
-        let localAuthMode = 'login';
+/* ---- QR encoder (works offline) ---- */
+const QR = (() => {
+  const EC = { 1:[10,[[1,16]]], 2:[16,[[1,28]]], 3:[26,[[1,44]]], 4:[18,[[2,32]]], 5:[24,[[2,43]]], 6:[16,[[4,27]]], 7:[18,[[4,31]]], 8:[22,[[2,38],[2,39]]], 9:[22,[[3,36],[2,37]]], 10:[26,[[4,43],[1,44]]] };
+  const ALIGN = { 1:[], 2:[6,18], 3:[6,22], 4:[6,26], 5:[6,30], 6:[6,34], 7:[6,22,38], 8:[6,24,42], 9:[6,26,46], 10:[6,28,50] };
+  const dataCW = v => EC[v][1].reduce((a, [n, k]) => a + n * k, 0);
+  const EXP = new Array(512), LOG = new Array(256);
+  { let x = 1; for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 256) x ^= 0x11d; } for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255]; }
+  const mul = (a, b) => (a && b) ? EXP[LOG[a] + LOG[b]] : 0;
+  function rsGen(n) { let g = [1]; for (let i = 0; i < n; i++) { const ng = new Array(g.length + 1).fill(0); for (let j = 0; j < g.length; j++) { ng[j] ^= g[j]; ng[j + 1] ^= mul(g[j], EXP[i]); } g = ng; } return g; }
+  function rsRem(data, n) { const g = rsGen(n), r = new Array(n).fill(0); for (const d of data) { const f = d ^ r[0]; r.shift(); r.push(0); for (let i = 0; i < n; i++) r[i] ^= mul(g[i + 1], f); } return r; }
 
-        function setLoginError(message) {
-            const el = document.getElementById('loginError');
-            if (el) el.textContent = message || '';
-        }
-        function friendlyAuthError(error) {
-            const messages = {
-                'auth/email-already-in-use': 'මෙම Email Address එක දැනටමත් භාවිතා කරලා තියෙනවා.',
-                'auth/invalid-email': 'නිවැරදි Email Address එකක් ඇතුළත් කරන්න.',
-                'auth/weak-password': 'Password එක අවම වශයෙන් අක්ෂර 6ක් විය යුතුයි.',
-                'auth/user-not-found': 'මෙම Email Address එකට ගිණුමක් හමු වුණේ නැහැ.',
-                'auth/wrong-password': 'Password එක වැරදියි.',
-                'auth/invalid-credential': 'Email හෝ Password වැරදියි.',
-                'auth/popup-closed-by-user': 'Google Login කවුළුව වසා දමා ඇත. නැවත උත්සාහ කරන්න.',
-                'auth/popup-blocked': 'Browser එක Google Login popup එක අවහිර කළා. Chrome හි සාමාන්‍ය tab එකකින් නැවත උත්සාහ කරන්න.',
-                'auth/cancelled-popup-request': 'Google Login ඉල්ලීම අවලංගු වුණා. නැවත උත්සාහ කරන්න.',
-                'auth/unauthorized-domain': 'මෙම Website Domain එක Firebase Authorized Domains තුළ නැහැ.',
-                'auth/operation-not-supported-in-this-environment': 'මෙම App පරිසරයේ Google Login ක්‍රමය සහාය නොදක්වයි. Chrome Browser එකෙන් උත්සාහ කරන්න.',
-                'auth/network-request-failed': 'Internet සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.',
-                'auth/too-many-requests': 'උත්සාහ කිරීම් වැඩියි. ටික වේලාවකින් නැවත උත්සාහ කරන්න.'
-            };
-            return messages[error && error.code] || (error && error.message) || 'Login කිරීමේදී දෝෂයක් ඇතිවුණා. නැවත උත්සාහ කරන්න.';
-        }
-        async function applyLoginPersistence() {
-            const remember = document.getElementById('rememberLogin').checked;
-            await firebaseAuth.setPersistence(remember ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
-        }
-        function setAuthMode(mode) {
-            localAuthMode = mode;
-            const signup = mode === 'signup';
-            document.getElementById('loginHeading').textContent = signup ? 'Create Account' : 'Welcome Back';
-            document.getElementById('loginSubtitle').textContent = signup ? 'Create your secure account to access the safety dashboard' : 'Sign in to continue to your safety dashboard';
-            document.getElementById('loginSubmitBtn').textContent = signup ? 'CREATE ACCOUNT' : 'LOGIN';
-            document.getElementById('loginPassword').autocomplete = signup ? 'new-password' : 'current-password';
-            document.getElementById('loginPassword').minLength = 6;
-            document.getElementById('loginSwitchText').innerHTML = signup
-                ? "Already have an account? <button type=\"button\" onclick=\"setAuthMode('login')\">Sign In</button>"
-                : "Don't have an account? <button type=\"button\" onclick=\"setAuthMode('signup')\">Create Account</button>";
-            document.getElementById('forgotPasswordBtn').classList.toggle('login-hidden', signup);
-            setLoginError('');
-            document.getElementById('loginPassword').value = '';
-        }
-        async function handleLocalAuth(event) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const submit = document.getElementById('loginSubmitBtn');
-            if (password.length < 6) { setLoginError('Password එක අවම වශයෙන් අක්ෂර 6ක් විය යුතුයි.'); return; }
-            submit.disabled = true;
-            submit.textContent = localAuthMode === 'signup' ? 'CREATING ACCOUNT…' : 'SIGNING IN…';
-            setLoginError('');
-            try {
-                await applyLoginPersistence();
-                if (localAuthMode === 'signup') {
-                    await firebaseAuth.createUserWithEmailAndPassword(email, password);
-                } else {
-                    await firebaseAuth.signInWithEmailAndPassword(email, password);
-                }
-            } catch (error) {
-                setLoginError(friendlyAuthError(error));
-                submit.disabled = false;
-                submit.textContent = localAuthMode === 'signup' ? 'CREATE ACCOUNT' : 'LOGIN';
-            }
-        }
-        function isInstalledPwa() {
-            return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-                   (window.navigator && window.navigator.standalone === true);
-        }
-        async function signInWithGoogle() {
-            const button = document.getElementById('googleLoginBtn');
-            button.disabled = true;
-            button.innerHTML = '<i class="fa-brands fa-google"></i><span>Connecting to Google…</span>';
-            setLoginError('');
-            try {
-                await applyLoginPersistence();
-                if (isInstalledPwa()) {
-                    // Installed Android PWA: use full-page redirect, then process
-                    // getRedirectResult() during app startup after returning.
-                    await firebaseAuth.signInWithRedirect(googleProvider);
-                    return;
-                }
-                // Normal browser tab: popup remains the smoother flow.
-                await firebaseAuth.signInWithPopup(googleProvider);
-            } catch (error) {
-                setLoginError(friendlyAuthError(error));
-                button.disabled = false;
-                button.innerHTML = '<i class="fa-brands fa-google"></i><span>Continue with Google</span>';
-            }
-        }
-        // Complete an installed-PWA Google redirect when the app is reopened.
-        // Firebase returns null when there is no pending redirect, which is normal.
-        (async function completeGoogleRedirect() {
-            try {
-                const result = await firebaseAuth.getRedirectResult();
-                if (result && result.user) setLoginError('');
-            } catch (error) {
-                setLoginError(friendlyAuthError(error));
-                const button = document.getElementById('googleLoginBtn');
-                if (button) {
-                    button.disabled = false;
-                    button.innerHTML = '<i class="fa-brands fa-google"></i><span>Continue with Google</span>';
-                }
-            }
-        })();
-        async function handleForgotPassword() {
-            const email = document.getElementById('loginEmail').value.trim();
-            if (!email) {
-                setLoginError('Password Reset කිරීමට පළමුව Email Address එක ඇතුළත් කරන්න.');
-                document.getElementById('loginEmail').focus();
-                return;
-            }
-            try {
-                await firebaseAuth.sendPasswordResetEmail(email);
-                setLoginError('Password Reset Link එක ඔබේ Email එකට යවා ඇත. Inbox එක පරීක්ෂා කරන්න.');
-            } catch (error) {
-                setLoginError(friendlyAuthError(error));
-            }
-        }
-        async function signOutCurrentUser() {
-            try {
-                await firebaseAuth.signOut();
-                document.getElementById('loginPassword').value = '';
-                setAuthMode('login');
-            } catch (error) {
-                if (typeof showToast === 'function') showToast('Logout Failed', friendlyAuthError(error), 'error');
-                else alert(friendlyAuthError(error));
-            }
-        }
-        function toggleLoginPassword() {
-            const field = document.getElementById('loginPassword');
-            const shown = field.type === 'password';
-            field.type = shown ? 'text' : 'password';
-            document.getElementById('loginEyeIcon').className = shown ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-        }
+  function codewords(text) {
+    const bytes = [...new TextEncoder().encode(text)];
+    let ver = 1; while (ver <= 10 && 4 + (ver < 10 ? 8 : 16) + bytes.length * 8 > dataCW(ver) * 8) ver++;
+    if (ver > 10) throw new Error('The link is too long for the QR label.');
+    const bits = []; const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >> i) & 1); };
+    put(4, 4); put(bytes.length, ver < 10 ? 8 : 16); bytes.forEach(b => put(b, 8));
+    put(0, Math.min(4, dataCW(ver) * 8 - bits.length)); while (bits.length % 8) bits.push(0);
+    const cw = []; for (let i = 0; i < bits.length; i += 8) cw.push(parseInt(bits.slice(i, i + 8).join(''), 2));
+    for (let p = 0; cw.length < dataCW(ver); p ^= 1) cw.push(p ? 0x11 : 0xEC);
+    const [ecLen, groups] = EC[ver], blocks = []; let pos = 0;
+    for (const [n, k] of groups) for (let i = 0; i < n; i++) { const d = cw.slice(pos, pos + k); pos += k; blocks.push({ d, e: rsRem(d, ecLen) }); }
+    const out = [], maxD = Math.max(...blocks.map(b => b.d.length));
+    for (let i = 0; i < maxD; i++) for (const b of blocks) if (i < b.d.length) out.push(b.d[i]);
+    for (let i = 0; i < ecLen; i++) for (const b of blocks) out.push(b.e[i]);
+    return { ver, out };
+  }
 
-        firebaseAuth.onAuthStateChanged(user => {
-            const gate = document.getElementById('loginGate');
-            const chip = document.getElementById('headerAuthChip');
-            if (user) {
-                gate.classList.add('login-hidden');
-                chip.style.display = 'flex';
-                document.getElementById('headerAuthEmail').textContent = user.displayName || user.email || 'Signed in';
-            } else {
-                gate.classList.remove('login-hidden');
-                chip.style.display = 'none';
-                document.getElementById('headerAuthEmail').textContent = '';
-            }
-        });
+  function make(text) {
+    const { ver, out } = codewords(text), size = 17 + 4 * ver;
+    const m = Array.from({ length: size }, () => new Array(size).fill(false)), fn = Array.from({ length: size }, () => new Array(size).fill(false));
+    const setF = (r, c, v) => { if (r >= 0 && r < size && c >= 0 && c < size) { m[r][c] = v; fn[r][c] = true; } };
+    for (let i = 0; i < size; i++) { setF(6, i, i % 2 === 0); setF(i, 6, i % 2 === 0); }
+    for (const [cr, cc] of [[3, 3], [3, size - 4], [size - 4, 3]]) for (let dr = -4; dr <= 4; dr++) for (let dc = -4; dc <= 4; dc++) { const d = Math.max(Math.abs(dr), Math.abs(dc)); setF(cr + dr, cc + dc, d !== 2 && d !== 4); }
+    const ap = ALIGN[ver];
+    for (let a = 0; a < ap.length; a++) for (let b = 0; b < ap.length; b++) {
+      if ((a === 0 && b === 0) || (a === 0 && b === ap.length - 1) || (a === ap.length - 1 && b === 0)) continue;
+      for (let dr = -2; dr <= 2; dr++) for (let dc = -2; dc <= 2; dc++) setF(ap[a] + dr, ap[b] + dc, Math.max(Math.abs(dr), Math.abs(dc)) !== 1);
+    }
+    const drawFormat = mask => {
+      let d = mask, r = d << 10; for (let i = 14; i >= 10; i--) if ((r >> i) & 1) r ^= 0x537 << (i - 10);
+      const bits = ((d << 10) | r) ^ 0x5412, bit = i => ((bits >> i) & 1) === 1;
+      for (let i = 0; i <= 5; i++) setF(i, 8, bit(i)); setF(7, 8, bit(6)); setF(8, 8, bit(7)); setF(8, 7, bit(8)); for (let i = 9; i < 15; i++) setF(8, 14 - i, bit(i));
+      for (let i = 0; i < 8; i++) setF(8, size - 1 - i, bit(i)); for (let i = 8; i < 15; i++) setF(size - 15 + i, 8, bit(i));
+      setF(size - 8, 8, true);
+    };
+    drawFormat(0);
+    if (ver >= 7) { let r = ver; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >> 11) * 0x1F25); const bits = (ver << 12) | r;
+      for (let i = 0; i < 18; i++) { const v = ((bits >> i) & 1) === 1, a = size - 11 + (i % 3), b = Math.floor(i / 3); setF(b, a, v); setF(a, b, v); } }
+    let i = 0; const total = out.length * 8;
+    for (let right = size - 1; right >= 1; right -= 2) { if (right === 6) right = 5;
+      for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) { const x = right - j, up = ((right + 1) & 2) === 0, y = up ? size - 1 - vert : vert;
+        if (!fn[y][x] && i < total) { m[y][x] = ((out[i >> 3] >> (7 - (i & 7))) & 1) === 1; i++; } } }
+    const MASKS = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, (x, y) => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+      (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => (x * y) % 2 + (x * y) % 3 === 0, (x, y) => ((x * y) % 2 + (x * y) % 3) % 2 === 0, (x, y) => ((x + y) % 2 + (x * y) % 3) % 2 === 0];
+    const applyMask = k => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!fn[y][x] && MASKS[k](x, y)) m[y][x] = !m[y][x]; };
+    const penalty = () => {
+      let p = 0;
+      for (let a = 0; a < size; a++) for (const get of [(b) => m[a][b], (b) => m[b][a]]) {
+        let run = 1; for (let b = 1; b < size; b++) { if (get(b) === get(b - 1)) run++; else { if (run >= 5) p += run - 2; run = 1; } } if (run >= 5) p += run - 2;
+        for (let b = 0; b + 11 <= size; b++) { const s = []; for (let k = 0; k < 11; k++) s.push(get(b + k) ? 1 : 0); const t = s.join(''); if (t === '10111010000' || t === '00001011101') p += 40; }
+      }
+      for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) if (m[y][x] === m[y][x + 1] && m[y][x] === m[y + 1][x] && m[y][x] === m[y + 1][x + 1]) p += 3;
+      let dark = 0; for (const row of m) for (const v of row) if (v) dark++; p += 10 * (Math.ceil(Math.abs(dark * 20 - size * size * 10) / (size * size)) - 1); return p;
+    };
+    let best = 0, bestP = Infinity;
+    for (let k = 0; k < 8; k++) { applyMask(k); drawFormat(k); const p = penalty(); if (p < bestP) { bestP = p; best = k; } applyMask(k); }
+    applyMask(best); drawFormat(best);
+    return { size, modules: m, version: ver };
+  }
+  function svg(text) {
+    const { size, modules } = make(text), q = 4; let d = '';
+    for (let y = 0; y < size; y++) { let x = 0; while (x < size) { if (!modules[y][x]) { x++; continue; } let e = x; while (e < size && modules[y][e]) e++; d += `M${x + q} ${y + q}h${e - x}v1h-${e - x}z`; x = e; } }
+    const n = size + 2 * q;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" role="img" aria-label="QR code"><rect width="${n}" height="${n}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+  }
+  return { make, svg };
+})();
 
-        // DOM Load Init
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('lion_brewery_theme') || 'dark-coral';
-            changeTheme(savedTheme);
-            initApkForm();
-            renderDashboard();
-        });
+
+/* ---- storage: reports in IndexedDB (room for years of data), settings + fleet in localStorage ---- */
+const KEY_CFG = 'forklift_config_v2';
+let fleet = defaultFleet(), deleteWindowHours = 24, pendingPhotos = {};
+function defaultFleet() { return Array.from({ length: 30 }, (_, i) => ({ unit: 'FL ' + String(i + 1).padStart(2, '0'), owner: '', model: '' })); }
+const LogDB = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('forklift_logs_db', 1); r.onupgradeneeded = () => r.result.createObjectStore('logs', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const run = (mode, fn) => open().then(d => new Promise((res, rej) => { const t = d.transaction('logs', mode), q = fn(t.objectStore('logs')); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }));
+  return { all: () => run('readonly', s => s.getAll()), put: l => run('readwrite', s => s.put(l)), del: id => run('readwrite', s => s.delete(id)) };
+})();
+function saveLog(l) { LogDB.put(l).catch(() => showToast('Saving problem', 'This record could not be saved. Export a CSV backup now.', 'fa-triangle-exclamation')); }
+function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify({ appSettings, departmentEmployees, fleet, deleteWindowHours })); } catch (e) {} }
+function loadConfig() {
+  try { const c = JSON.parse(localStorage.getItem(KEY_CFG)); if (!c) return;
+    if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings }; if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
+    if (Array.isArray(c.fleet) && c.fleet.length) fleet = c.fleet; if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours; } catch (e) {}
+}
+const byNewest = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0);
+function newLogId(date) { const prefix = 'CHK-' + date.replaceAll('-', '') + '-'; let max = 0; for (const l of inspectionLogs) if (l.id && l.id.startsWith(prefix)) max = Math.max(max, parseInt(l.id.slice(prefix.length), 10) || 0); return prefix + String(max + 1).padStart(3, '0'); }
+function hoursLeft(l) { return l.createdAt ? deleteWindowHours - (Date.now() - l.createdAt) / 3600000 : 0; }
+
+/* ---- fleet helpers ---- */
+const fleetNames = () => fleet.map(f => f.unit);
+const unitKey = n => String(n || '').replace(/\s+/g, '').toUpperCase();
+const findUnit = raw => fleet.find(f => unitKey(f.unit) === unitKey(raw));
+function normalizeForklift(raw) {
+  const u = findUnit(raw); if (u) return u.unit;
+  const m = /^\s*(?:FL)?\s*0*(\d{1,3})\s*$/i.exec(raw || ''); if (m) { const v = findUnit('FL ' + String(+m[1]).padStart(2, '0')); if (v) return v.unit; }
+  return null;
+}
+function forkliftFromUrl(url) { try { const raw = new URL(url, location.href).searchParams.get('fl'); return raw === null ? { none: true } : { unit: normalizeForklift(raw), raw }; } catch (e) { return { none: true }; } }
+function labelUrl(base, unit) { const b = base.trim().replace(/[?#].*$/, ''); return (b.endsWith('/') || /\.html?$/i.test(b) ? b : b + '/') + '?fl=' + encodeURIComponent(unitKey(unit)); }
+function sortFleet() { fleet.sort((a, b) => a.unit.localeCompare(b.unit, undefined, { numeric: true })); }
+
+/* ---- navigation ---- */
+function switchView(v) {
+  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'] };
+  Object.values(map).forEach(([s, b]) => { $(s).classList.add('hidden'); const btn = $(b); btn.style.color = 'var(--text-muted)'; btn.style.backgroundColor = 'transparent'; btn.classList.remove('text-white', 'shadow-md'); });
+  const [s, b] = map[v]; $(s).classList.remove('hidden'); const btn = $(b); btn.style.backgroundColor = 'var(--accent-color)'; btn.style.color = ''; btn.classList.add('text-white', 'shadow-md');
+  if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function printMode(name) { document.body.classList.add('print-' + name); window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
+
+/* ---- operator form ---- */
+function renderPills() {
+  const pill = (v, sel, fn) => `<button type="button" data-v="${esc(v)}" onclick="${fn}(this.dataset.v)" class="py-2.5 px-3 rounded-xl text-xs font-bold border transition-all ${sel ? 'text-white shadow' : ''}" style="${sel ? 'background-color: var(--accent-color); border-color: var(--accent-color);' : 'background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);'}">${esc(v)}</button>`;
+  $('ownerPillGroup').innerHTML = appSettings.owners.map(o => pill(o, selectedOwner === o, 'selectOwner')).join('');
+  $('modelPillGroup').innerHTML = appSettings.models.map(m => pill(m, selectedModel === m, 'selectModel')).join('');
+}
+function initApkForm() {
+  const keep = { f: $('formForkliftNo').value, d: $('formDepartment').value, o: $('formOperator').value, s: $('formSupervisor').value };
+  const opts = a => a.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  $('formForkliftNo').innerHTML = opts(fleetNames()); if (keep.f && findUnit(keep.f)) $('formForkliftNo').value = findUnit(keep.f).unit;
+  if (!$('formInspectionDate').value) $('formInspectionDate').value = localDate();
+  $('formDepartment').innerHTML = opts(appSettings.departments); if (keep.d && appSettings.departments.includes(keep.d)) $('formDepartment').value = keep.d;
+  $('formSupervisor').innerHTML = opts(appSettings.supervisors); if (keep.s && appSettings.supervisors.includes(keep.s)) $('formSupervisor').value = keep.s;
+  onDepartmentChange(); if (keep.o && [...$('formOperator').options].some(o => o.value === keep.o)) $('formOperator').value = keep.o;
+  CHECKLIST_ITEMS.forEach((_, idx) => { if (!checklistResponses[idx]) checklistResponses[idx] = 'Pass'; });
+  renderPills(); renderChecklistItems(); updateLockWarn();
+}
+function updateLockWarn() {
+  const lk = Safety.lockedUnits(inspectionLogs)[$('formForkliftNo').value];
+  $('forkliftLockWarn').innerHTML = lk ? `<div class="mt-2 p-2.5 rounded-xl bg-red-500/15 text-red-500 text-xs font-bold">${esc($('formForkliftNo').value)} is locked (${Safety.criticalFails(lk[0]).map(i => esc(CHECKLIST_ITEMS[i].slice(4))).join(', ')}). Do not operate until a supervisor clears it.</div>` : '';
+}
+function onForkliftChange() {
+  const u = findUnit($('formForkliftNo').value);
+  if (u) { if (u.owner && appSettings.owners.includes(u.owner)) selectedOwner = u.owner; if (u.model && appSettings.models.includes(u.model)) selectedModel = u.model; }
+  renderPills(); updateLockWarn();
+}
+function renderChecklistItems() { renderChecklistItemsBase(); const rows = $('checklistItemsContainer').children;
+  CHECKLIST_ITEMS.forEach((_, i) => { if (checklistResponses[i] !== 'Fail') return; rows[i].classList.add('flex-wrap');
+    const b = 'px-3 py-1.5 rounded-xl text-xs font-bold border border-dashed cursor-pointer'; const st = 'border-color: var(--accent-color); color: var(--accent-color);';
+    rows[i].insertAdjacentHTML('beforeend', `<div class="w-full flex items-center gap-2 flex-wrap"><label class="${b}" style="${st}"><i class="fa-solid fa-camera mr-1"></i>Take photo<input type="file" accept="image/*" capture="environment" hidden onchange="onPhotoPicked(${i}, this)"></label><label class="${b}" style="${st}"><i class="fa-solid fa-image mr-1"></i>Gallery<input type="file" accept="image/*" hidden onchange="onPhotoPicked(${i}, this)"></label>${pendingPhotos[i] ? `<img src="${pendingPhotos[i]}" class="w-14 h-14 rounded-lg object-cover border" alt="Defect photo">` : ''}</div>`); });
+}
+async function onPhotoPicked(i, input) { const f = input.files[0]; if (!f) return; try { pendingPhotos[i] = await Photos.shrink(f); } catch (e) { showToast('Photo problem', e.message, 'fa-triangle-exclamation'); } renderChecklistItems(); }
+function setCheckStatus(idx, status) { checklistResponses[idx] = status; if (status !== 'Fail') delete pendingPhotos[idx]; renderChecklistItems(); }
+function markAllChecklistPass() { CHECKLIST_ITEMS.forEach((_, i) => { checklistResponses[i] = 'Pass'; }); pendingPhotos = {}; renderChecklistItems(); showToast('Checklist Updated', 'All 21 items marked as Pass.', 'fa-check-double'); }
+
+async function handlePreCheckSubmit(e) {
+  e.preventDefault();
+  const f = $('formForkliftNo').value, date = $('formInspectionDate').value, shift = $('formShiftTime').value, hm = parseFloat($('formHourMeter').value) || 0, remarks = $('formRemarks').value.trim();
+  const fails = Object.keys(checklistResponses).filter(i => checklistResponses[i] === 'Fail').map(Number);
+  if (fails.length && !remarks) { showToast('Remarks needed', 'Write a remark for: ' + fails.map(i => CHECKLIST_ITEMS[i].slice(4)).join(', '), 'fa-triangle-exclamation'); $('formRemarks').classList.add('ring-2', 'ring-red-500'); $('formRemarks').focus(); return; }
+  $('formRemarks').classList.remove('ring-2', 'ring-red-500');
+  const sk = s => s.startsWith('Night') ? 'N' : 'D';
+  if (inspectionLogs.some(l => l.date === date && l.forkliftNo === f && sk(l.shift) === sk(shift))) { showToast('Already recorded', `${f} already has this shift's check for ${date}.`, 'fa-triangle-exclamation'); return; }
+  const prev = inspectionLogs.filter(l => l.forkliftNo === f && l.date <= date && l.hourMeter > 0).sort(byNewest)[0];
+  if (prev && hm < prev.hourMeter && !confirm(`The hour meter (${hm}) is lower than the last reading for ${f} (${prev.hourMeter}). Save anyway?`)) return;
+  const photos = {}; for (const i of fails) if (pendingPhotos[i]) photos[i] = await Photos.put(pendingPhotos[i]);
+  const log = { id: newLogId(date), date, forkliftNo: f, owner: selectedOwner, model: selectedModel, shift, hourMeter: hm, department: $('formDepartment').value, operator: $('formOperator').value, supervisor: $('formSupervisor').value,
+    results: { ...checklistResponses }, remarks: remarks || 'No remarks provided.', photos, defectResolved: false, createdAt: Date.now() };
+  inspectionLogs.unshift(log); inspectionLogs.sort(byNewest); saveLog(log);
+  showToast(Safety.criticalFails(log).length ? 'DO NOT OPERATE' : 'Inspection Submitted', Safety.criticalFails(log).length ? `${f} has a critical failure and is locked.` : `${f} checklist successfully recorded!`, Safety.criticalFails(log).length ? 'fa-ban' : 'fa-circle-check');
+  $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; switchView('dashboard');
+}
+
+/* ---- dashboard ---- */
+function rangeLogs() {
+  const t = localDate();
+  if (currentTimeFilter === 'daily') return inspectionLogs.filter(l => l.date === t);
+  if (currentTimeFilter === 'weekly') { const d = new Date(); d.setDate(d.getDate() - 6); const from = localDate(d); return inspectionLogs.filter(l => l.date >= from && l.date <= t); }
+  return inspectionLogs.filter(l => (l.date || '').startsWith(t.slice(0, 7)));
+}
+function hydratePhotos(root) { root.querySelectorAll('img[data-photo]').forEach(async img => { const u = await Photos.get(img.dataset.photo); if (u) { img.src = u; img.style.cursor = 'pointer'; } }); }
+document.addEventListener('click', e => { const t = e.target; if (t.matches && t.matches('img[data-photo]') && t.src) { $('big').src = t.src; $('viewer').classList.add('show'); } });
+
+function renderLockPanel() {
+  const locked = Safety.lockedUnits(inspectionLogs), us = Object.keys(locked); let h = '';
+  if (us.length) h += `<div class="rounded-2xl border-2 border-red-500 bg-red-500/10 p-4 space-y-2"><p class="text-sm font-extrabold text-red-500"><i class="fa-solid fa-ban mr-1"></i> DO NOT OPERATE: ${us.length} forklift${us.length > 1 ? 's' : ''}</p>` +
+    us.map(u => locked[u].map(l => `<div class="flex items-center justify-between gap-3 text-xs border-t border-red-500/30 pt-2" style="color: var(--text-main);"><div><strong>${esc(u)}</strong> <span style="color: var(--text-muted);">${esc(l.id)} &bull; ${esc(l.date)}</span><div>${Safety.criticalFails(l).map(i => esc(CHECKLIST_ITEMS[i].slice(4))).join(', ')}</div></div><button type="button" onclick="toggleDefectResolution('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0" style="background-color: var(--bg-card); border-color: var(--border-color);">Clear defect</button></div>`).join('')).join('') + '</div>';
+  const sh = Safety.currentShift(), missed = Safety.missedUnits(inspectionLogs);
+  h += `<div class="neu-card rounded-2xl p-4"><p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Not checked this shift (${sh.label}, ${sh.date}): ${missed.length} of ${fleet.length}</p><div class="flex flex-wrap gap-1.5 mt-2">${missed.length ? missed.map(u => `<span class="px-2 py-0.5 rounded-full border text-xs" style="border-color: var(--border-color); color: var(--text-main);">${esc(u)}</span>`).join('') : '<span class="text-xs text-emerald-500 font-semibold">Every forklift has been checked.</span>'}</div></div>`;
+  $('lockPanel').innerHTML = h;
+}
+function renderDashboard() {
+  const range = rangeLogs(), q = ($('logSearchInput').value || '').toLowerCase(), failed = l => Safety.failedIdx(l).length > 0;
+  $('kpiTotalInspections').textContent = range.length;
+  const units = new Set(range.map(l => l.forkliftNo)).size, pct = Math.min(100, Math.round(units / (fleet.length || 1) * 100));
+  $('kpiActiveFleet').textContent = units; $('kpiFleetTotal').textContent = '/ ' + fleet.length + ' Units';
+  $('kpiFleetProgressBar').style.width = pct + '%'; $('kpiFleetPct').textContent = pct + '% of the fleet inspected';
+  const open = inspectionLogs.reduce((a, l) => a + (l.defectResolved ? 0 : Safety.failedIdx(l).length), 0);
+  $('kpiDefects').textContent = open; $('openIssuesBadge').textContent = open + ' Active Defects';
+  const bad = range.filter(failed).length, rate = range.length ? Math.round((range.length - bad) / range.length * 100) : null;
+  $('kpiSafetyScore').textContent = rate === null ? 'No inspections yet' : rate + '% Pass Rate'; $('kpiSafetyScore').className = 'font-bold ' + (rate === null ? '' : rate >= 95 ? 'text-emerald-500' : rate >= 85 ? 'text-amber-500' : 'text-red-500');
+  const latest = {}; range.forEach(l => { if (l.hourMeter > 0 && (!latest[l.forkliftNo] || byNewest(latest[l.forkliftNo], l) > 0)) latest[l.forkliftNo] = l; });
+  const lv = Object.values(latest).map(l => l.hourMeter); $('kpiRunningHours').textContent = lv.length ? (lv.reduce((a, b) => a + b, 0) / lv.length).toLocaleString(undefined, { maximumFractionDigits: 1 }) : '0';
+  const day = range.filter(l => l.shift.includes('Day')).length, night = range.filter(l => l.shift.includes('Night')).length, tot = (day + night) || 1;
+  $('dayShiftCount').textContent = day; $('nightShiftCount').textContent = night; $('dayShiftBar').style.width = Math.round(day / tot * 100) + '%'; $('nightShiftBar').style.width = Math.round(night / tot * 100) + '%';
+  $('ownerBreakdownGrid').innerHTML = appSettings.owners.map((o, i) => `<div class="border rounded-xl p-3" style="background-color: var(--bg-main); border-color: var(--border-color);"><p class="text-[11px] font-semibold" style="color: var(--text-muted);">${esc(o)}</p><p class="text-lg font-extrabold mt-0.5" style="color: ${['var(--accent-color)', '#10b981', '#3b82f6'][i % 3]};">${range.filter(l => l.owner === o).length}</p></div>`).join('');
+  renderLockPanel();
+  const cards = inspectionLogs.filter(failed).sort((a, b) => (a.defectResolved - b.defectResolved) || byNewest(a, b)).slice(0, 30), kg = $('kanbanDefectGrid');
+  kg.innerHTML = cards.length ? cards.map(l => `<div class="border rounded-2xl p-4 space-y-3" style="background-color: var(--bg-main); border-color: var(--border-color);"><div class="flex items-center justify-between"><span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/15 text-red-500 border border-red-500/30">${esc(l.forkliftNo)} &bull; ${Safety.criticalFails(l).length ? 'Critical' : 'Defect Alert'}</span><span class="text-[11px]" style="color: var(--text-muted);">${esc(l.date)}</span></div><div><p class="text-xs font-bold" style="color: var(--text-main);">${esc(l.operator)} (${esc(l.department)})</p><p class="text-xs mt-1 leading-relaxed" style="color: var(--text-muted);">${Safety.failedIdx(l).map(i => esc(CHECKLIST_ITEMS[i].slice(4))).join(', ')}. ${esc(l.remarks)}</p>${Object.values(l.photos || {}).length ? `<div class="flex gap-2 mt-2">${Object.values(l.photos).map(p => `<img data-photo="${esc(p)}" class="w-14 h-14 rounded-lg object-cover border" alt="Defect photo">`).join('')}</div>` : ''}${l.defectResolved && l.clearedBy ? `<p class="text-[11px] mt-1 text-emerald-500">Cleared by ${esc(l.clearedBy)}: ${esc(l.clearAction)}</p>` : ''}</div><div class="flex items-center justify-between pt-2 border-t" style="border-color: var(--border-color);"><span class="text-[11px] font-semibold ${l.defectResolved ? 'text-emerald-500' : 'text-amber-500'}">${l.defectResolved ? 'Cleared & Safe' : 'In Maintenance'}</span><button type="button" onclick="toggleDefectResolution('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);">${l.defectResolved ? 'Re-open' : 'Mark Cleared'}</button></div></div>`).join('')
+    : `<div class="col-span-full py-8 text-center text-xs" style="color: var(--text-muted);"><i class="fa-solid fa-circle-check text-emerald-500 text-2xl mb-2"></i><p>No forklift defects reported. All units safe for operation!</p></div>`;
+  hydratePhotos(kg);
+  const rows = inspectionLogs.filter(l => [l.forkliftNo, l.operator, l.department, l.id].some(v => (v || '').toLowerCase().includes(q)));
+  $('logsTableBody').innerHTML = rows.slice(0, 200).map(l => {
+    const hasFail = failed(l), left = hoursLeft(l);
+    const badge = hasFail && !l.defectResolved ? '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-red-500/15 text-red-500 border border-red-500/30">Defect Fail</span>' : '<span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">' + (hasFail ? 'Cleared' : 'All Pass') + '</span>';
+    const del = left > 0 ? `<button type="button" onclick="deleteLog('${l.id}')" title="Delete (${Math.floor(left)} h left)" class="ml-2 w-8 h-8 rounded-xl bg-red-500/15 text-red-500 hover:bg-red-500/25"><i class="fa-solid fa-trash-can text-xs"></i></button>` : `<span title="Locked after ${deleteWindowHours} hours" class="ml-2 inline-flex w-8 h-8 items-center justify-center rounded-xl opacity-40" style="color: var(--text-muted);"><i class="fa-solid fa-lock text-xs"></i></span>`;
+    return `<tr class="hover:bg-white/5 transition-all"><td class="py-3.5 px-4"><p class="font-bold" style="color: var(--text-main);">${esc(l.date)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.shift.split(' ')[0])} Shift</p></td><td class="py-3.5 px-4 font-extrabold" style="color: var(--accent-color);">${esc(l.forkliftNo)}</td><td class="py-3.5 px-4"><p class="font-semibold" style="color: var(--text-main);">${esc(l.owner)}</p><p class="text-[11px]" style="color: var(--text-muted);">${esc(l.model)}</p></td><td class="py-3.5 px-4" style="color: var(--text-main);">${esc(l.department)}</td><td class="py-3.5 px-4 font-semibold" style="color: var(--text-main);">${esc(l.operator)}</td><td class="py-3.5 px-4" style="color: var(--text-muted);">${esc(l.supervisor)}</td><td class="py-3.5 px-4 font-bold" style="color: var(--text-main);">${esc(l.hourMeter)} HRS</td><td class="py-3.5 px-4">${badge}</td><td class="py-3.5 px-4 text-right whitespace-nowrap"><button type="button" onclick="openA4Modal('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border transition-all" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-file-pdf mr-1"></i> View Sheet</button>${del}</td></tr>`;
+  }).join('') + (rows.length > 200 ? `<tr><td colspan="9" class="py-3 px-4 text-center text-[11px]" style="color: var(--text-muted);">Showing the latest 200 of ${rows.length}. Use the search box or export a CSV for the rest.</td></tr>` : '');
+  renderTrendChart();
+}
+function renderTrendChart() {
+  if (typeof Chart === 'undefined') return;
+  const days = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return localDate(d); });
+  const counts = days.map(d => inspectionLogs.filter(l => l.date === d).length);
+  const avg = days.map(d => { const a = inspectionLogs.filter(l => l.date === d && l.hourMeter > 0); return a.length ? Math.round(a.reduce((s, l) => s + l.hourMeter, 0) / a.length) : null; });
+  if (trendChartInstance) trendChartInstance.destroy();
+  trendChartInstance = new Chart($('safetyTrendChart').getContext('2d'), { type: 'bar',
+    data: { labels: days.map(d => new Date(d + 'T00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric' })), datasets: [
+      { label: 'Inspections Count', data: counts, backgroundColor: '#ff5722', borderRadius: 8, barThickness: 20 },
+      { label: 'Avg Meter (HRS)', data: avg, type: 'line', borderColor: '#fbbf24', borderWidth: 3, tension: 0.3, spanGaps: true, yAxisID: 'y1' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: {
+      x: { grid: { display: false }, ticks: { color: '#a1a1aa', font: { size: 11 } } }, y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#a1a1aa', font: { size: 11 }, precision: 0 } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#fbbf24', font: { size: 11 } } } } } });
+}
+
+async function toggleDefectResolution(id) {
+  const log = inspectionLogs.find(l => l.id === id); if (!log) return;
+  if (!(await requireSupervisor())) { renderPinState(); return; } renderPinState();
+  if (log.defectResolved) { log.defectResolved = false; delete log.clearedAt; delete log.clearedBy; delete log.clearAction; }
+  else {
+    const v = await ask('Clear defect', [{ id: 'by', label: 'Cleared by', type: 'select', options: appSettings.supervisors }, { id: 'act', label: 'What was done to fix it', type: 'area', ph: 'e.g. Brake pads replaced, tested OK' }], { ok: 'Mark cleared' });
+    if (!v) return; if (!v.act.trim()) { showToast('Action needed', 'Write what was done to fix it.', 'fa-triangle-exclamation'); return; }
+    Object.assign(log, { defectResolved: true, clearedAt: Date.now(), clearedBy: v.by, clearAction: v.act.trim() });
+  }
+  saveLog(log); renderDashboard(); showToast('Defect Status Updated', `Log ${id} marked as ${log.defectResolved ? 'Cleared' : 'Active'}`, 'fa-wrench');
+}
+async function deleteLog(id) {
+  const l = inspectionLogs.find(x => x.id === id); if (!l) return;
+  if (hoursLeft(l) <= 0) { showToast('Locked', `Reports older than ${deleteWindowHours} hours cannot be deleted.`, 'fa-lock'); return; }
+  if (!(await requireSupervisor())) { renderPinState(); return; } renderPinState();
+  if (!confirm(`Delete report ${id} (${l.forkliftNo}, ${l.date})? This cannot be undone.`)) return;
+  for (const p of Object.values(l.photos || {})) await Photos.del(p);
+  try { await LogDB.del(id); } catch (e) {}
+  inspectionLogs = inspectionLogs.filter(x => x !== l); renderDashboard(); showToast('Report deleted', id + ' was removed.', 'fa-trash-can');
+}
+function openA4Modal(id) {
+  openA4ModalBase(id); const l = inspectionLogs.find(x => x.id === id); if (!l) return; const area = $('a4PrintArea'), ph = Object.entries(l.photos || {}); let h = '';
+  if (ph.length) h += `<div class="mt-3 text-[11px]"><p class="font-bold underline mb-1">DEFECT PHOTOS:</p><div class="flex flex-wrap gap-2">${ph.map(([i, p]) => `<figure><img data-photo="${esc(p)}" class="w-40 h-32 object-cover border" alt=""><figcaption class="text-[10px]">${esc(CHECKLIST_ITEMS[i])}</figcaption></figure>`).join('')}</div></div>`;
+  if (l.defectResolved && l.clearedBy) h += `<p class="mt-2 text-[11px]"><strong>Defect cleared by:</strong> ${esc(l.clearedBy)} &mdash; ${esc(l.clearAction)} (${new Date(l.clearedAt).toLocaleString()})</p>`;
+  area.insertAdjacentHTML('beforeend', h); hydratePhotos(area);
+}
+async function exportToCSV() {
+  const p = Period.active(), v = await ask('Export CSV', [{ id: 'scope', label: 'Which records', type: 'select', options: [`Reporting month (${p.month} ${p.year})`, 'All records'] }], { ok: 'Download' }); if (!v) return;
+  const all = v.scope === 'All records', rows = all ? inspectionLogs : Csv.inPeriod(inspectionLogs, p.year, p.month);
+  if (!rows.length) { showToast('Nothing to export', 'There are no records for this choice.', 'fa-file-csv'); return; }
+  Csv.download(Csv.build(rows), `Lion_Brewery_Forklift_Logs_${all ? 'All' : p.month + '_' + p.year}.csv`); showToast('CSV Exported', `${rows.length} record${rows.length > 1 ? 's' : ''} downloaded.`, 'fa-file-csv');
+}
+
+/* ---- settings ---- */
+const optHtml = (a, cur, blank) => (blank ? `<option value="">${blank}</option>` : '') + a.map(x => `<option value="${esc(x)}" ${x === cur ? 'selected' : ''}>${esc(x)}</option>`).join('');
+function initSettingsView() {
+  const p = Period.active();
+  $('settingAutoPeriod').checked = p.auto; $('settingYear').innerHTML = optHtml(Period.yearOptions(inspectionLogs), p.year); $('settingMonth').innerHTML = optHtml(MONTHS, p.month);
+  $('settingYear').disabled = $('settingMonth').disabled = p.auto;
+  $('settingTheme').value = localStorage.getItem('lion_brewery_theme') || 'dark-coral';
+  $('settingDepartments').value = appSettings.departments.join(', '); $('settingModels').value = appSettings.models.join(', '); $('settingOwners').value = appSettings.owners.join(', '); $('settingSupervisors').value = appSettings.supervisors.join(', ');
+  $('settingDeleteHours').value = deleteWindowHours;
+  $('mgmtDeptSelect').innerHTML = appSettings.departments.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  renderEmployeeManagementList(); renderFleetManagement(); renderPinState();
+}
+function onAutoPeriodChange() { const a = $('settingAutoPeriod').checked; $('settingYear').disabled = $('settingMonth').disabled = a; }
+function saveSystemSettings(e) {
+  e.preventDefault(); const list = id => $(id).value.split(',').map(s => s.trim()).filter(Boolean);
+  Period.save({ auto: $('settingAutoPeriod').checked, year: $('settingYear').value, month: $('settingMonth').value });
+  Object.assign(appSettings, { departments: list('settingDepartments'), models: list('settingModels'), owners: list('settingOwners'), supervisors: list('settingSupervisors') });
+  deleteWindowHours = Math.max(1, parseInt($('settingDeleteHours').value, 10) || 24); saveConfig();
+  showToast('Settings Saved', 'System configuration successfully updated.', 'fa-floppy-disk'); switchView('dashboard');
+}
+async function resetDefaultSettings() {
+  if (!(await requireSupervisor())) { renderPinState(); return; }
+  appSettings = { year: '2026', month: 'November', departments: Object.keys(departmentEmployees), models: ['Gas', 'Battery', 'Diesel', 'Petrol'], owners: ['Winwill', 'Tasma', 'Other'], supervisors: ['R.D. Sanjeewa Newil Rajapaksha', 'R.M.A. Ajith Indralal Rajathewa'] };
+  deleteWindowHours = 24; saveConfig(); initSettingsView(); showToast('Reset Defaults', 'Settings restored. The forklift list and reports were not changed.', 'fa-rotate-right');
+}
+function addNewOperator() { addNewOperatorBase(); saveConfig(); }
+function removeOperator(d, i) { removeOperatorBase(d, i); saveConfig(); }
+
+function renderFleetManagement() {
+  const q = ($('fleetSearch').value || '').toLowerCase(); $('fleetCount').textContent = fleet.length;
+  $('newFleetOwner').innerHTML = optHtml(appSettings.owners, '', 'Owner (optional)'); $('newFleetModel').innerHTML = optHtml(appSettings.models, '', 'Model (optional)');
+  const rows = fleet.map((f, i) => ({ f, i })).filter(({ f }) => f.unit.toLowerCase().includes(q));
+  $('fleetList').innerHTML = rows.length ? rows.map(({ f, i }) => `<div class="py-2 px-2 flex items-center gap-2 text-xs border-b last:border-b-0" style="border-color: var(--border-color); color: var(--text-main);"><span class="font-extrabold w-24 shrink-0 truncate">${esc(f.unit)}</span><select onchange="updateFleetUnit(${i}, 'owner', this.value)" class="${INPUT_CLS} flex-1 min-w-0" style="${INPUT_STY}">${optHtml(appSettings.owners, f.owner, '-')}</select><select onchange="updateFleetUnit(${i}, 'model', this.value)" class="${INPUT_CLS} flex-1 min-w-0" style="${INPUT_STY}">${optHtml(appSettings.models, f.model, '-')}</select><button type="button" onclick="removeFleetUnit(${i})" class="w-7 h-7 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500/25 shrink-0" title="Remove"><i class="fa-solid fa-trash-can text-xs"></i></button></div>`).join('') : '<p class="p-3 text-xs text-center" style="color: var(--text-muted);">No forklifts match.</p>';
+}
+function addFleetUnit() {
+  const name = $('newFleetName').value.trim().replace(/\s+/g, ' '); if (!name) { showToast('Name needed', 'Type the forklift number or name.', 'fa-triangle-exclamation'); return; }
+  if (findUnit(name)) { showToast('Already in the list', `${findUnit(name).unit} exists.`, 'fa-triangle-exclamation'); return; }
+  fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); sortFleet(); saveConfig(); $('newFleetName').value = ''; renderFleetManagement(); showToast('Forklift added', name + ' is now in the list.', 'fa-truck-ramp-box');
+}
+function addFleetRange() {
+  const prefix = $('rangePrefix').value, from = parseInt($('rangeFrom').value, 10), to = parseInt($('rangeTo').value, 10);
+  if (!(from >= 0 && to >= from && to - from < 500)) { showToast('Check the numbers', 'Enter a valid From and To (up to 500 at a time).', 'fa-triangle-exclamation'); return; }
+  let n = 0; for (let i = from; i <= to; i++) { const name = (prefix + String(i).padStart(2, '0')).trim(); if (!findUnit(name)) { fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); n++; } }
+  sortFleet(); saveConfig(); renderFleetManagement(); showToast('Forklifts added', `${n} new forklift${n === 1 ? '' : 's'} added (${to - from + 1 - n} already existed).`, 'fa-truck-ramp-box');
+}
+function updateFleetUnit(i, field, val) { fleet[i][field] = val; saveConfig(); }
+async function removeFleetUnit(i) {
+  if (!(await requireSupervisor())) { renderPinState(); return; } renderPinState(); const u = fleet[i].unit, used = inspectionLogs.some(l => l.forkliftNo === u);
+  if (!confirm(`Remove ${u} from the forklift list?` + (used ? ' Its past reports stay in the records.' : ''))) return;
+  fleet.splice(i, 1); saveConfig(); renderFleetManagement();
+}
+
+/* ---- supervisor PIN card ---- */
+function renderPinState() {
+  const set = Pin.isSet(), un = Pin.isUnlocked(), el = $('pinState'); if (!el) return;
+  el.textContent = !set ? 'Not set' : un ? `Unlocked ${Pin.minutesLeft()} min` : 'Locked'; el.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold ' + (un ? 'bg-emerald-500/15 text-emerald-500' : 'bg-amber-500/15 text-amber-500');
+  $('pinNote').textContent = !set ? 'You will be asked to create a PIN the first time it is needed.' : un ? 'Locks again after 5 minutes.' : 'Needed to clear defects, delete reports and remove forklifts.';
+}
+function lockNow() { Pin.lock(); renderPinState(); }
+async function changePin() {
+  if (!Pin.isSet()) { await requireSupervisor(); renderPinState(); return; }
+  const o = await ask('Change PIN', [{ id: 'old', label: 'Current PIN', numeric: true }], { ok: 'Next' }); if (!o) return;
+  const chk = await Pin.change(o.old, null); if (!chk.ok && !/4 digits/.test(chk.error)) { showToast('PIN', chk.error, 'fa-triangle-exclamation'); return; }
+  await newPinFlow('Choose a new PIN', p => Pin.change(o.old, p)); renderPinState();
+}
+
+/* ---- monthly report ---- */
+function initReportView() {
+  const p = Period.active(); $('rptYear').innerHTML = optHtml(Period.yearOptions(inspectionLogs), p.year); $('rptMonth').innerHTML = optHtml(MONTHS, p.month); renderReport();
+}
+function pct(r) { return r === null ? '-' : r + '%'; }
+function pctCls(r) { return r === null ? '' : r >= 95 ? 'good' : r >= 85 ? 'amber' : 'bad'; }
+function bar(r) { return `<div class="bar"><i style="width:${r || 0}%"></i></div>`; }
+
+function renderReport() {
+  const y = $('rptYear').value, m = $('rptMonth').value, R = Report.build(inspectionLogs, y, m);
+  const today = localDate();
+  let h = `<h1 style="margin-bottom:2px">Lion Brewery (Biyagama)</h1>
+    <div><strong>Forklift Pre-Check Monthly Report: ${esc(m)} ${esc(y)}</strong></div>
+    <div class="mute">Generated ${today}. An inspection counts as Pass when none of its 21 items is Fail.</div>`;
+  if (!R.total) return $('reportBody').innerHTML = h + '<p class="mute" style="margin-top:16px">No inspections recorded for this month.</p>';
+  h += `<div class="kpis">
+    <div class="kpi"><b>${R.total}</b><span>Inspections</span></div>
+    <div class="kpi"><b class="${pctCls(R.passRate)}">${pct(R.passRate)}</b><span>Pass rate (${R.total - R.withFail} of ${R.total})</span></div>
+    <div class="kpi"><b>${R.units.length} / ${fleetNames().length}</b><span>Forklifts inspected</span></div>
+    <div class="kpi"><b class="${R.critical ? 'bad' : 'good'}">${R.critical}</b><span>Critical Fails</span></div>
+    <div class="kpi"><b class="${R.open ? 'amber' : 'good'}">${R.open}</b><span>Defects still open</span></div>
+    <div class="kpi"><b>${R.cleared}</b><span>Defects cleared</span></div></div>`;
+  h += `<h2>By owner</h2><div class="wrap"><table><tr><th>Owner</th><th class="n">Forklifts</th><th class="n">Inspections</th><th class="n">With Fail</th><th>Pass rate</th></tr>` +
+    R.owners.map(o => { const r = R.rate(o.n, o.fail); return `<tr><td>${esc(o.owner)}</td><td class="n">${o.units.size}</td><td class="n">${o.n}</td><td class="n">${o.fail}</td><td class="${pctCls(r)}">${pct(r)}${bar(r)}</td></tr>`; }).join('') + '</table></div>';
+  h += `<h2>By forklift</h2><div class="wrap"><table><tr><th>Unit</th><th>Owner</th><th class="n">Checks</th><th class="n">With Fail</th><th>Pass rate</th><th class="n">Last hour meter</th></tr>` +
+    R.units.map(u => { const r = R.rate(u.n, u.fail); return `<tr><td><strong>${esc(u.unit)}</strong></td><td>${esc(u.owner)}</td><td class="n">${u.n}</td><td class="n">${u.fail}</td><td class="${pctCls(r)}">${pct(r)}${bar(r)}</td><td class="n">${u.last && u.last.hourMeter ? esc(u.last.hourMeter) : '-'}</td></tr>`; }).join('') + '</table></div>';
+  h += `<h2>Items that failed most</h2>` + (R.items.length ? `<div class="wrap"><table><tr><th>Item</th><th class="n">Times failed</th><th>Forklifts</th></tr>` +
+    R.items.slice(0, 8).map(it => `<tr><td>${esc(CHECKLIST_ITEMS[it.idx])}${CRITICAL_ITEMS.includes(it.idx) ? ' <span class="bad">(critical)</span>' : ''}</td><td class="n">${it.count}</td><td>${Object.keys(it.units).map(esc).join(', ')}</td></tr>`).join('') + '</table></div>' : '<div class="mute">No item failed this month.</div>');
+  h += `<h2>Repeat problems</h2>` + (R.repeats.length ? `<div class="wrap"><table><tr><th>Forklift</th><th>Item</th><th class="n">Times</th></tr>` +
+    R.repeats.map(r => `<tr><td><strong>${esc(r.unit)}</strong></td><td>${esc(CHECKLIST_ITEMS[r.idx])}</td><td class="n bad">${r.count}</td></tr>`).join('') + '</table></div>' : '<div class="mute">No forklift failed the same item twice.</div>');
+  h += `<h2>Not inspected this month (${R.notInspected.length})</h2>` + (R.notInspected.length ? `<div class="chips">${R.notInspected.map(u => `<span class="chip">${esc(u)}</span>`).join('')}</div>` : '<div class="mute">Every forklift was inspected at least once.</div>');
+  h += `<div class="sign printonly"><div>Prepared by / Date</div><div>Reviewed by (Safety Officer) / Date</div></div>`;
+  $('reportBody').innerHTML = h;
+}
+
+
+
+/* ---- QR labels ---- */
+const QR_SIZES = { '2x3': { cols: 2, rows: 3, lw: 95, lh: 90 }, '3x4': { cols: 3, rows: 4, lw: 63, lh: 66 }, '4x5': { cols: 4, rows: 5, lw: 47, lh: 54 } };
+function defaultQrBase() { return /^https?:/.test(location.protocol) && location.hostname !== 'localhost' ? location.origin + location.pathname.replace(/[^/]*$/, '') : 'https://iroshanekanayake.github.io/lion-brewery-forklift/'; }
+function initQrView() {
+  if (!$('qrBase').value) $('qrBase').value = defaultQrBase();
+  const opts = fleet.map((f, i) => `<option value="${i}">${esc(f.unit)}</option>`).join(''); const a = $('qrFrom').value, b = $('qrTo').value;
+  $('qrFrom').innerHTML = $('qrTo').innerHTML = opts; $('qrFrom').value = a || 0; $('qrTo').value = b || fleet.length - 1; renderQr();
+}
+function renderQr() {
+  const base = $('qrBase').value.trim(), ok = /^https:\/\/.+\..+/i.test(base); let a = +$('qrFrom').value, b = +$('qrTo').value; if (a > b) [a, b] = [b, a];
+  const s = QR_SIZES[$('qrSize').value], sh = $('qrSheet'); sh.style.setProperty('--cols', s.cols); sh.style.setProperty('--lw', s.lw); sh.style.setProperty('--lh', s.lh);
+  $('qrNote').innerHTML = ok ? '<span style="color:#10b981;font-weight:700">Looks good.</span> Phones need an https link to open the app. Check it is your real address.' : '<span style="color:#ef4444;font-weight:700">Enter the full link starting with https://</span>';
+  if (!ok) { sh.innerHTML = ''; $('qrCount').textContent = ''; return; }
+  const list = fleet.slice(a, b + 1), per = s.cols * s.rows;
+  sh.innerHTML = list.map(f => `<div class="qrl"><div class="band">LION BREWERY &middot; BIYAGAMA<small>FORKLIFT PRE-CHECK</small></div><div class="num" style="font-size:${Math.min(17, 72 / Math.max(f.unit.length, 4)).toFixed(1)}cqw">${esc(f.unit)}</div><div class="qr">${QR.svg(labelUrl(base, f.unit))}</div><div class="foot">Scan before every shift</div></div>`).join('');
+  $('qrCount').textContent = `${list.length} label${list.length === 1 ? '' : 's'}, ${Math.ceil(list.length / per)} A4 page${Math.ceil(list.length / per) === 1 ? '' : 's'}. Example link: ${labelUrl(base, list[0] ? list[0].unit : 'FL 01')}`;
+}
+function handleDeepLink() {
+  const r = forkliftFromUrl(location.href); if (r.none) return; history.replaceState(null, '', location.pathname);
+  if (r.unit) { switchView('apk'); $('formForkliftNo').value = r.unit; onForkliftChange(); showToast('Forklift selected', r.unit + ' opened from its QR label.', 'fa-qrcode'); }
+  else showToast('Unknown forklift code', `"${r.raw}" is not in the forklift list. Choose it by hand.`, 'fa-triangle-exclamation');
+}
+
+/* ---- start ---- */
+window.addEventListener('DOMContentLoaded', async () => {
+  changeTheme(localStorage.getItem('lion_brewery_theme') || 'dark-coral', true);
+  loadConfig(); try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+  initApkForm(); renderDashboard();
+  try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
+  renderDashboard(); handleDeepLink(); renderPinState();
+  setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
+});
+
     </script>
     <script>
       if ("serviceWorker" in navigator) {
