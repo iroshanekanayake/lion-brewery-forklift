@@ -291,108 +291,17 @@
             body.print-report #reportBody .bad { color:#b00020; } body.print-report #reportBody .good { color:#1b7a4b; } body.print-report #reportBody .amber { color:#9a6700; }
             body.print-report #reportBody .sign { display:grid; } body.print-report #reportBody table { min-width:0; } body.print-report #reportBody tr, body.print-report #reportBody .kpi { break-inside:avoid; }
             body.print-report #reportBody .bar { background:#ddd; }
+            /* Monthly Summary PDF must not include the separate Daily A4 modal. */
+            body.print-report #a4ModalBackdrop,
+            body.print-report #a4ModalBackdrop *,
+            body.print-report #weeklyPrintArea,
+            body.print-report #qrSheet,
+            body.print-report #modal,
+            body.print-report #viewer { display:none !important; }
+            body.print-report main > section#viewReport { display:block !important; }
             body.print-qr .qrsheet { grid-template-columns:repeat(var(--cols), calc(var(--lw) * 1mm)); gap:0; justify-content:center; }
             body.print-qr .qrl { width:calc(var(--lw) * 1mm); height:calc(var(--lh) * 1mm); aspect-ratio:auto; border-radius:0; border:1px dashed #999; }
         }
-
-        @page daily {
-            size: A4 portrait;
-            margin: 6mm;
-        }
-        @media print {
-            body.print-daily {
-                page: daily !important;
-                display: block !important;
-                width: auto !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #fff !important;
-            }
-            body.print-daily > * {
-                display: none !important;
-            }
-            body.print-daily > #a4ModalBackdrop {
-                display: block !important;
-                position: static !important;
-                inset: auto !important;
-                width: auto !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #fff !important;
-                backdrop-filter: none !important;
-            }
-            body.print-daily #a4ModalBackdrop .neu-card {
-                display: block !important;
-                position: static !important;
-                width: auto !important;
-                max-width: none !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                border: 0 !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                background: #fff !important;
-            }
-            body.print-daily #a4ModalBackdrop .no-print {
-                display: none !important;
-            }
-            body.print-daily #a4ModalBackdrop .max-h-\[80vh\] {
-                display: block !important;
-                position: static !important;
-                width: auto !important;
-                max-width: none !important;
-                max-height: none !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                background: #fff !important;
-            }
-            body.print-daily #a4PrintArea,
-            body.print-daily #a4PrintArea * {
-                visibility: visible !important;
-            }
-            body.print-daily #a4PrintArea {
-                display: block !important;
-                position: static !important;
-                box-sizing: border-box !important;
-                width: 100% !important;
-                max-width: 198mm !important;
-                min-height: 0 !important;
-                height: auto !important;
-                margin: 0 auto !important;
-                padding: 0 !important;
-                overflow: visible !important;
-                border: 0 !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                background: #fff !important;
-                color: #000 !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-            }
-            body.print-daily #a4PrintArea table,
-            body.print-daily #a4PrintArea tr,
-            body.print-daily #a4PrintArea .border,
-            body.print-daily #a4PrintArea figure {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
-            }
-            body.print-daily .no-print {
-                display: none !important;
-            }
-        }
-
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
@@ -1159,7 +1068,7 @@
                     <span class="text-sm font-bold" style="color: var(--text-main);">Official A4 Forklift Pre-Check Sheet</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="printDailyA4()"
+                    <button type="button" onclick="window.print()"
                         class="px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5 shadow" style="background-color: var(--accent-color);">
                         <i class="fa-solid fa-print"></i> Print / Save PDF
                     </button>
@@ -1891,12 +1800,6 @@ function switchView(v) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function printMode(name) { document.body.classList.add('print-' + name); window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
-function printDailyA4() {
-  document.body.classList.add('print-daily');
-  const cleanup = () => document.body.classList.remove('print-daily');
-  window.addEventListener('afterprint', cleanup, { once: true });
-  setTimeout(() => window.print(), 120);
-}
 
 /* ---- operator form ---- */
 function renderPills() {
