@@ -786,12 +786,12 @@
 
             <!-- Supervisor PIN -->
             <div class="neu-card rounded-3xl overflow-hidden shadow-2xl p-6 space-y-4">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
+                <div class="flex items-center justify-between gap-3 flex-wrap">
+                    <div class="min-w-0">
                         <h3 class="text-base font-extrabold flex items-center gap-2" style="color: var(--text-main);"><i class="fa-solid fa-lock" style="color: var(--accent-color);"></i><span>Supervisor PIN</span> <span id="pinState" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold"></span></h3>
                         <p id="pinNote" class="text-xs mt-0.5" style="color: var(--text-muted);"></p>
                     </div>
-                    <div class="flex gap-2 shrink-0">
+                    <div class="flex gap-2 flex-wrap">
                         <button type="button" onclick="lockNow()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Lock now</button>
                         <button type="button" onclick="changePin()" class="px-3 py-1.5 rounded-xl text-xs font-semibold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Change PIN</button>
                     </div>
