@@ -51,3 +51,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 - Scanning a forklift's QR (phone camera or the Scan QR button) now asks: **Today's report / This week's reports / New inspection (operator)**. Operators still reach the checklist with the third button.
 - Week is Monday to Sunday (`WEEK_DAYS = 7` in index.html; use 5 for Mon to Fri). The weekly PDF prints in A4 landscape, one page per forklift.
 - Service worker version is v12. Upload every file again and refresh once online so the phones update.
+
+## v4.2
+- Camera QR scanner has a **Flash** button (top right) for dark places and night shift. It appears only on phones whose browser allows the torch (most Android Chrome phones). On iPhones it is not offered by Safari; use the phone's own flashlight.
+- Weekly > "Office copy: all forklifts" already makes ONE PDF for all forklifts (summary page + one landscape page per forklift that has an inspection that week). Choose "Save as PDF" in the print window.

@@ -980,7 +980,10 @@
     <div id="scanOverlay" class="fixed inset-0 z-[60] hidden flex-col" style="background:#000;">
         <div class="flex items-center justify-between px-4 py-3" style="background:#111215; color:#fff;">
             <div class="font-extrabold text-sm"><i class="fa-solid fa-qrcode mr-2" style="color:var(--accent-color);"></i>Scan forklift QR</div>
-            <button type="button" onclick="closeScanner()" class="px-3 py-1.5 rounded-lg text-xs font-bold border" style="border-color:#333; color:#fff;"><i class="fa-solid fa-xmark mr-1"></i>Close</button>
+            <div class="flex items-center gap-2">
+                <button type="button" id="torchBtn" onclick="toggleTorch()" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold border" style="border-color:#333; color:#fff;"><i class="fa-solid fa-bolt mr-1"></i><span id="torchTxt">Flash off</span></button>
+                <button type="button" onclick="closeScanner()" class="px-3 py-1.5 rounded-lg text-xs font-bold border" style="border-color:#333; color:#fff;"><i class="fa-solid fa-xmark mr-1"></i>Close</button>
+            </div>
         </div>
         <div class="relative flex-1 overflow-hidden">
             <video id="scanVideo" class="absolute inset-0 w-full h-full object-cover" playsinline muted autoplay></video>
@@ -2110,7 +2113,7 @@ async function openScanner() {
   ov.classList.remove('hidden'); ov.classList.add('flex'); msg.textContent = 'Starting camera...';
   try {
     scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
-    vid.srcObject = scanStream; await vid.play();
+    vid.srcObject = scanStream; await vid.play(); setupTorch();
   } catch (e) {
     msg.textContent = 'Camera is blocked. Allow camera for this app in the browser settings, or choose the forklift by hand.'; scanStream = null; return;
   }
@@ -2119,8 +2122,18 @@ async function openScanner() {
   if (!scanDetector) { try { await loadJsQR(); } catch (e) { msg.textContent = 'Scanner could not load. Connect to the internet once, then try again.'; return; } }
   msg.textContent = 'Point the camera at the QR label on the forklift.'; scanRunning = true; scanLoop();
 }
+let torchOn = false;
+function setupTorch() {
+  torchOn = false; const btn = $('torchBtn'); $('torchTxt').textContent = 'Flash off'; btn.style.background = 'transparent'; btn.classList.add('hidden');
+  try { const t = scanStream.getVideoTracks()[0], c = t.getCapabilities ? t.getCapabilities() : {}; if (c.torch) btn.classList.remove('hidden'); } catch (e) {}
+}
+async function toggleTorch() {
+  try { const t = scanStream.getVideoTracks()[0]; torchOn = !torchOn; await t.applyConstraints({ advanced: [{ torch: torchOn }] });
+    $('torchTxt').textContent = torchOn ? 'Flash on' : 'Flash off'; $('torchBtn').style.background = torchOn ? '#ff7a1a' : 'transparent'; }
+  catch (e) { torchOn = false; $('scanMsg').textContent = 'This phone cannot switch the flashlight from the browser. Use the phone\'s own flashlight.'; }
+}
 function closeScanner() {
-  scanRunning = false;
+  scanRunning = false; torchOn = false;
   if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
   const v = $('scanVideo'); if (v) v.srcObject = null;
   const ov = $('scanOverlay'); ov.classList.add('hidden'); ov.classList.remove('flex');
