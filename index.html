@@ -226,19 +226,20 @@
         .wkrow { display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px solid var(--border-color); font-size:13px; } .wkrow span:first-child { color:var(--text-muted); }
         .wkitems { display:grid; grid-template-columns:1fr; gap:0; font-size:13px; } .wkitems div { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--border-color); }
         .wkpage { font-family:Arial, Helvetica, sans-serif; background:#fff; color:#000; padding:0; page-break-after:always; break-after:page; } .wkpage:last-child { page-break-after:auto; break-after:auto; }
-        .wkpage, .wkpage h1, .wkpage .sub, .wkpage b, .wkpage th, .wkpage td, .wkpage div { color:#000; } .wkpage .ttl { font-size:18px; font-weight:700; margin:0; text-align:center; } .wkpage .sub { text-align:center; font-size:11px; margin:2px 0 8px; }
-        .wkpage table { width:100%; border-collapse:collapse; font-size:10.5px; margin-top:6px; } .wkpage th, .wkpage td { border:1px solid #444; padding:3px 4px; text-align:center; } .wkpage td.l, .wkpage th.l { text-align:left; }
+        .wkpage, .wkpage h1, .wkpage .sub, .wkpage b, .wkpage th, .wkpage td, .wkpage div { color:#000; } .wkpage .ttl { font-size:16px; font-weight:700; margin:0; text-align:center; } .wkpage .sub { text-align:center; font-size:11px; margin:2px 0 8px; }
+        .wkpage table { width:100%; border-collapse:collapse; font-size:9.5px; margin-top:4px; } .wkpage th, .wkpage td { border:1px solid #444; padding:1.5px 4px; text-align:center; line-height:1.25; } .wkpage td.l, .wkpage th.l { text-align:left; }
         .wkpage th { background:#e5e5e5; } .wkpage .p { color:#15803d; font-weight:800; } .wkpage .f { color:#b00020; font-weight:900; background:#fde8e8; }
         .wkpage .meta { display:grid; grid-template-columns:1fr 1fr; gap:2px 16px; font-size:11px; margin-bottom:4px; }
         .wkpage .legend { font-size:10px; margin-top:4px; } .wkpage .notes { font-size:10px; margin-top:8px; border-top:1px solid #444; padding-top:4px; }
-        .wkpage .sign { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; font-size:10.5px; } .wkpage .sign div { border-top:1px solid #444; padding-top:3px; }
+        .wkpage .sign { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; font-size:10.5px; } .wkpage .sign div { border-top:1px solid #444; padding-top:3px; }
 
+        @page wkland { size: A4 landscape; margin: 7mm; }
         @media print {
+            .wkpage { page: wkland; }
             #bottomNav, #scanOverlay, #modal, #viewer, #toastBanner { display: none !important; }
             body.print-week header, body.print-week main > section, body.print-week #toastBanner, body.print-week #a4ModalBackdrop, body.print-week #a4PrintArea { display:none !important; }
             body.print-week, body.print-week main { background:#fff !important; padding:0 !important; max-width:none !important; }
             body.print-week #wkPrintArea { display:block !important; visibility:visible !important; } body.print-week #wkPrintArea * { visibility:visible !important; }
-            @page { margin:10mm; }
             /* single record sheet: print only the sheet, once, in normal page flow */
             body:not(.print-report):not(.print-qr):not(.print-week) > *:not(#a4ModalBackdrop) { display: none !important; }
             body:not(.print-report):not(.print-qr):not(.print-week) #a4ModalBackdrop { position: static !important; display: block !important; background: #fff !important; padding: 0 !important; overflow: visible !important; backdrop-filter: none !important; }
@@ -299,15 +300,15 @@
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <span class="hidden sm:inline">Inspection</span>
                     </button>
-                    <button type="button" id="navDashboardBtn" onclick="switchView('dashboard')"
-                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md" style="background-color: var(--accent-color);">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span class="hidden sm:inline">Dashboard</span>
-                    </button>
                     <button type="button" id="navWeekBtn" onclick="openWeek()" title="Weekly Forklift Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
                         <i class="fa-solid fa-calendar-week"></i>
                         <span class="hidden sm:inline">Weekly</span>
+                    </button>
+                    <button type="button" id="navDashboardBtn" onclick="switchView('dashboard')"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md" style="background-color: var(--accent-color);">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span class="hidden sm:inline">Dashboard</span>
                     </button>
                     <button type="button" id="navReportBtn" onclick="switchView('report')" title="Monthly Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
@@ -998,16 +999,16 @@
                 <i class="fa-solid fa-clipboard-check text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Inspect</span>
             </button>
+            <button type="button" id="bnavWeek" onclick="openWeek()"
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
+                <i class="fa-solid fa-calendar-week text-sm"></i>
+                <span class="text-[10px] font-bold mt-0.5">Weekly</span>
+            </button>
             <button type="button" id="bnavDashboard" onclick="switchView('dashboard')"
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all"
                 >
                 <i class="fa-solid fa-house text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Home</span>
-            </button>
-            <button type="button" id="bnavWeek" onclick="openWeek()"
-                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
-                <i class="fa-solid fa-calendar-week text-sm"></i>
-                <span class="text-[10px] font-bold mt-0.5">Weekly</span>
             </button>
             <button type="button" id="bnavReport" onclick="switchView('report')"
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
@@ -2149,7 +2150,7 @@ function onScanned(text) {
 
 
 /* ---- weekly forklift report (Mon-Fri) + QR choice ---- */
-const WEEK_DAYS = 5;   // 5 = Monday to Friday. Change to 6 or 7 to include Saturday / Sunday.
+const WEEK_DAYS = 7;   // 7 = Monday to Sunday. Use 5 for Monday to Friday.
 const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const SAFETY_NOTES = 'Forklifts should be properly cleaned before and after operation. Always maintain a speed of 5 KMH. Appropriate PPE and seat belt must be worn while on duty.';
 let wk = { unit: null, monday: null, day: null, mode: 'day' };
@@ -2187,7 +2188,7 @@ function initWeekView() {
 function wkSetUnit(u) { wk.unit = u; renderWeek(); }
 function wkSetMode(m) { wk.mode = m; renderWeek(); }
 function wkShift(n) { wk.monday = addDays(wk.monday, 7 * n); const d = weekDates(wk.monday); const t = localDate(); wk.day = d.includes(t) ? t : d[d.length - 1]; renderWeek(); }
-function wkPickDay(date) { wk.day = date; wk.mode = 'day'; renderWeek(); }
+function wkPickDay(date) { wk.day = date; wk.mode = 'day'; wk.auto = true; renderWeek(); }
 
 function renderWeek() {
   const data = weekData(wk.unit, wk.monday), today = localDate();
@@ -2197,6 +2198,8 @@ function renderWeek() {
   $('wkChips').innerHTML = data.map(d => { const dot = !d.logs.length ? '#9ca3af' : d.logs.some(logHasFail) ? '#dc2626' : '#16a34a';
     return `<button type="button" class="wkchip ${d.date === wk.day ? 'on' : ''}" onclick="wkPickDay('${d.date}')"><span class="wkdot" style="background:${dot}"></span>${dowOf(d.date)}<small>${d.date === today ? 'Today' : d.date.slice(5)}</small></button>`; }).join('');
   $('wkBody').innerHTML = wk.mode === 'day' ? dayCardHtml(data.find(d => d.date === wk.day)) : weekGridHtml(data);
+  if (wk.auto && wk.mode === 'day') { const dl = data.find(d => d.date === wk.day).logs; if (dl.length === 1) openA4Modal(dl[0].id); }
+  wk.auto = false;
 }
 function dayCardHtml(d) {
   const head = `<div class="text-base font-black">${esc(wk.unit)} <span style="color:var(--text-muted);font-weight:600">· ${dowOf(d.date)} ${d.date}${d.date === localDate() ? ' (today)' : ''}</span></div>`;
@@ -2269,7 +2272,7 @@ function openQrChoice(unit) {
       <button class="ghost" id="qc_new">New inspection (operator)</button></div>`;
   $('modal').classList.add('show');
   const go = fn => () => { $('modal').classList.remove('show'); fn(); };
-  $('qc_day').onclick = go(() => { wk.day = null; wk.monday = null; openWeek(unit, 'day'); });
+  $('qc_day').onclick = go(() => { wk.day = null; wk.monday = null; wk.auto = true; openWeek(unit, 'day'); });
   $('qc_week').onclick = go(() => { wk.day = null; wk.monday = null; openWeek(unit, 'week'); });
   $('qc_new').onclick = go(() => { switchView('apk'); $('formForkliftNo').value = unit; onForkliftChange(); });
 }
