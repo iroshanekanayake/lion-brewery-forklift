@@ -211,15 +211,41 @@
         .qrl .qr { flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding:1cqw 8cqw; } .qrl .qr svg { height:100%; max-width:100%; aspect-ratio:1; }
         .qrl .foot { text-align:center; font-weight:700; font-size:4.6cqw; padding:0 2cqw 2.6cqw; }
 
+
+        /* weekly forklift report */
+        #wkPrintArea { display:none; }
+        .wk { --line:var(--border-color); --mute:var(--text-muted); }
+        .wk table { width:100%; border-collapse:collapse; font-size:12px; }
+        .wk th, .wk td { border:1px solid var(--line); padding:5px 6px; text-align:center; vertical-align:middle; }
+        .wk td.l, .wk th.l { text-align:left; }
+        .wk .p { color:#16a34a; font-weight:800; } .wk .f { color:#dc2626; font-weight:800; background:rgba(220,38,38,.12); } .wk .o { color:var(--mute); }
+        .wk .seg button, .wkchip { padding:8px 12px; border-radius:12px; font-size:12px; font-weight:700; border:1px solid var(--border-color); color:var(--text-main); background:transparent; }
+        .wk .seg button.on, .wkchip.on { background:var(--accent-color); color:#fff; border-color:var(--accent-color); }
+        .wkchip { min-width:62px; text-align:center; line-height:1.25; } .wkchip small { display:block; font-weight:600; opacity:.8; }
+        .wkdot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
+        .wkrow { display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px solid var(--border-color); font-size:13px; } .wkrow span:first-child { color:var(--text-muted); }
+        .wkitems { display:grid; grid-template-columns:1fr; gap:0; font-size:13px; } .wkitems div { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--border-color); }
+        .wkpage { font-family:Arial, Helvetica, sans-serif; background:#fff; color:#000; padding:0; page-break-after:always; break-after:page; } .wkpage:last-child { page-break-after:auto; break-after:auto; }
+        .wkpage, .wkpage h1, .wkpage .sub, .wkpage b, .wkpage th, .wkpage td, .wkpage div { color:#000; } .wkpage .ttl { font-size:18px; font-weight:700; margin:0; text-align:center; } .wkpage .sub { text-align:center; font-size:11px; margin:2px 0 8px; }
+        .wkpage table { width:100%; border-collapse:collapse; font-size:10.5px; margin-top:6px; } .wkpage th, .wkpage td { border:1px solid #444; padding:3px 4px; text-align:center; } .wkpage td.l, .wkpage th.l { text-align:left; }
+        .wkpage th { background:#e5e5e5; } .wkpage .p { color:#15803d; font-weight:800; } .wkpage .f { color:#b00020; font-weight:900; background:#fde8e8; }
+        .wkpage .meta { display:grid; grid-template-columns:1fr 1fr; gap:2px 16px; font-size:11px; margin-bottom:4px; }
+        .wkpage .legend { font-size:10px; margin-top:4px; } .wkpage .notes { font-size:10px; margin-top:8px; border-top:1px solid #444; padding-top:4px; }
+        .wkpage .sign { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:26px; font-size:10.5px; } .wkpage .sign div { border-top:1px solid #444; padding-top:3px; }
+
         @media print {
             #bottomNav, #scanOverlay, #modal, #viewer, #toastBanner { display: none !important; }
+            body.print-week header, body.print-week main > section, body.print-week #toastBanner, body.print-week #a4ModalBackdrop, body.print-week #a4PrintArea { display:none !important; }
+            body.print-week, body.print-week main { background:#fff !important; padding:0 !important; max-width:none !important; }
+            body.print-week #wkPrintArea { display:block !important; visibility:visible !important; } body.print-week #wkPrintArea * { visibility:visible !important; }
+            @page { margin:10mm; }
             /* single record sheet: print only the sheet, once, in normal page flow */
-            body:not(.print-report):not(.print-qr) > *:not(#a4ModalBackdrop) { display: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop { position: static !important; display: block !important; background: #fff !important; padding: 0 !important; overflow: visible !important; backdrop-filter: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop * { max-height: none !important; overflow: visible !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop .neu-card { background: #fff !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; max-width: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop .bg-zinc-200 { background: #fff !important; padding: 0 !important; }
-            body:not(.print-report):not(.print-qr) #a4PrintArea { position: static !important; box-shadow: none !important; padding: 0 !important; max-width: none !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) > *:not(#a4ModalBackdrop) { display: none !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) #a4ModalBackdrop { position: static !important; display: block !important; background: #fff !important; padding: 0 !important; overflow: visible !important; backdrop-filter: none !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) #a4ModalBackdrop * { max-height: none !important; overflow: visible !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) #a4ModalBackdrop .neu-card { background: #fff !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; max-width: none !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) #a4ModalBackdrop .bg-zinc-200 { background: #fff !important; padding: 0 !important; }
+            body:not(.print-report):not(.print-qr):not(.print-week) #a4PrintArea { position: static !important; box-shadow: none !important; padding: 0 !important; max-width: none !important; }
             body.print-report header, body.print-report main > section:not(#viewReport), body.print-report #toastBanner,
             body.print-qr header, body.print-qr main > section:not(#viewQr), body.print-qr #toastBanner { display: none !important; }
             body.print-report *, body.print-qr * { visibility: visible !important; }
@@ -268,20 +294,25 @@
         <div class="hidden md:block" style="background-color: var(--bg-card);">
             <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex justify-end">
                 <nav class="hidden md:flex items-center gap-2 p-1.5 rounded-2xl border" style="background-color: var(--bg-card); border-color: var(--border-color);">
+                    <button type="button" id="navApkBtn" onclick="switchView('apk')"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <span class="hidden sm:inline">Inspection</span>
+                    </button>
                     <button type="button" id="navDashboardBtn" onclick="switchView('dashboard')"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all text-white shadow-md" style="background-color: var(--accent-color);">
                         <i class="fa-solid fa-chart-line"></i>
                         <span class="hidden sm:inline">Dashboard</span>
                     </button>
-                    <button type="button" id="navApkBtn" onclick="switchView('apk')"
+                    <button type="button" id="navWeekBtn" onclick="openWeek()" title="Weekly Forklift Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
-                        <i class="fa-solid fa-mobile-screen-button"></i>
-                        <span class="hidden sm:inline">Operator APK</span>
+                        <i class="fa-solid fa-calendar-week"></i>
+                        <span class="hidden sm:inline">Weekly</span>
                     </button>
                     <button type="button" id="navReportBtn" onclick="switchView('report')" title="Monthly Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
                         <i class="fa-solid fa-file-lines"></i>
-                        <span class="hidden sm:inline">Report</span>
+                        <span class="hidden sm:inline">Monthly</span>
                     </button>
                     <button type="button" id="navSettingsBtn" onclick="switchView('settings')" title="System Settings"
                         class="flex items-center justify-center p-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
@@ -897,6 +928,30 @@
         <!-- ===================================================================== -->
         <!-- VIEW 5: QR LABELS                                                     -->
         <!-- ===================================================================== -->
+
+        <!-- ===================================================================== -->
+        <!-- VIEW 6: WEEKLY FORKLIFT REPORT (Mon-Fri)                              -->
+        <!-- ===================================================================== -->
+        <section id="viewWeek" class="hidden max-w-4xl mx-auto space-y-4 wk">
+            <div class="neu-card rounded-2xl p-4 space-y-3">
+                <div class="flex flex-wrap items-end gap-3">
+                    <div class="flex-1 min-w-[140px]"><label for="wkUnit" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">Forklift</label><select id="wkUnit" onchange="wkSetUnit(this.value)" class="w-full border rounded-xl px-3 py-2 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
+                    <div class="seg flex gap-2"><button type="button" id="wkModeDay" onclick="wkSetMode('day')">Day report</button><button type="button" id="wkModeWeek" onclick="wkSetMode('week')">This week</button></div>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                    <button type="button" class="wkchip" onclick="wkShift(-1)" aria-label="Previous week"><i class="fa-solid fa-chevron-left"></i></button>
+                    <div id="wkLabel" class="text-sm font-bold text-center"></div>
+                    <button type="button" class="wkchip" onclick="wkShift(1)" aria-label="Next week"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="printWeek(false)" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-print mr-1"></i> Print / PDF: this forklift</button>
+                    <button type="button" onclick="printWeek(true)" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="border-color: var(--accent-color); color: var(--accent-color);"><i class="fa-solid fa-file-pdf mr-1"></i> Office copy: all forklifts</button>
+                </div>
+            </div>
+            <div id="wkChips" class="flex gap-2 overflow-x-auto pb-1"></div>
+            <div id="wkBody" class="neu-card rounded-2xl p-4"></div>
+        </section>
+
         <section id="viewQr" class="hidden max-w-4xl mx-auto space-y-4">
             <div class="neu-card rounded-2xl p-4 no-print space-y-3">
                 <div class="flex items-center justify-between gap-3">
@@ -938,30 +993,36 @@
     <nav id="bottomNav" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 md:hidden">
         <div class="flex items-center gap-1 px-2 py-1.5 rounded-full border shadow-2xl"
              style="background-color: var(--bg-card); border-color: var(--border-color); box-shadow: 0 12px 32px rgba(0,0,0,0.45);">
-            <button type="button" id="bnavDashboard" onclick="switchView('dashboard')"
-                class="bnav-item flex flex-col items-center justify-center w-16 h-12 rounded-full transition-all"
-                style="background-color: var(--accent-color); color: #ffffff;">
-                <i class="fa-solid fa-house text-sm"></i>
-                <span class="text-[10px] font-bold mt-0.5">Home</span>
-            </button>
             <button type="button" id="bnavApk" onclick="switchView('apk')"
-                class="bnav-item flex flex-col items-center justify-center w-16 h-12 rounded-full transition-all">
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
                 <i class="fa-solid fa-clipboard-check text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Inspect</span>
             </button>
+            <button type="button" id="bnavDashboard" onclick="switchView('dashboard')"
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all"
+                >
+                <i class="fa-solid fa-house text-sm"></i>
+                <span class="text-[10px] font-bold mt-0.5">Home</span>
+            </button>
+            <button type="button" id="bnavWeek" onclick="openWeek()"
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
+                <i class="fa-solid fa-calendar-week text-sm"></i>
+                <span class="text-[10px] font-bold mt-0.5">Weekly</span>
+            </button>
             <button type="button" id="bnavReport" onclick="switchView('report')"
-                class="bnav-item flex flex-col items-center justify-center w-16 h-12 rounded-full transition-all">
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
                 <i class="fa-solid fa-file-lines text-sm"></i>
-                <span class="text-[10px] font-bold mt-0.5">Reports</span>
+                <span class="text-[10px] font-bold mt-0.5">Monthly</span>
             </button>
             <button type="button" id="bnavSettings" onclick="switchView('settings')"
-                class="bnav-item flex flex-col items-center justify-center w-16 h-12 rounded-full transition-all">
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
                 <i class="fa-solid fa-gear text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Settings</span>
             </button>
         </div>
     </nav>
 
+        <div id="wkPrintArea"></div>
     </main>
 
     <!-- ===================================================================== -->
@@ -1745,13 +1806,13 @@ function sortFleet() { fleet.sort((a, b) => a.unit.localeCompare(b.unit, undefin
 
 /* ---- navigation ---- */
 function switchView(v) {
-  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'] };
+  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'], week: ['viewWeek', 'navWeekBtn'] };
   Object.values(map).forEach(([s, b]) => { $(s).classList.add('hidden'); const btn = $(b); btn.style.color = 'var(--text-muted)'; btn.style.backgroundColor = 'transparent'; btn.classList.remove('text-white', 'shadow-md'); });
   const [s, b] = map[v]; $(s).classList.remove('hidden'); const btn = $(b); btn.style.backgroundColor = 'var(--accent-color)'; btn.style.color = ''; btn.classList.add('text-white', 'shadow-md');
   // sync floating bottom nav active state
-  const bnavMap = { dashboard: 'bnavDashboard', apk: 'bnavApk', report: 'bnavReport', settings: 'bnavSettings', qr: 'bnavSettings' };
+  const bnavMap = { dashboard: 'bnavDashboard', apk: 'bnavApk', report: 'bnavReport', settings: 'bnavSettings', qr: 'bnavSettings', week: 'bnavWeek' };
   const activeB = bnavMap[v];
-  ['bnavDashboard', 'bnavApk', 'bnavReport', 'bnavSettings'].forEach(id => {
+  ['bnavDashboard', 'bnavApk', 'bnavWeek', 'bnavReport', 'bnavSettings'].forEach(id => {
     const el = document.getElementById(id); if (!el) return;
     if (id === activeB) {
       el.style.backgroundColor = 'var(--accent-color)'; el.style.color = '#ffffff';
@@ -1761,7 +1822,7 @@ function switchView(v) {
       el.classList.remove('shadow-lg');
     }
   });
-  if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView();
+  if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView(); else if (v === 'week') initWeekView();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function printMode(name) { document.body.classList.add('print-' + name); window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
@@ -2030,7 +2091,7 @@ function renderQr() {
 }
 function handleDeepLink() {
   const r = forkliftFromUrl(location.href); if (r.none) return; history.replaceState(null, '', location.pathname);
-  if (r.unit) { switchView('apk'); $('formForkliftNo').value = r.unit; onForkliftChange(); showToast('Forklift selected', r.unit + ' opened from its QR label.', 'fa-qrcode'); }
+  if (r.unit) { openQrChoice(r.unit); }
   else showToast('Unknown forklift code', `"${r.raw}" is not in the forklift list. Choose it by hand.`, 'fa-triangle-exclamation');
 }
 
@@ -2082,8 +2143,135 @@ async function scanLoop() {
 function onScanned(text) {
   let unit = null; const r = forkliftFromUrl(text);
   if (!r.none) unit = r.unit; else unit = normalizeForklift(text.trim());
-  if (unit) { closeScanner(); switchView('apk'); $('formForkliftNo').value = unit; onForkliftChange(); showToast('Forklift selected', unit + ' scanned from its QR label.', 'fa-qrcode'); }
+  if (unit) { closeScanner(); openQrChoice(unit); }
   else { $('scanMsg').textContent = 'This QR is not a forklift label from this app. Try again.'; setTimeout(() => { if (scanRunning) scanLoop(); }, 1200); }
+}
+
+
+/* ---- weekly forklift report (Mon-Fri) + QR choice ---- */
+const WEEK_DAYS = 5;   // 5 = Monday to Friday. Change to 6 or 7 to include Saturday / Sunday.
+const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const SAFETY_NOTES = 'Forklifts should be properly cleaned before and after operation. Always maintain a speed of 5 KMH. Appropriate PPE and seat belt must be worn while on duty.';
+let wk = { unit: null, monday: null, day: null, mode: 'day' };
+function dParse(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function addDays(s, n) { const d = dParse(s); d.setDate(d.getDate() + n); return localDate(d); }
+function mondayOf(s) { const d = dParse(s); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return localDate(d); }
+function weekDates(mon) { return Array.from({ length: WEEK_DAYS }, (_, i) => addDays(mon, i)); }
+function dowOf(date) { return DOW[(dParse(date).getDay() + 6) % 7]; }
+function fmtTime(ms) { if (!ms) return '-'; const d = new Date(ms); let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return String(h).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ap; }
+function logHasFail(l) { return !!l.results && Object.values(l.results).includes('Fail'); }
+function weekData(unit, mon) { return weekDates(mon).map(date => ({ date, logs: inspectionLogs.filter(l => l.forkliftNo === unit && l.date === date).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)) })); }
+function mark(v) { return v === 'Fail' ? 'F' : v === 'Pass' ? 'P' : '-'; }
+function cellMark(logs, i) { if (!logs.length) return { t: '-', c: 'o' }; const v = logs.map(l => mark(l.results && l.results[i])); const t = v.every(x => x === v[0]) ? v[0] : v.join('/'); return { t, c: t.includes('F') ? 'f' : t === 'P' ? 'p' : 'o' }; }
+function shiftShort(l) { return (l.shift || '').startsWith('Night') ? 'Night' : 'Day'; }
+function weekLabel(mon) { const d = weekDates(mon); return d[0] + '  to  ' + d[d.length - 1]; }
+
+function openWeek(unit, mode, date) {
+  if (unit) wk.unit = unit;
+  wk.mode = mode || wk.mode || 'day';
+  const today = localDate();
+  wk.day = date || (wk.mode === 'day' ? (wk.day && wk.monday && weekDates(wk.monday).includes(wk.day) ? wk.day : null) : wk.day);
+  if (date) wk.monday = mondayOf(date);
+  else if (mode) { wk.monday = mondayOf(today); wk.day = wk.day || null; }
+  switchView('week');
+}
+function initWeekView() {
+  const names = fleetNames();
+  if (!wk.unit || !names.includes(wk.unit)) wk.unit = names[0] || '';
+  if (!wk.monday) wk.monday = mondayOf(localDate());
+  const dates = weekDates(wk.monday);
+  if (!wk.day || !dates.includes(wk.day)) { const t = localDate(); wk.day = dates.includes(t) ? t : dates[dates.length - 1]; }
+  $('wkUnit').innerHTML = names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join(''); $('wkUnit').value = wk.unit;
+  renderWeek();
+}
+function wkSetUnit(u) { wk.unit = u; renderWeek(); }
+function wkSetMode(m) { wk.mode = m; renderWeek(); }
+function wkShift(n) { wk.monday = addDays(wk.monday, 7 * n); const d = weekDates(wk.monday); const t = localDate(); wk.day = d.includes(t) ? t : d[d.length - 1]; renderWeek(); }
+function wkPickDay(date) { wk.day = date; wk.mode = 'day'; renderWeek(); }
+
+function renderWeek() {
+  const data = weekData(wk.unit, wk.monday), today = localDate();
+  $('wkLabel').textContent = weekLabel(wk.monday);
+  $('wkModeDay').className = wk.mode === 'day' ? 'on' : ''; $('wkModeWeek').className = wk.mode === 'week' ? 'on' : '';
+  $('wkChips').style.display = wk.mode === 'day' ? 'flex' : 'none';
+  $('wkChips').innerHTML = data.map(d => { const dot = !d.logs.length ? '#9ca3af' : d.logs.some(logHasFail) ? '#dc2626' : '#16a34a';
+    return `<button type="button" class="wkchip ${d.date === wk.day ? 'on' : ''}" onclick="wkPickDay('${d.date}')"><span class="wkdot" style="background:${dot}"></span>${dowOf(d.date)}<small>${d.date === today ? 'Today' : d.date.slice(5)}</small></button>`; }).join('');
+  $('wkBody').innerHTML = wk.mode === 'day' ? dayCardHtml(data.find(d => d.date === wk.day)) : weekGridHtml(data);
+}
+function dayCardHtml(d) {
+  const head = `<div class="text-base font-black">${esc(wk.unit)} <span style="color:var(--text-muted);font-weight:600">· ${dowOf(d.date)} ${d.date}${d.date === localDate() ? ' (today)' : ''}</span></div>`;
+  if (!d.logs.length) return head + `<p class="text-sm mt-3" style="color:var(--text-muted)">No inspection recorded for this forklift on this day.</p>`;
+  return head + d.logs.map(l => {
+    const fails = Object.keys(l.results || {}).filter(i => l.results[i] === 'Fail').map(Number);
+    return `<div class="mt-3 pt-3 border-t" style="border-color:var(--border-color)">
+      <div class="inline-block px-3 py-1 rounded-full text-xs font-black text-white mb-2" style="background:${fails.length ? '#dc2626' : '#16a34a'}">${fails.length ? fails.length + ' FAILED' : 'ALL PASS'}</div>
+      <div class="wkrow"><span>Operator</span><b>${esc(l.operator || '-')}</b></div>
+      <div class="wkrow"><span>Supervisor</span><b>${esc(l.supervisor || '-')}</b></div>
+      <div class="wkrow"><span>Shift</span><b>${esc(l.shift || '-')}</b></div>
+      <div class="wkrow"><span>Time</span><b>${fmtTime(l.createdAt)}</b></div>
+      <div class="wkrow"><span>Hour meter</span><b>${esc(l.hourMeter || '-')}</b></div>
+      <div class="wkitems mt-3">${CHECKLIST_ITEMS.map((it, i) => { const v = l.results && l.results[i]; return `<div><span>${esc(it)}</span><b class="${v === 'Fail' ? 'f' : 'p'}" style="padding:0 6px;border-radius:6px">${v === 'Fail' ? 'FAIL' : v === 'Pass' ? 'PASS' : '-'}</b></div>`; }).join('')}</div>
+      <div class="wkrow" style="border:0"><span>Remarks</span><b style="text-align:right">${esc(l.remarks || '-')}</b></div>
+      <button type="button" onclick="openA4Modal('${esc(l.id)}')" class="mt-2 px-4 py-2 rounded-xl text-xs font-bold border" style="border-color:var(--accent-color);color:var(--accent-color)"><i class="fa-solid fa-file-lines mr-1"></i> Full record sheet (A4)</button>
+    </div>`; }).join('');
+}
+function weekGridHtml(data) {
+  const hasAny = data.some(d => d.logs.length);
+  let h = `<div class="text-base font-black mb-2">${esc(wk.unit)} <span style="color:var(--text-muted);font-weight:600">· Mon to ${DOW[WEEK_DAYS - 1]}</span></div><div style="overflow-x:auto"><table><tr><th class="l">Check</th>` +
+    data.map(d => `<th><a href="#" onclick="wkPickDay('${d.date}');return false" style="text-decoration:underline">${dowOf(d.date)}<br><small>${d.date.slice(5)}</small></a></th>`).join('') + '</tr>' +
+    CHECKLIST_ITEMS.map((it, i) => `<tr><td class="l">${esc(it)}</td>` + data.map(d => { const c = cellMark(d.logs, i); return `<td class="${c.c}">${c.t}</td>`; }).join('') + '</tr>').join('') + '</table></div>';
+  h += `<div class="text-xs mt-2" style="color:var(--text-muted)">P = Pass · F = Fail · - = not checked. Tap a day name to open that day's report.</div>`;
+  if (!hasAny) h += `<p class="text-sm mt-3" style="color:var(--text-muted)">No inspections recorded for this forklift this week.</p>`;
+  return h;
+}
+function ownerOf(unit, data) { for (const d of data) if (d.logs.length && d.logs[0].owner) return d.logs[0].owner; const u = findUnit(unit); return (u && u.owner) || '-'; }
+function sheetHtml(unit, mon) {
+  const data = weekData(unit, mon), dates = data.map(d => d.date);
+  const th = data.map(d => `<th>${dowOf(d.date)}<br>${d.date.slice(5)}</th>`).join('');
+  const rows = CHECKLIST_ITEMS.map((it, i) => `<tr><td class="l">${esc(it.replace(/\.\s/, ' '))}</td>` + data.map(d => { const c = cellMark(d.logs, i); return `<td class="${c.c === 'o' ? '' : c.c}">${c.t === '-' ? '—' : c.t}</td>`; }).join('') + '</tr>').join('');
+  const info = (label, fn) => `<tr><td class="l"><b>${label}</b></td>` + data.map(d => `<td style="font-size:9.5px">${d.logs.length ? d.logs.map(fn).join('<br>') : '—'}</td>`).join('') + '</tr>';
+  const remarks = data.map(d => d.logs.filter(l => logHasFail(l) || (l.remarks && l.remarks !== 'No remarks provided.')).map(l => `${dowOf(d.date)}: ${esc(l.remarks)}`).join(' | ') || '').filter(Boolean);
+  return `<div class="wkpage"><div class="ttl">FORKLIFT PRE-CHECK LIST</div><div class="sub"><b>LION BREWERY (BIYAGAMA)</b><br>WEEKLY INSPECTION RECORD · MONDAY TO ${['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'][WEEK_DAYS - 1]}</div>
+    <div class="meta"><div><b>FORKLIFT NO:</b> ${esc(unit)}</div><div><b>FORKLIFT OWNER:</b> ${esc(ownerOf(unit, data))}</div><div><b>WEEK START:</b> ${dates[0]}</div><div><b>WEEK END:</b> ${dates[dates.length - 1]}</div></div>
+    <table><tr><th class="l">CHECKS (21 POINTS)</th>${th}</tr>${rows}</table>
+    <div class="legend">P = Pass · F = Fail · — = not checked (if two shifts were checked on a day, the Day and Night marks are shown as D/N)</div>
+    <table><tr><th class="l">Day details</th>${th}</tr>${info('Operator', l => esc(l.operator || '-'))}${info('Supervisor', l => esc(l.supervisor || '-'))}${info('Shift', l => shiftShort(l))}${info('Time', l => fmtTime(l.createdAt))}${info('Hour meter', l => esc(l.hourMeter || '-'))}</table>
+    <div style="font-size:10.5px;margin-top:6px"><b>REMARKS / DEFECT DETAILS:</b> ${remarks.length ? remarks.join('  ·  ') : '—'}</div>
+    <div class="notes"><b>SAFETY NOTES:</b> ${SAFETY_NOTES}</div>
+    <div class="sign"><div>Safety Officer (weekly review) / Date</div><div>Received by Office / Date</div></div>
+    <div class="legend">Generated: ${localDate()} · Digital record</div></div>`;
+}
+function summaryHtml(mon, units) {
+  const dates = weekDates(mon);
+  const rows = units.map(u => { const d = weekData(u, mon); const fails = d.reduce((n, x) => n + x.logs.filter(logHasFail).length, 0), done = d.filter(x => x.logs.length).length;
+    return `<tr><td class="l"><b>${esc(u)}</b></td>` + d.map(x => `<td class="${!x.logs.length ? '' : x.logs.some(logHasFail) ? 'f' : 'p'}">${!x.logs.length ? '—' : x.logs.some(logHasFail) ? 'FAIL' : 'OK'}</td>`).join('') + `<td>${done}/${WEEK_DAYS}</td><td class="${fails ? 'f' : ''}">${fails}</td></tr>`; }).join('');
+  return `<div class="wkpage"><div class="ttl">WEEKLY FORKLIFT INSPECTION SUMMARY</div><div class="sub"><b>LION BREWERY (BIYAGAMA)</b><br>${dates[0]} to ${dates[dates.length - 1]}</div>
+    <table><tr><th class="l">Forklift</th>${dates.map(d => `<th>${dowOf(d)}<br>${d.slice(5)}</th>`).join('')}<th>Days checked</th><th>Inspections with Fail</th></tr>${rows}</table>
+    <div class="legend">OK = all 21 points passed · FAIL = at least one point failed · — = not checked. Only forklifts with at least one inspection this week are listed; the next pages hold each forklift's full weekly sheet.</div>
+    <div class="sign"><div>Safety Officer / Date</div><div>Received by Office / Date</div></div><div class="legend">Generated: ${localDate()} · Digital record</div></div>`;
+}
+function printWeek(all) {
+  const mon = wk.monday;
+  if (all) {
+    const units = fleetNames().filter(u => weekData(u, mon).some(d => d.logs.length));
+    if (!units.length) { showToast('Nothing to print', 'No inspections were recorded in this week.', 'fa-triangle-exclamation'); return; }
+    $('wkPrintArea').innerHTML = summaryHtml(mon, units) + units.map(u => sheetHtml(u, mon)).join('');
+  } else $('wkPrintArea').innerHTML = sheetHtml(wk.unit, mon);
+  printMode('week');
+}
+
+/* QR scan: ask what the person wants for this forklift */
+function openQrChoice(unit) {
+  $('modalBox').innerHTML = `<h3>${esc(unit)}</h3><div class="mute">What do you want to open?</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+      <button class="primary" id="qc_day">Today's report</button>
+      <button class="ghost" id="qc_week">This week's reports (Mon to ${DOW[WEEK_DAYS - 1]})</button>
+      <button class="ghost" id="qc_new">New inspection (operator)</button></div>`;
+  $('modal').classList.add('show');
+  const go = fn => () => { $('modal').classList.remove('show'); fn(); };
+  $('qc_day').onclick = go(() => { wk.day = null; wk.monday = null; openWeek(unit, 'day'); });
+  $('qc_week').onclick = go(() => { wk.day = null; wk.monday = null; openWeek(unit, 'week'); });
+  $('qc_new').onclick = go(() => { switchView('apk'); $('formForkliftNo').value = unit; onForkliftChange(); });
 }
 
 /* ---- start ---- */
@@ -2093,7 +2281,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initApkForm(); renderDashboard();
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
   mergeBackupLogs();
-  renderDashboard(); handleDeepLink(); renderPinState();
+  renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
   setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
 });
 

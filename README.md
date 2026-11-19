@@ -43,3 +43,11 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v3.2 fix
 - "VersionError" when opening the app or saving: the browser already held a database with the same name at a newer version, so opening it as version 1 was refused. The app now opens the database at its existing version and adds the missing store if needed. Records kept in backup storage move over automatically.
+
+## v4: weekly forklift report + QR choice
+- The app now opens on the **Inspection** screen (it used to open on the Dashboard). Bottom bar order: Inspect, Home, Weekly, Monthly, Settings.
+- New **Weekly** screen: pick a forklift and a week (Monday to Friday). "Day report" shows one day on the phone (operator, supervisor, shift, time, hour meter, all 21 points, remarks). Day buttons Mon to Fri let the Safety Officer open earlier days of the week. "This week" shows the Mon to Fri grid of 21 checks, like the paper weekly sheet.
+- **Print / PDF: this forklift** gives the one-page weekly sheet. **Office copy: all forklifts** gives a summary page plus one sheet for every forklift that was inspected that week. Give this to the office once a week (Friday evening or Monday morning).
+- Scanning a forklift's QR (phone camera or the Scan QR button) now asks: **Today's report / This week's reports / New inspection (operator)**. Operators still reach the checklist with the third button.
+- Mon to Fri is set by `WEEK_DAYS = 5` in index.html (use 6 or 7 to include Saturday / Sunday).
+- Service worker version is v11. Upload every file again and refresh once online so the phones update.
