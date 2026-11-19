@@ -34,4 +34,9 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 - New header: Lion banner image with "LION BREWERY CEYLON PLC - Forklift Safety & Pre-Check" and the forklift logo. The old title bar was removed (on phones use the bottom bar; on laptops the menu sits under the banner).
 - App icon, home-screen icon and favicon are now the forklift shield picture.
 - Camera QR scanner: "Scan QR" on the Dashboard and "Scan forklift QR with camera" in the inspection form. It selects the forklift from its QR label. The camera needs the https link and camera permission. Phones without a built-in QR reader load a small helper (jsQR) once from the internet.
-- Service worker version is v6. Remove the old home-screen icon and install again if the old icon still shows.
+- Service worker version is v7. Remove the old home-screen icon and install again if the old icon still shows.
+
+## v3.1 fixes
+- Printing a report, QR labels or a single record sheet no longer shows the floating bottom bar.
+- A single record sheet now prints once (before, the same sheet repeated on 3 pages).
+- Saving: the app reconnects to the phone's storage if it was closed, retries once, and keeps a backup copy if it still fails. The warning now also shows the reason. Backed-up records move to the main store the next time the app opens.
