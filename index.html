@@ -50,16 +50,6 @@
 
     <style>
         .bnav-item { color: var(--text-muted); }
-
-        /* Keep the complete Lion Brewery banner/header visible while page content scrolls. */
-        body > header,
-        header.border-b {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background-color: var(--bg-main);
-        }
-
         :root {
             --bg-main: #0a0a0c;
             --bg-card: #111215;
@@ -100,28 +90,11 @@
             color: var(--text-main) !important;
         }
 
-        html, body {
-            min-height: 100%;
-            height: auto;
-            overflow-x: hidden;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
         body {
-            min-height: 100vh;
             background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Keep the full page (including the banner and settings cards) scrollable. */
-        main {
-            flex: 0 0 auto;
-            min-height: 0;
-            overflow: visible;
-            touch-action: pan-y;
         }
 
         .neu-card {
@@ -212,14 +185,6 @@
         .qrl .foot { text-align:center; font-weight:700; font-size:4.6cqw; padding:0 2cqw 2.6cqw; }
 
         @media print {
-            #bottomNav, #scanOverlay, #modal, #viewer, #toastBanner { display: none !important; }
-            /* single record sheet: print only the sheet, once, in normal page flow */
-            body:not(.print-report):not(.print-qr) > *:not(#a4ModalBackdrop) { display: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop { position: static !important; display: block !important; background: #fff !important; padding: 0 !important; overflow: visible !important; backdrop-filter: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop * { max-height: none !important; overflow: visible !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop .neu-card { background: #fff !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; max-width: none !important; }
-            body:not(.print-report):not(.print-qr) #a4ModalBackdrop .bg-zinc-200 { background: #fff !important; padding: 0 !important; }
-            body:not(.print-report):not(.print-qr) #a4PrintArea { position: static !important; box-shadow: none !important; padding: 0 !important; max-width: none !important; }
             body.print-report header, body.print-report main > section:not(#viewReport), body.print-report #toastBanner,
             body.print-qr header, body.print-qr main > section:not(#viewQr), body.print-qr #toastBanner { display: none !important; }
             body.print-report *, body.print-qr * { visibility: visible !important; }
@@ -836,9 +801,15 @@
                 </div>
                 <div class="flex flex-wrap gap-2 items-center">
                     <button type="button" onclick="addFleetUnit()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-plus mr-1"></i> Add forklift</button>
+                    <span class="text-xs" style="color: var(--text-muted);">or add many:</span>
+                    <input type="text" id="rangePrefix" value="FL " class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="Name prefix">
+                    <input type="number" id="rangeFrom" value="31" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="From">
+                    <span class="text-xs" style="color: var(--text-muted);">to</span>
+                    <input type="number" id="rangeTo" value="75" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="To">
+                    <button type="button" onclick="addFleetRange()" class="px-3 py-2 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Add range</button>
                 </div>
                 <input type="text" id="fleetSearch" oninput="renderFleetManagement()" placeholder="Search the list..." class="w-full border rounded-xl px-3.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
-                <div id="fleetList" class="border rounded-2xl" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
+                <div id="fleetList" class="border rounded-2xl max-h-72 overflow-y-auto" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
                 <button type="button" onclick="switchView('qr')" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-qrcode mr-1"></i> Open QR label sheet</button>
             </div>
 
@@ -1469,22 +1440,16 @@ const Report = (() => {
 
 /* ---- photos + supervisor PIN ---- */
 /* Photos live in IndexedDB (localStorage is too small for pictures). Each is shrunk to 900 px JPEG, about 60-120 KB. */
-/* open an IndexedDB database at whatever version it already has; create the store if it is missing */
-function openStoreDb(name, store, params) {
-  return new Promise((res, rej) => {
-    const attempt = ver => {
-      let r; try { r = ver ? indexedDB.open(name, ver) : indexedDB.open(name); } catch (e) { return rej(e); }
-      r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains(store)) r.result.createObjectStore(store, params); };
-      r.onsuccess = () => { const d = r.result; if (d.objectStoreNames.contains(store)) res(d); else { const v = d.version + 1; d.close(); attempt(v); } };
-      r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('blocked'));
-    };
-    attempt();
-  });
-}
 const Photos = (() => {
   const memory = new Map(); let dbp = null;
   function db() {
-    if (!dbp) dbp = openStoreDb('forklift_photos_v1', 'p').then(d => { d.onclose = () => { dbp = null; }; d.onversionchange = () => { d.close(); dbp = null; }; return d; }).catch(e => { dbp = null; throw e; });
+    if (!dbp) dbp = new Promise((res, rej) => {
+      try {
+        const r = indexedDB.open('forklift_photos_v1', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('p');
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+      } catch (e) { rej(e); }
+    });
     return dbp;
   }
   const tx = (mode, fn) => db().then(d => new Promise((res, rej) => { const t = d.transaction('p', mode), s = t.objectStore('p'), q = fn(s); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }));
@@ -1681,50 +1646,16 @@ let fleet = defaultFleet(), deleteWindowHours = 24, pendingPhotos = {};
 function defaultFleet() { return Array.from({ length: 30 }, (_, i) => ({ unit: 'FL ' + String(i + 1).padStart(2, '0'), owner: '', model: '' })); }
 const LogDB = (() => {
   let dbp = null;
-  const open = () => dbp || (dbp = openStoreDb('forklift_logs_db', 'logs', { keyPath: 'id' }).then(d => { d.onclose = () => { dbp = null; }; d.onversionchange = () => { d.close(); dbp = null; }; return d; }).catch(e => { dbp = null; throw e; }));
-  const once = (mode, fn) => open().then(d => new Promise((res, rej) => {
-    let t, q; try { t = d.transaction('logs', mode); q = fn(t.objectStore('logs')); } catch (e) { dbp = null; return rej(e); }
-    t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('aborted'));
-  }));
-  const run = (mode, fn) => once(mode, fn).catch(() => { dbp = null; return once(mode, fn); });
+  const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('forklift_logs_db', 1); r.onupgradeneeded = () => r.result.createObjectStore('logs', { keyPath: 'id' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const run = (mode, fn) => open().then(d => new Promise((res, rej) => { const t = d.transaction('logs', mode), q = fn(t.objectStore('logs')); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }));
   return { all: () => run('readonly', s => s.getAll()), put: l => run('readwrite', s => s.put(l)), del: id => run('readwrite', s => s.delete(id)) };
 })();
-const KEY_BAK = 'forklift_logs_backup_v1';
-function bakGet() { try { return JSON.parse(localStorage.getItem(KEY_BAK)) || {}; } catch (e) { return {}; } }
-function bakSet(o) { try { localStorage.setItem(KEY_BAK, JSON.stringify(o)); return true; } catch (e) { return false; } }
-function saveLog(l) {
-  return LogDB.put(l).then(() => { const b = bakGet(); if (b[l.id]) { delete b[l.id]; bakSet(b); } }).catch(err => {
-    const b = bakGet(); b[l.id] = l; const kept = bakSet(b);
-    showToast('Saving problem', (kept ? 'Kept in backup storage and will be retried. ' : 'Not saved. ') + 'Reason: ' + ((err && (err.name || err.message)) || 'unknown') + '. Export a CSV now.', 'fa-triangle-exclamation');
-  });
-}
-function mergeBackupLogs() {
-  const b = bakGet(), ids = Object.keys(b); if (!ids.length) return;
-  ids.forEach(id => { const i = inspectionLogs.findIndex(x => x.id === id); if (i >= 0) inspectionLogs[i] = b[id]; else inspectionLogs.push(b[id]); saveLog(b[id]); });
-  inspectionLogs.sort(byNewest);
-}
+function saveLog(l) { LogDB.put(l).catch(() => showToast('Saving problem', 'This record could not be saved. Export a CSV backup now.', 'fa-triangle-exclamation')); }
 function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify({ appSettings, departmentEmployees, fleet, deleteWindowHours })); } catch (e) {} }
 function loadConfig() {
-  try {
-    const c = JSON.parse(localStorage.getItem(KEY_CFG));
-    if (!c) return;
-    if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings };
-    if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
-    if (Array.isArray(c.fleet) && c.fleet.length) {
-      fleet = c.fleet;
-      // Older builds could pre-populate a long FL 01..FL 74 list. If it is
-      // still the untouched generated list, return the default fleet to 30.
-      // Never trim a fleet containing custom names or assigned owner/model data.
-      const untouchedNumberedFleet = fleet.length > 30 && fleet.every((f, i) => {
-        const expected = 'FL ' + String(i + 1).padStart(2, '0');
-        return f && unitKey(f.unit) === unitKey(expected) && !String(f.owner || '').trim() && !String(f.model || '').trim();
-      });
-      if (untouchedNumberedFleet) fleet = fleet.slice(0, 30);
-    }
-    if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours;
-    // Persist only after all saved settings have been restored.
-    if (Array.isArray(c.fleet) && c.fleet.length && fleet.length < c.fleet.length) saveConfig();
-  } catch (e) {}
+  try { const c = JSON.parse(localStorage.getItem(KEY_CFG)); if (!c) return;
+    if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings }; if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
+    if (Array.isArray(c.fleet) && c.fleet.length) fleet = c.fleet; if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours; } catch (e) {}
 }
 const byNewest = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0);
 function newLogId(date) { const prefix = 'CHK-' + date.replaceAll('-', '') + '-'; let max = 0; for (const l of inspectionLogs) if (l.id && l.id.startsWith(prefix)) max = Math.max(max, parseInt(l.id.slice(prefix.length), 10) || 0); return prefix + String(max + 1).padStart(3, '0'); }
@@ -1953,6 +1884,12 @@ function addFleetUnit() {
   if (findUnit(name)) { showToast('Already in the list', `${findUnit(name).unit} exists.`, 'fa-triangle-exclamation'); return; }
   fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); sortFleet(); saveConfig(); $('newFleetName').value = ''; renderFleetManagement(); showToast('Forklift added', name + ' is now in the list.', 'fa-truck-ramp-box');
 }
+function addFleetRange() {
+  const prefix = $('rangePrefix').value, from = parseInt($('rangeFrom').value, 10), to = parseInt($('rangeTo').value, 10);
+  if (!(from >= 0 && to >= from && to - from < 500)) { showToast('Check the numbers', 'Enter a valid From and To (up to 500 at a time).', 'fa-triangle-exclamation'); return; }
+  let n = 0; for (let i = from; i <= to; i++) { const name = (prefix + String(i).padStart(2, '0')).trim(); if (!findUnit(name)) { fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); n++; } }
+  sortFleet(); saveConfig(); renderFleetManagement(); showToast('Forklifts added', `${n} new forklift${n === 1 ? '' : 's'} added (${to - from + 1 - n} already existed).`, 'fa-truck-ramp-box');
+}
 function updateFleetUnit(i, field, val) { fleet[i][field] = val; saveConfig(); }
 async function removeFleetUnit(i) {
   if (!(await requireSupervisor())) { renderPinState(); return; } renderPinState(); const u = fleet[i].unit, used = inspectionLogs.some(l => l.forkliftNo === u);
@@ -2092,7 +2029,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   loadConfig(); try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
   initApkForm(); renderDashboard();
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
-  mergeBackupLogs();
   renderDashboard(); handleDeepLink(); renderPinState();
   setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
 });
