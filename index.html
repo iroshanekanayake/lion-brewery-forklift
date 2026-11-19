@@ -50,6 +50,16 @@
 
     <style>
         .bnav-item { color: var(--text-muted); }
+
+        /* Keep the complete Lion Brewery banner/header visible while page content scrolls. */
+        body > header,
+        header.border-b {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: var(--bg-main);
+        }
+
         :root {
             --bg-main: #0a0a0c;
             --bg-card: #111215;
@@ -90,11 +100,28 @@
             color: var(--text-main) !important;
         }
 
+        html, body {
+            min-height: 100%;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
+            min-height: 100vh;
             background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Keep the full page (including the banner and settings cards) scrollable. */
+        main {
+            flex: 0 0 auto;
+            min-height: 0;
+            overflow: visible;
+            touch-action: pan-y;
         }
 
         .neu-card {
@@ -224,7 +251,7 @@
     </div>
 
     <!-- Top Header & Navigation -->
-    <header class="border-b" style="border-color: var(--border-color);">
+    <header class="sticky top-0 z-50 border-b" style="border-color: var(--border-color);">
         <div class="relative overflow-hidden" style="background:#1a1208;">
             <img src="./lion-banner.jpg" alt="Lion Beer" class="absolute inset-0 w-full h-full object-cover" style="object-position:left center; opacity:.95;">
             <div class="absolute inset-0" style="background:linear-gradient(90deg, rgba(10,10,12,.05) 0%, rgba(10,10,12,.55) 45%, rgba(10,10,12,.88) 100%);"></div>
@@ -809,15 +836,9 @@
                 </div>
                 <div class="flex flex-wrap gap-2 items-center">
                     <button type="button" onclick="addFleetUnit()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-plus mr-1"></i> Add forklift</button>
-                    <span class="text-xs" style="color: var(--text-muted);">or add many:</span>
-                    <input type="text" id="rangePrefix" value="FL " class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="Name prefix">
-                    <input type="number" id="rangeFrom" value="31" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="From">
-                    <span class="text-xs" style="color: var(--text-muted);">to</span>
-                    <input type="number" id="rangeTo" value="75" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="To">
-                    <button type="button" onclick="addFleetRange()" class="px-3 py-2 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Add range</button>
                 </div>
                 <input type="text" id="fleetSearch" oninput="renderFleetManagement()" placeholder="Search the list..." class="w-full border rounded-xl px-3.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
-                <div id="fleetList" class="border rounded-2xl max-h-72 overflow-y-auto" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
+                <div id="fleetList" class="border rounded-2xl" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
                 <button type="button" onclick="switchView('qr')" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-qrcode mr-1"></i> Open QR label sheet</button>
             </div>
 
@@ -1684,9 +1705,26 @@ function mergeBackupLogs() {
 }
 function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify({ appSettings, departmentEmployees, fleet, deleteWindowHours })); } catch (e) {} }
 function loadConfig() {
-  try { const c = JSON.parse(localStorage.getItem(KEY_CFG)); if (!c) return;
-    if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings }; if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
-    if (Array.isArray(c.fleet) && c.fleet.length) fleet = c.fleet; if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours; } catch (e) {}
+  try {
+    const c = JSON.parse(localStorage.getItem(KEY_CFG));
+    if (!c) return;
+    if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings };
+    if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
+    if (Array.isArray(c.fleet) && c.fleet.length) {
+      fleet = c.fleet;
+      // Older builds could pre-populate a long FL 01..FL 74 list. If it is
+      // still the untouched generated list, return the default fleet to 30.
+      // Never trim a fleet containing custom names or assigned owner/model data.
+      const untouchedNumberedFleet = fleet.length > 30 && fleet.every((f, i) => {
+        const expected = 'FL ' + String(i + 1).padStart(2, '0');
+        return f && unitKey(f.unit) === unitKey(expected) && !String(f.owner || '').trim() && !String(f.model || '').trim();
+      });
+      if (untouchedNumberedFleet) fleet = fleet.slice(0, 30);
+    }
+    if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours;
+    // Persist only after all saved settings have been restored.
+    if (Array.isArray(c.fleet) && c.fleet.length && fleet.length < c.fleet.length) saveConfig();
+  } catch (e) {}
 }
 const byNewest = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0);
 function newLogId(date) { const prefix = 'CHK-' + date.replaceAll('-', '') + '-'; let max = 0; for (const l of inspectionLogs) if (l.id && l.id.startsWith(prefix)) max = Math.max(max, parseInt(l.id.slice(prefix.length), 10) || 0); return prefix + String(max + 1).padStart(3, '0'); }
@@ -1914,12 +1952,6 @@ function addFleetUnit() {
   const name = $('newFleetName').value.trim().replace(/\s+/g, ' '); if (!name) { showToast('Name needed', 'Type the forklift number or name.', 'fa-triangle-exclamation'); return; }
   if (findUnit(name)) { showToast('Already in the list', `${findUnit(name).unit} exists.`, 'fa-triangle-exclamation'); return; }
   fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); sortFleet(); saveConfig(); $('newFleetName').value = ''; renderFleetManagement(); showToast('Forklift added', name + ' is now in the list.', 'fa-truck-ramp-box');
-}
-function addFleetRange() {
-  const prefix = $('rangePrefix').value, from = parseInt($('rangeFrom').value, 10), to = parseInt($('rangeTo').value, 10);
-  if (!(from >= 0 && to >= from && to - from < 500)) { showToast('Check the numbers', 'Enter a valid From and To (up to 500 at a time).', 'fa-triangle-exclamation'); return; }
-  let n = 0; for (let i = from; i <= to; i++) { const name = (prefix + String(i).padStart(2, '0')).trim(); if (!findUnit(name)) { fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); n++; } }
-  sortFleet(); saveConfig(); renderFleetManagement(); showToast('Forklifts added', `${n} new forklift${n === 1 ? '' : 's'} added (${to - from + 1 - n} already existed).`, 'fa-truck-ramp-box');
 }
 function updateFleetUnit(i, field, val) { fleet[i][field] = val; saveConfig(); }
 async function removeFleetUnit(i) {
