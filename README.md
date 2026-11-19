@@ -5,7 +5,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## Upload to GitHub Pages
 1. Extract this ZIP on your phone or computer.
 2. In the GitHub repository choose Add file > Upload files.
-3. Upload every file (index.html, manifest.json, service-worker.js, README.md and the 5 PNG icons) to the repository root. Replace the old ones.
+3. Upload every file (index.html, manifest.json, service-worker.js, README.md, lion-banner.jpg and the 6 PNG files) to the repository root. Replace the old ones.
 4. Commit. Wait for the Pages deployment to finish, then open the https Pages link (not the github.com repository page).
 5. Open the app online once, then refresh it once more. After that it also opens without internet.
 6. If an older version is installed on a phone, remove the old home-screen icon and install again.
@@ -28,3 +28,10 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 - Do not clear the browser's site data, or the saved reports are lost.
 - The PIN keeps honest mistakes out. It is not strong security because the app has no server.
 - To release an update, change `VERSION` in service-worker.js (for example "v6").
+
+
+## v3 changes
+- New header: Lion banner image with "LION BREWERY CEYLON PLC - Forklift Safety & Pre-Check" and the forklift logo. The old title bar was removed (on phones use the bottom bar; on laptops the menu sits under the banner).
+- App icon, home-screen icon and favicon are now the forklift shield picture.
+- Camera QR scanner: "Scan QR" on the Dashboard and "Scan forklift QR with camera" in the inspection form. It selects the forklift from its QR label. The camera needs the https link and camera permission. Phones without a built-in QR reader load a small helper (jsQR) once from the internet.
+- Service worker version is v6. Remove the old home-screen icon and install again if the old icon still shows.
