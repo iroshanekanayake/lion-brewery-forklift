@@ -90,11 +90,28 @@
             color: var(--text-main) !important;
         }
 
+        html, body {
+            min-height: 100%;
+            height: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         body {
+            min-height: 100vh;
             background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Keep the full page (including the banner and settings cards) scrollable. */
+        main {
+            flex: 0 0 auto;
+            min-height: 0;
+            overflow: visible;
+            touch-action: pan-y;
         }
 
         .neu-card {
@@ -809,15 +826,9 @@
                 </div>
                 <div class="flex flex-wrap gap-2 items-center">
                     <button type="button" onclick="addFleetUnit()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow" style="background-color: var(--accent-color);"><i class="fa-solid fa-plus mr-1"></i> Add forklift</button>
-                    <span class="text-xs" style="color: var(--text-muted);">or add many:</span>
-                    <input type="text" id="rangePrefix" value="FL " class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="Name prefix">
-                    <input type="number" id="rangeFrom" value="31" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="From">
-                    <span class="text-xs" style="color: var(--text-muted);">to</span>
-                    <input type="number" id="rangeTo" value="75" min="0" class="w-16 border rounded-xl px-2.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);" aria-label="To">
-                    <button type="button" onclick="addFleetRange()" class="px-3 py-2 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">Add range</button>
                 </div>
                 <input type="text" id="fleetSearch" oninput="renderFleetManagement()" placeholder="Search the list..." class="w-full border rounded-xl px-3.5 py-2 text-xs focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
-                <div id="fleetList" class="border rounded-2xl max-h-72 overflow-y-auto" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
+                <div id="fleetList" class="border rounded-2xl" style="background-color: var(--bg-main); border-color: var(--border-color);"></div>
                 <button type="button" onclick="switchView('qr')" class="px-4 py-2.5 rounded-xl text-xs font-bold border" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--accent-color);"><i class="fa-solid fa-qrcode mr-1"></i> Open QR label sheet</button>
             </div>
 
@@ -1914,12 +1925,6 @@ function addFleetUnit() {
   const name = $('newFleetName').value.trim().replace(/\s+/g, ' '); if (!name) { showToast('Name needed', 'Type the forklift number or name.', 'fa-triangle-exclamation'); return; }
   if (findUnit(name)) { showToast('Already in the list', `${findUnit(name).unit} exists.`, 'fa-triangle-exclamation'); return; }
   fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); sortFleet(); saveConfig(); $('newFleetName').value = ''; renderFleetManagement(); showToast('Forklift added', name + ' is now in the list.', 'fa-truck-ramp-box');
-}
-function addFleetRange() {
-  const prefix = $('rangePrefix').value, from = parseInt($('rangeFrom').value, 10), to = parseInt($('rangeTo').value, 10);
-  if (!(from >= 0 && to >= from && to - from < 500)) { showToast('Check the numbers', 'Enter a valid From and To (up to 500 at a time).', 'fa-triangle-exclamation'); return; }
-  let n = 0; for (let i = from; i <= to; i++) { const name = (prefix + String(i).padStart(2, '0')).trim(); if (!findUnit(name)) { fleet.push({ unit: name, owner: $('newFleetOwner').value, model: $('newFleetModel').value }); n++; } }
-  sortFleet(); saveConfig(); renderFleetManagement(); showToast('Forklifts added', `${n} new forklift${n === 1 ? '' : 's'} added (${to - from + 1 - n} already existed).`, 'fa-truck-ramp-box');
 }
 function updateFleetUnit(i, field, val) { fleet[i][field] = val; saveConfig(); }
 async function removeFleetUnit(i) {
