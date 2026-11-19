@@ -1,4 +1,4 @@
-/* Forklift Safety – service worker v4
+/* Forklift Safety – service worker v5
    - index.html: network first (so updates show up), cache when offline
    - own files (icons, manifest): cache first, refreshed in the background
    - CDN files (Tailwind, Chart.js, Font Awesome, Inter): saved on first visit so the app works offline
