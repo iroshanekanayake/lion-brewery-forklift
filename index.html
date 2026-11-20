@@ -1863,7 +1863,10 @@ function clearEditState() { editingId = null; setEditUi(false); $('preCheckForm'
 function ensureOption(id, val) { const el = $(id); if (val && ![...el.options].some(o => o.value === val)) el.add(new Option(val, val)); if (val) el.value = val; }
 async function startEdit(id) {
   const l = inspectionLogs.find(x => x.id === id); if (!l) return;
-  if (hoursLeft(l) <= 0 && !(await requireSupervisor())) return;     // old record: supervisor PIN
+  if (hoursLeft(l) <= 0) {                                            // old record: supervisor only
+    if (OPERATOR_ONLY) { showToast('Supervisor only', 'Records older than ' + deleteWindowHours + ' hours can only be corrected by a supervisor.', 'fa-lock'); return; }
+    if (!(await requireSupervisor())) return;
+  }
   editingId = id; checklistResponses = { ...(l.results || {}) }; pendingPhotos = {};
   switchView('apk');
   if (l.owner) selectedOwner = l.owner; if (l.model) selectedModel = l.model;
@@ -1877,9 +1880,12 @@ async function startEdit(id) {
 function cancelEdit() { const l = inspectionLogs.find(x => x.id === editingId); clearEditState(); if (l) openWeek(l.forkliftNo, 'day', l.date); else switchView('apk'); }
 
 /* Operators only need Inspect + Weekly. Home, Monthly and Settings need the supervisor PIN. */
+/* OPERATOR_ONLY = true builds the operator app: only Inspect + Weekly, no Home / Monthly / Settings at all. */
+const OPERATOR_ONLY = false;
 const PIN_VIEWS = ['dashboard', 'report', 'settings', 'qr'];
 function switchView(v) {
   if (v !== 'apk' && editingId) clearEditState();
+  if (OPERATOR_ONLY && PIN_VIEWS.includes(v)) return;
   if (PIN_VIEWS.includes(v)) {
     if (Pin.isUnlocked()) return _switchView(v);
     requireSupervisor().then(ok => { if (ok) _switchView(v); });
@@ -2375,7 +2381,7 @@ function printWeek(all) {
   if (all) {
     const units = fleetNames().filter(u => weekData(u, mon).some(d => d.logs.length));
     if (!units.length) { showToast('Nothing to print', 'No inspections were recorded in this week.', 'fa-triangle-exclamation'); return; }
-    $('wkPrintArea').innerHTML = summaryHtml(mon, units) + units.map(u => sheetHtml(u, mon)).join('');
+    $('wkPrintArea').innerHTML = units.map(u => sheetHtml(u, mon)).join('');   // one full weekly sheet per forklift, one page each
   } else $('wkPrintArea').innerHTML = sheetHtml(wk.unit, mon);
   printMode('week');
 }
@@ -2452,6 +2458,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
   mergeBackupLogs();
   Cloud.start();
+  if (OPERATOR_ONLY) ['bnavDashboard', 'bnavReport', 'bnavSettings', 'navDashboardBtn', 'navReportBtn', 'navSettingsBtn'].forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
   renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
   setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
 });

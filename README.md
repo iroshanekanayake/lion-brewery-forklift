@@ -87,3 +87,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v6.6
 - Weekly screen: only the "Day report" button is removed. The day record card (all 21 checks, Edit and A4 buttons) shows by default again with the Mon-Sun day chips; the "This week" button switches to the week table and back. Service worker v22.
+
+## v6.7
+- "Office copy: all forklifts" no longer adds the summary page. The PDF now holds one full weekly sheet per forklift (one page each, same layout as the single-forklift sheet), for every forklift that has at least one inspection that week.
+- Operator-only build support: set OPERATOR_ONLY = true at the top of the switchView code to hide Home / Monthly / Settings completely (see the separate operator zip). Service worker v23.
