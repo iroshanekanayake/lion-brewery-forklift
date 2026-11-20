@@ -233,6 +233,31 @@
         .wkpage .legend { font-size:10px; margin-top:4px; } .wkpage .notes { font-size:10px; margin-top:8px; border-top:1px solid #444; padding-top:4px; }
         .wkpage .sign { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; font-size:10.5px; } .wkpage .sign div { border-top:1px solid #444; padding-top:3px; }
 
+
+        /* weekly sheet - same look as the company sample PDF */
+        .wkpage.w2 { font-family: Roboto, Arial, Helvetica, sans-serif; }
+        .w2 .ttl { font-size:18px; font-weight:800; text-decoration:underline; text-align:center; margin:2px 0 12px; }
+        .w2 .sub1 { text-align:center; font-weight:700; font-size:9.5px; }
+        .w2 .sub2 { text-align:center; font-size:9.5px; margin:6px 0 4px; }
+        .w2 .meta2 { display:grid; grid-template-columns:1fr 1fr; row-gap:6px; font-size:9.5px; margin:6px 0 6px; }
+        .wkpage.w2 table { table-layout:fixed; font-size:9.5px; margin-top:2px; }
+        .wkpage.w2 th, .wkpage.w2 td { border:1.5px solid #666; background:#fff; padding:1px 3px; }
+        .wkpage.w2 th b { font-weight:700; }
+        .wkpage.w2 td.sn { width:4.5%; } .wkpage.w2 td.nm { width:30%; text-align:left; font-weight:700; white-space:nowrap; }
+        .wkpage.w2 td { color:#777; } .wkpage.w2 td.p { color:#15803d; font-weight:800; } .wkpage.w2 td.f { color:#b00020; font-weight:900; background:#fde8e8; } .wkpage.w2 td.sn, .wkpage.w2 td.nm { color:#000; }
+        .w2 .leg2 { font-size:7.5px; margin-top:3px; }
+        .w2 .days2 { display:grid; gap:6px; margin-top:8px; }
+        .w2 .dbox { border:1.5px solid #888; padding:3px 5px; font-size:8.5px; line-height:1.2; }
+        .w2 .dbox .dh { font-weight:700; font-size:9px; }
+        .w2 .dbox .ent + .ent { border-top:1px dashed #888; margin-top:3px; padding-top:3px; }
+        .w2 .rem2 { border:1.5px solid #888; margin-top:8px; padding:7px 14px 8px; }
+        .w2 .rem2 .rh { font-weight:700; font-size:8px; margin-bottom:6px; }
+        .w2 .rem2 .rg { display:grid; font-size:8px; }
+        .w2 .rem2 .rg div { border-left:1px solid #666; padding-left:6px; } .w2 .rem2 .rg div:first-child { border-left:0; padding-left:0; }
+        .w2 .hr2 { border-top:1.5px solid #aaa; margin-top:8px; }
+        .w2 .notes2 { font-size:7.5px; margin-top:8px; }
+        .w2 .gen2 { font-size:7px; text-align:right; margin-top:10px; }
+
         @page wkland { size: A4 landscape; margin: 7mm; }
         @media print {
             .wkpage { page: wkland; }
@@ -822,6 +847,7 @@
                         </label>
                         <input type="text" id="settingSupervisors"
                             class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
+                        <p class="text-[11px] mt-1.5" style="color: var(--text-muted);">Position: Forklift - Supervisor &middot; Lion Location: Logistic Division</p>
                     </div>
 
                     <div>
@@ -1109,6 +1135,13 @@
             ]
         };
 
+        // Position / location info from the company employee list (no ID numbers stored)
+        const POS_OPERATOR = "Fork Lift Operator";
+        const SUPERVISOR_INFO = {
+            "R.D. Sanjeewa Newil Rajapaksha": { position: "Forklift - Supervisor", location: "Logistic Division" },
+            "R.M.A. Ajith Indralal Rajathewa": { position: "Forklift - Supervisor", location: "Logistic Division" }
+        };
+
         const CHECKLIST_ITEMS = [
             "01. Hour Meter / Running Hours Check",
             "02. Head lights",
@@ -1364,7 +1397,7 @@
 
             container.innerHTML = ops.map((op, idx) => `
                 <div class="py-2.5 px-3 flex items-center justify-between text-xs border-b last:border-b-0" style="border-color: var(--border-color); color: var(--text-main);">
-                    <span class="font-semibold">${op}</span>
+                    <span class="font-semibold">${op}<span class="block text-[11px] font-normal" style="color: var(--text-muted);">${POS_OPERATOR}</span></span>
                     <button type="button" onclick="removeOperator('${dept}', ${idx})"
                         class="w-7 h-7 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500/25 flex items-center justify-center transition-all">
                         <i class="fa-solid fa-trash-can text-xs"></i>
@@ -2179,7 +2212,7 @@ function dowOf(date) { return DOW[(dParse(date).getDay() + 6) % 7]; }
 function fmtTime(ms) { if (!ms) return '-'; const d = new Date(ms); let h = d.getHours(); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return String(h).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' + ap; }
 function logHasFail(l) { return !!l.results && Object.values(l.results).includes('Fail'); }
 function weekData(unit, mon) { return weekDates(mon).map(date => ({ date, logs: inspectionLogs.filter(l => l.forkliftNo === unit && l.date === date).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)) })); }
-function mark(v) { return v === 'Fail' ? 'F' : v === 'Pass' ? 'P' : '-'; }
+function mark(v) { return v === 'Fail' ? 'F' : v === 'Pass' ? 'P' : v === 'N/A' ? 'N/A' : '-'; }
 function cellMark(logs, i) { if (!logs.length) return { t: '-', c: 'o' }; const v = logs.map(l => mark(l.results && l.results[i])); const t = v.every(x => x === v[0]) ? v[0] : v.join('/'); return { t, c: t.includes('F') ? 'f' : t === 'P' ? 'p' : 'o' }; }
 function shiftShort(l) { return (l.shift || '').startsWith('Night') ? 'Night' : 'Day'; }
 function weekLabel(mon) { const d = weekDates(mon); return d[0] + '  to  ' + d[d.length - 1]; }
@@ -2245,21 +2278,32 @@ function weekGridHtml(data) {
   return h;
 }
 function ownerOf(unit, data) { for (const d of data) if (d.logs.length && d.logs[0].owner) return d.logs[0].owner; const u = findUnit(unit); return (u && u.owner) || '-'; }
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtLong(s) { const d = dParse(s); return MONTHS_SHORT[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+function printMark(logs, i) {
+  if (!logs.length) return { t: '—', c: '' };
+  const v = logs.map(l => mark(l.results && l.results[i]));
+  const t = logs.length === 1 ? v[0] : logs.map((l, k) => shiftShort(l)[0] + ':' + v[k]).join(' ');
+  return { t: t === '-' ? '—' : t, c: v.includes('F') ? 'f' : v.every(x => x === 'P') ? 'p' : '' };
+}
 function sheetHtml(unit, mon) {
-  const data = weekData(unit, mon), dates = data.map(d => d.date);
-  const th = data.map(d => `<th>${dowOf(d.date)}<br>${d.date.slice(5)}</th>`).join('');
-  const rows = CHECKLIST_ITEMS.map((it, i) => `<tr><td class="l">${esc(it.replace(/\.\s/, ' '))}</td>` + data.map(d => { const c = cellMark(d.logs, i); return `<td class="${c.c === 'o' ? '' : c.c}">${c.t === '-' ? '—' : c.t}</td>`; }).join('') + '</tr>').join('');
-  const info = (label, fn) => `<tr><td class="l"><b>${label}</b></td>` + data.map(d => `<td style="font-size:9.5px">${d.logs.length ? d.logs.map(fn).join('<br>') : '—'}</td>`).join('') + '</tr>';
-  const remarks = data.map(d => d.logs.filter(l => logHasFail(l) || (l.remarks && l.remarks !== 'No remarks provided.')).map(l => `${dowOf(d.date)}: ${esc(l.remarks)}`).join(' | ') || '').filter(Boolean);
-  return `<div class="wkpage"><div class="ttl">FORKLIFT PRE-CHECK LIST</div><div class="sub"><b>LION BREWERY (BIYAGAMA)</b><br>WEEKLY INSPECTION RECORD · MONDAY TO ${['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'][WEEK_DAYS - 1]}</div>
-    <div class="meta"><div><b>FORKLIFT NO:</b> ${esc(unit)}</div><div><b>FORKLIFT OWNER:</b> ${esc(ownerOf(unit, data))}</div><div><b>WEEK START:</b> ${dates[0]}</div><div><b>WEEK END:</b> ${dates[dates.length - 1]}</div></div>
-    <table><tr><th class="l">CHECKS (21 POINTS)</th>${th}</tr>${rows}</table>
-    <div class="legend">P = Pass · F = Fail · — = not checked (if two shifts were checked on a day, the Day and Night marks are shown as D/N)</div>
-    <table><tr><th class="l">Day details</th>${th}</tr>${info('Operator', l => esc(l.operator || '-'))}${info('Supervisor', l => esc(l.supervisor || '-'))}${info('Shift', l => shiftShort(l))}${info('Time', l => fmtTime(l.createdAt))}${info('Hour meter', l => esc(l.hourMeter || '-'))}</table>
-    <div style="font-size:10.5px;margin-top:6px"><b>REMARKS / DEFECT DETAILS:</b> ${remarks.length ? remarks.join('  ·  ') : '—'}</div>
-    <div class="notes"><b>SAFETY NOTES:</b> ${SAFETY_NOTES}</div>
-    <div class="sign"><div>Safety Officer (weekly review) / Date</div><div>Received by Office / Date</div></div>
-    <div class="legend">Generated: ${localDate()} · Digital record</div></div>`;
+  const data = weekData(unit, mon), dates = data.map(d => d.date), D = '—';
+  const th = data.map(d => `<th><b>${dowOf(d.date)}</b><br>${d.date.slice(5)}</th>`).join('');
+  const rows = CHECKLIST_ITEMS.map((it, i) => `<tr><td class="sn">${esc(it.slice(0, 2))}</td><td class="nm">${esc(it.slice(4))}</td>` +
+    data.map(d => { const c = printMark(d.logs, i); return `<td class="${c.c}">${c.t}</td>`; }).join('') + '</tr>').join('');
+  const entry = l => `<div class="ent"><div><b>Operator:</b> ${esc(l ? (l.operator || D) : D)}</div><div><b>Supervisor:</b> ${esc(l ? (l.supervisor || D) : D)}</div><div><b>Shift:</b> ${esc(l ? (l.shift || D) : D)}</div><div><b>Time:</b> ${l ? fmtTime(l.createdAt) : D}</div><div><b>Hour Meter:</b> ${esc(l ? (l.hourMeter || D) : D)}</div></div>`;
+  const boxes = data.map(d => `<div class="dbox"><div class="dh">${dowOf(d.date)} · ${d.date}</div>${d.logs.length ? d.logs.map(entry).join('') : entry(null)}</div>`).join('');
+  const rem = data.map(d => { const t = d.logs.filter(l => logHasFail(l) || (l.remarks && l.remarks !== 'No remarks provided.')).map(l => esc(l.remarks)).join(' | '); return `<div><b>${dowOf(d.date)}:</b> ${t || D}</div>`; }).join('');
+  const last = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'][WEEK_DAYS - 1];
+  return `<div class="wkpage w2"><div class="ttl">FORKLIFT PRE-CHECK LIST</div><div class="sub1">LION BREWERY (BIYAGAMA)</div><div class="sub2">WEEKLY INSPECTION RECORD · MONDAY TO ${last}</div>
+    <div class="meta2"><div><b>FORKLIFT NO:</b> ${esc(unit)}</div><div><b>FORKLIFT OWNER:</b> ${esc(ownerOf(unit, data))}</div><div><b>WEEK START:</b> ${fmtLong(dates[0])}</div><div><b>WEEK END:</b> ${fmtLong(dates[dates.length - 1])}</div></div>
+    <table><tr><th>SN</th><th>CHECKS (21 POINTS)</th>${th}</tr>${rows}</table>
+    <div class="leg2">* Manual entry &nbsp;&nbsp; <b>D</b> = Day Shift &nbsp; <b>N</b> = Night Shift &nbsp; <b>P</b> = Pass &nbsp; <b>F</b> = Fail &nbsp; <b>N/A</b> = Not Applicable</div>
+    <div class="days2" style="grid-template-columns:repeat(${WEEK_DAYS},1fr)">${boxes}</div>
+    <div class="rem2"><div class="rh">REMARKS / DEFECT DETAILS</div><div class="rg" style="grid-template-columns:repeat(${WEEK_DAYS},1fr)">${rem}</div></div>
+    <div class="hr2"></div>
+    <div class="notes2"><b>SAFETY NOTES:</b> ${SAFETY_NOTES}</div>
+    <div class="gen2">Generated: ${localDate()} · Digital record · No signatures required</div></div>`;
 }
 function summaryHtml(mon, units) {
   const dates = weekDates(mon);
@@ -2268,7 +2312,7 @@ function summaryHtml(mon, units) {
   return `<div class="wkpage"><div class="ttl">WEEKLY FORKLIFT INSPECTION SUMMARY</div><div class="sub"><b>LION BREWERY (BIYAGAMA)</b><br>${dates[0]} to ${dates[dates.length - 1]}</div>
     <table><tr><th class="l">Forklift</th>${dates.map(d => `<th>${dowOf(d)}<br>${d.slice(5)}</th>`).join('')}<th>Days checked</th><th>Inspections with Fail</th></tr>${rows}</table>
     <div class="legend">OK = all 21 points passed · FAIL = at least one point failed · — = not checked. Only forklifts with at least one inspection this week are listed; the next pages hold each forklift's full weekly sheet.</div>
-    <div class="sign"><div>Safety Officer / Date</div><div>Received by Office / Date</div></div><div class="legend">Generated: ${localDate()} · Digital record</div></div>`;
+    <div class="legend" style="text-align:right">Generated: ${localDate()} · Digital record · No signatures required</div></div>`;
 }
 function printWeek(all) {
   const mon = wk.monday;

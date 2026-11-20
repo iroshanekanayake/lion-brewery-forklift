@@ -64,3 +64,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 - Small pill at top right: Synced / Syncing / Not synced / Sync problem. Tap it to see the reason and retry.
 - Needed once in the Firebase console: create Firestore Database, enable Authentication > Sign-in method > Anonymous, paste FIRESTORE_RULES.txt into Firestore > Rules and Publish.
 - Not synced yet: forklift list, operator/supervisor lists, settings, supervisor PIN (each phone keeps its own). Photos are off. Service worker v15.
+
+## v6
+- Weekly report sheet (Print / PDF) now looks exactly like the company sample PDF: SN + checks grid, Mon-Sun day boxes (Operator, Supervisor, Shift, Time, Hour Meter), Remarks / Defect Details box, Safety Notes, and "Generated ... No signatures required" (no signature lines). The office-copy summary page also has no signature lines.
+- Employee list: all names from the company list were already in the app. Settings now shows the position (Fork Lift Operator) under each operator, and supervisors show Forklift - Supervisor / Logistic Division. No ID numbers are stored. Service worker v16.
