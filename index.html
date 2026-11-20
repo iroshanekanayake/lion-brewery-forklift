@@ -265,6 +265,7 @@
 <body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
 
     <!-- Toast Notification Banner -->
+    <button type="button" id="cloudStatus" onclick="Cloud.info()" class="fixed top-1.5 right-1.5 z-[55] text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style="background:#6b7280">● Not synced</button>
     <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-4 opacity-0">
         <div class="bg-dark-800 border border-coral-500/40 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3">
             <div id="toastIcon" class="w-8 h-8 rounded-xl bg-coral-500/20 text-coral-500 flex items-center justify-center shrink-0">
@@ -1758,6 +1759,7 @@ const KEY_BAK = 'forklift_logs_backup_v1';
 function bakGet() { try { return JSON.parse(localStorage.getItem(KEY_BAK)) || {}; } catch (e) { return {}; } }
 function bakSet(o) { try { localStorage.setItem(KEY_BAK, JSON.stringify(o)); return true; } catch (e) { return false; } }
 function saveLog(l) {
+  l.updatedAt = Date.now(); Cloud.push(l);
   return LogDB.put(l).then(() => { const b = bakGet(); if (b[l.id]) { delete b[l.id]; bakSet(b); } }).catch(err => {
     const b = bakGet(); b[l.id] = l; const kept = bakSet(b);
     showToast('Saving problem', (kept ? 'Kept in backup storage and will be retried. ' : 'Not saved. ') + 'Reason: ' + ((err && (err.name || err.message)) || 'unknown') + '. Export a CSV now.', 'fa-triangle-exclamation');
@@ -1857,8 +1859,9 @@ function onForkliftChange() {
   if (u) { if (u.owner && appSettings.owners.includes(u.owner)) selectedOwner = u.owner; if (u.model && appSettings.models.includes(u.model)) selectedModel = u.model; }
   renderPills(); updateLockWarn();
 }
+const PHOTOS_ENABLED = false;   // defect photos switched off for now (set true to bring back Take photo / Gallery)
 function renderChecklistItems() { renderChecklistItemsBase(); const rows = $('checklistItemsContainer').children;
-  CHECKLIST_ITEMS.forEach((_, i) => { if (checklistResponses[i] !== 'Fail') return; rows[i].classList.add('flex-wrap');
+  CHECKLIST_ITEMS.forEach((_, i) => { if (!PHOTOS_ENABLED || checklistResponses[i] !== 'Fail') return; rows[i].classList.add('flex-wrap');
     const b = 'px-3 py-1.5 rounded-xl text-xs font-bold border border-dashed cursor-pointer'; const st = 'border-color: var(--accent-color); color: var(--accent-color);';
     rows[i].insertAdjacentHTML('beforeend', `<div class="w-full flex items-center gap-2 flex-wrap"><label class="${b}" style="${st}"><i class="fa-solid fa-camera mr-1"></i>Take photo<input type="file" accept="image/*" capture="environment" hidden onchange="onPhotoPicked(${i}, this)"></label><label class="${b}" style="${st}"><i class="fa-solid fa-image mr-1"></i>Gallery<input type="file" accept="image/*" hidden onchange="onPhotoPicked(${i}, this)"></label>${pendingPhotos[i] ? `<img src="${pendingPhotos[i]}" class="w-14 h-14 rounded-lg object-cover border" alt="Defect photo">` : ''}</div>`); });
 }
@@ -1964,6 +1967,7 @@ async function deleteLog(id) {
   if (!confirm(`Delete report ${id} (${l.forkliftNo}, ${l.date})? This cannot be undone.`)) return;
   for (const p of Object.values(l.photos || {})) await Photos.del(p);
   try { await LogDB.del(id); } catch (e) {}
+  Cloud.remove(id);
   inspectionLogs = inspectionLogs.filter(x => x !== l); renderDashboard(); showToast('Report deleted', id + ' was removed.', 'fa-trash-can');
 }
 function openA4Modal(id) {
@@ -2290,6 +2294,56 @@ function openQrChoice(unit) {
   $('qc_new').onclick = go(() => { switchView('apk'); $('formForkliftNo').value = unit; onForkliftChange(); });
 }
 
+/* ---- cloud sync (Firebase Firestore). Optional: the app keeps working offline and saves on the phone first ---- */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBzgqcp5zM_Ny95DGqlMwUikiG49zQ_LVw",
+  authDomain: "lion-brewery-app.firebaseapp.com",
+  projectId: "lion-brewery-app",
+  storageBucket: "lion-brewery-app.firebasestorage.app",
+  messagingSenderId: "770106674062",
+  appId: "1:770106674062:web:7778041fecde71bbb1f2df"
+};
+const Cloud = (() => {
+  let db = null, ready = false, started = false, reason = '';
+  const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+  const LABEL = { ok: ['\u25CF Synced', '#16a34a'], off: ['\u25CF Not synced', '#6b7280'], err: ['\u25CF Sync problem', '#dc2626'], busy: ['\u25CF Syncing...', '#d97706'] };
+  function setState(st, r) { reason = r || ''; const el = $('cloudStatus'); if (!el) return; el.textContent = LABEL[st][0]; el.style.background = LABEL[st][1]; el.dataset.state = st; }
+  function loadScript(src) { return new Promise((res, rej) => { const t = document.createElement('script'); t.src = src; t.onload = res; t.onerror = () => rej(new Error('Could not load Firebase files (check internet)')); document.head.appendChild(t); }); }
+  function clean(l) { const c = JSON.parse(JSON.stringify(l)); c.photos = {}; if (!c.updatedAt) c.updatedAt = c.createdAt || Date.now(); return c; }
+  async function push(l) { if (!ready) return; try { await db.collection('logs').doc(l.id).set(clean(l)); setState('ok'); } catch (e) { setState('err', e.code || e.message); } }
+  async function remove(id) { if (!ready) return; try { await db.collection('logs').doc(id).delete(); } catch (e) { setState('err', e.code || e.message); } }
+  async function onSnap(snap, first) {
+    let changed = false;
+    for (const ch of snap.docChanges()) {
+      const id = ch.doc.id, i = inspectionLogs.findIndex(x => x.id === id);
+      if (ch.type === 'removed') { if (i >= 0) { inspectionLogs.splice(i, 1); try { await LogDB.del(id); } catch (e) {} changed = true; } continue; }
+      const r = ch.doc.data();
+      if (i < 0) { r.photos = {}; inspectionLogs.push(r); try { await LogDB.put(r); } catch (e) {} changed = true; }
+      else if ((r.updatedAt || 0) > (inspectionLogs[i].updatedAt || 0)) { const m = { ...r, photos: inspectionLogs[i].photos || {} }; inspectionLogs[i] = m; try { await LogDB.put(m); } catch (e) {} changed = true; }
+    }
+    if (first) {
+      const rmap = new Map(snap.docs.map(d => [d.id, d.data()]));
+      for (const l of inspectionLogs) { const r = rmap.get(l.id); if (!r || (l.updatedAt || 0) > (r.updatedAt || 0)) push(l); }
+    }
+    if (changed) { inspectionLogs.sort(byNewest); renderDashboard(); if (!$('viewWeek').classList.contains('hidden')) renderWeek(); }
+    setState('ok');
+  }
+  async function start() {
+    if (started) return; started = true;
+    if (!navigator.onLine) { started = false; setState('off', 'No internet'); window.addEventListener('online', start, { once: true }); return; }
+    setState('busy');
+    try {
+      if (!window.firebase) { await loadScript(base + 'firebase-app-compat.js'); await loadScript(base + 'firebase-auth-compat.js'); await loadScript(base + 'firebase-firestore-compat.js'); }
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      await firebase.auth().signInAnonymously();
+      db = firebase.firestore(); ready = true; let first = true;
+      db.collection('logs').onSnapshot(snap => { const f = first; first = false; onSnap(snap, f); }, err => setState('err', err.code || err.message));
+    } catch (e) { started = false; ready = false; setState('err', e.code || e.message); }
+  }
+  function info() { const st = $('cloudStatus').dataset.state; showToast(st === 'ok' ? 'Synced' : st === 'busy' ? 'Syncing' : st === 'err' ? 'Sync problem' : 'Not synced', st === 'ok' ? 'Reports are shared with all phones that use this app.' : (reason || 'Working offline. Reports are kept on this phone and will sync later.'), st === 'ok' ? 'fa-cloud' : 'fa-triangle-exclamation'); if (st !== 'ok' && st !== 'busy') { started = false; start(); } }
+  return { start, push, remove, info };
+})();
+
 /* ---- start ---- */
 window.addEventListener('DOMContentLoaded', async () => {
   changeTheme(localStorage.getItem('lion_brewery_theme') || 'dark-coral', true);
@@ -2297,6 +2351,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   initApkForm(); renderDashboard();
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
   mergeBackupLogs();
+  Cloud.start();
   renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
   setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
 });

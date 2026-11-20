@@ -55,3 +55,12 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## v4.2
 - Camera QR scanner has a **Flash** button (top right) for dark places and night shift. It appears only on phones whose browser allows the torch (most Android Chrome phones). On iPhones it is not offered by Safari; use the phone's own flashlight.
 - Weekly > "Office copy: all forklifts" already makes ONE PDF for all forklifts (summary page + one landscape page per forklift that has an inspection that week). Choose "Save as PDF" in the print window.
+
+## v4.3
+- Defect photo buttons (Take photo / Gallery) removed from the inspection form. To bring them back set `PHOTOS_ENABLED = true` in index.html. Service worker v14.
+
+## v5: Firebase sync (project lion-brewery-app)
+- Every saved inspection is also sent to Firestore collection `logs`, and reports from other phones appear on this phone. The phone still saves first, so the app works offline and syncs when the internet returns.
+- Small pill at top right: Synced / Syncing / Not synced / Sync problem. Tap it to see the reason and retry.
+- Needed once in the Firebase console: create Firestore Database, enable Authentication > Sign-in method > Anonymous, paste FIRESTORE_RULES.txt into Firestore > Rules and Publish.
+- Not synced yet: forklift list, operator/supervisor lists, settings, supervisor PIN (each phone keeps its own). Photos are off. Service worker v15.
