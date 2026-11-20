@@ -87,10 +87,3 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v6.6
 - Weekly screen: only the "Day report" button is removed. The day record card (all 21 checks, Edit and A4 buttons) shows by default again with the Mon-Sun day chips; the "This week" button switches to the week table and back. Service worker v22.
-
-
-## v6.6 Premium Navy visual refresh
-- Added the Premium Navy blue-glass theme inspired by the supplied reference video.
-- Existing theme choices remain available; the new theme is the default for fresh installs and previous default Dark Coral installations.
-- Existing inspection, weekly/monthly reports, QR, supervisor PIN, local storage, Firebase sync, and print layouts were left functionally unchanged.
-- Service worker shell cache updated to v23 so installed PWA clients can receive the visual update.
