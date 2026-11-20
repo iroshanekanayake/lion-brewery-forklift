@@ -610,6 +610,10 @@
         <!-- VIEW 2: OPERATOR APK MODE                                             -->
         <!-- ===================================================================== -->
         <section id="viewApk" class="hidden max-w-2xl mx-auto">
+            <div id="editBanner" class="hidden mb-3 p-3.5 rounded-2xl border flex items-center justify-between gap-3" style="background-color: rgba(255,122,26,0.12); border-color: var(--accent-color);">
+                <div class="text-xs font-bold" style="color: var(--accent-color);"><i class="fa-solid fa-pen-to-square mr-1.5"></i><span id="editBannerTxt">Editing record</span></div>
+                <button type="button" onclick="cancelEdit()" class="px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0" style="border-color: var(--accent-color); color: var(--accent-color);">Cancel</button>
+            </div>
             <form id="preCheckForm" onsubmit="handlePreCheckSubmit(event)" class="neu-card rounded-3xl overflow-hidden shadow-2xl">
                 <div class="px-6 py-5 text-white" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));">
                     <div class="flex items-center justify-between">
@@ -754,7 +758,7 @@
                         <button type="submit"
                             class="w-full py-4 px-6 rounded-2xl text-white font-extrabold text-sm uppercase tracking-wider shadow-xl transition-all flex items-center justify-center gap-2" style="background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));">
                             <i class="fa-solid fa-paper-plane"></i>
-                            <span>Submit Pre-Check Inspection</span>
+                            <span id="submitBtnTxt">Submit Pre-Check Inspection</span>
                         </button>
                     </div>
                 </div>
@@ -967,7 +971,7 @@
             <div class="neu-card rounded-2xl p-4 space-y-3">
                 <div class="flex flex-wrap items-end gap-3">
                     <div class="flex-1 min-w-[140px]"><label for="wkUnit" class="block text-[11px] font-bold uppercase mb-1" style="color: var(--text-muted);">Forklift</label><select id="wkUnit" onchange="wkSetUnit(this.value)" class="w-full border rounded-xl px-3 py-2 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);"></select></div>
-                    <div class="seg flex gap-2"><button type="button" id="wkModeDay" onclick="wkSetMode('day')">Day report</button><button type="button" id="wkModeWeek" onclick="wkSetMode('week')">This week</button></div>
+                    <div class="seg flex gap-2"><button type="button" id="wkModeWeek" onclick="wkSetMode(wk.mode === 'week' ? 'day' : 'week')">This week</button></div>
                 </div>
                 <div class="flex items-center justify-between gap-2">
                     <button type="button" class="wkchip" onclick="wkShift(-1)" aria-label="Previous week"><i class="fa-solid fa-chevron-left"></i></button>
@@ -1007,7 +1011,7 @@
     <!-- FLOATING BOTTOM NAVIGATION (Image-3 style)                            -->
     <!-- ===================================================================== -->
     <!-- QR SCANNER -->
-    <div id="scanOverlay" class="fixed inset-0 z-[60] hidden flex-col" style="background:#000;">
+    <div id="scanOverlay" class="fixed inset-0 z-[300] hidden flex-col" style="background:#000;">
         <div class="flex items-center justify-between px-4 py-3" style="background:#111215; color:#fff;">
             <div class="font-extrabold text-sm"><i class="fa-solid fa-qrcode mr-2" style="color:var(--accent-color);"></i>Scan forklift QR</div>
             <div class="flex items-center gap-2">
@@ -1847,7 +1851,44 @@ function labelUrl(base, unit) { const b = base.trim().replace(/[?#].*$/, ''); re
 function sortFleet() { fleet.sort((a, b) => a.unit.localeCompare(b.unit, undefined, { numeric: true })); }
 
 /* ---- navigation ---- */
+/* ---- edit a submitted record (operator mistake) ----
+   Within the same hours window as delete (Settings, default 24 h) no PIN is needed. Older records need the supervisor PIN. */
+let editingId = null;
+function setEditUi(on, l) {
+  $('editBanner').classList.toggle('hidden', !on);
+  if (on && l) $('editBannerTxt').textContent = 'Editing ' + l.forkliftNo + ' \u00B7 ' + l.date + ' \u00B7 ' + String(l.shift || '').split(' (')[0];
+  $('submitBtnTxt').textContent = on ? 'Save Changes' : 'Submit Pre-Check Inspection';
+}
+function clearEditState() { editingId = null; setEditUi(false); $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; $('formInspectionDate').value = ''; }
+function ensureOption(id, val) { const el = $(id); if (val && ![...el.options].some(o => o.value === val)) el.add(new Option(val, val)); if (val) el.value = val; }
+async function startEdit(id) {
+  const l = inspectionLogs.find(x => x.id === id); if (!l) return;
+  if (hoursLeft(l) <= 0 && !(await requireSupervisor())) return;     // old record: supervisor PIN
+  editingId = id; checklistResponses = { ...(l.results || {}) }; pendingPhotos = {};
+  switchView('apk');
+  if (l.owner) selectedOwner = l.owner; if (l.model) selectedModel = l.model;
+  ensureOption('formForkliftNo', l.forkliftNo);
+  $('formInspectionDate').value = l.date; $('formShiftTime').value = l.shift; $('formHourMeter').value = l.hourMeter || '';
+  if (l.department && [...$('formDepartment').options].some(o => o.value === l.department)) $('formDepartment').value = l.department;
+  onDepartmentChange(); ensureOption('formOperator', l.operator); ensureOption('formSupervisor', l.supervisor);
+  $('formRemarks').value = l.remarks === 'No remarks provided.' ? '' : (l.remarks || '');
+  renderPills(); renderChecklistItems(); updateLockWarn(); setEditUi(true, l);
+}
+function cancelEdit() { const l = inspectionLogs.find(x => x.id === editingId); clearEditState(); if (l) openWeek(l.forkliftNo, 'day', l.date); else switchView('apk'); }
+
+/* Operators only need Inspect + Weekly. Home, Monthly and Settings need the supervisor PIN. */
+const PIN_VIEWS = ['dashboard', 'report', 'settings', 'qr'];
 function switchView(v) {
+  if (v !== 'apk' && editingId) clearEditState();
+  if (PIN_VIEWS.includes(v)) {
+    if (Pin.isUnlocked()) return _switchView(v);
+    requireSupervisor().then(ok => { if (ok) _switchView(v); });
+    return;
+  }
+  Pin.lock();                       // back on an operator screen: lock again so the next person needs the PIN
+  _switchView(v);
+}
+function _switchView(v) {
   const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'], week: ['viewWeek', 'navWeekBtn'] };
   Object.values(map).forEach(([s, b]) => { $(s).classList.add('hidden'); const btn = $(b); btn.style.color = 'var(--text-muted)'; btn.style.backgroundColor = 'transparent'; btn.classList.remove('text-white', 'shadow-md'); });
   const [s, b] = map[v]; $(s).classList.remove('hidden'); const btn = $(b); btn.style.backgroundColor = 'var(--accent-color)'; btn.style.color = ''; btn.classList.add('text-white', 'shadow-md');
@@ -1913,15 +1954,25 @@ async function handlePreCheckSubmit(e) {
   if (fails.length && !remarks) { showToast('Remarks needed', 'Write a remark for: ' + fails.map(i => CHECKLIST_ITEMS[i].slice(4)).join(', '), 'fa-triangle-exclamation'); $('formRemarks').classList.add('ring-2', 'ring-red-500'); $('formRemarks').focus(); return; }
   $('formRemarks').classList.remove('ring-2', 'ring-red-500');
   const sk = s => s.startsWith('Night') ? 'N' : 'D';
-  if (inspectionLogs.some(l => l.date === date && l.forkliftNo === f && sk(l.shift) === sk(shift))) { showToast('Already recorded', `${f} already has this shift's check for ${date}.`, 'fa-triangle-exclamation'); return; }
-  const prev = inspectionLogs.filter(l => l.forkliftNo === f && l.date <= date && l.hourMeter > 0).sort(byNewest)[0];
+  if (inspectionLogs.some(l => l.id !== editingId && l.date === date && l.forkliftNo === f && sk(l.shift) === sk(shift))) { showToast('Already recorded', `${f} already has this shift's check for ${date}.`, 'fa-triangle-exclamation'); return; }
+  const prev = inspectionLogs.filter(l => l.id !== editingId && l.forkliftNo === f && l.date <= date && l.hourMeter > 0).sort(byNewest)[0];
   if (prev && hm < prev.hourMeter && !confirm(`The hour meter (${hm}) is lower than the last reading for ${f} (${prev.hourMeter}). Save anyway?`)) return;
   const photos = {}; for (const i of fails) if (pendingPhotos[i]) photos[i] = await Photos.put(pendingPhotos[i]);
   const log = { id: newLogId(date), date, forkliftNo: f, owner: selectedOwner, model: selectedModel, shift, hourMeter: hm, department: $('formDepartment').value, operator: $('formOperator').value, supervisor: $('formSupervisor').value,
     results: { ...checklistResponses }, remarks: remarks || 'No remarks provided.', photos, defectResolved: false, createdAt: Date.now() };
+  if (editingId) {
+    const i = inspectionLogs.findIndex(x => x.id === editingId), old = inspectionLogs[i];
+    if (i >= 0) {
+      const keep = {}; for (const k of fails) if (old.photos && old.photos[k]) keep[k] = old.photos[k];
+      const upd = { ...old, date, forkliftNo: f, owner: log.owner, model: log.model, shift, hourMeter: hm, department: log.department, operator: log.operator, supervisor: log.supervisor, results: log.results, remarks: log.remarks, photos: { ...keep, ...photos }, editedAt: Date.now() };
+      inspectionLogs[i] = upd; inspectionLogs.sort(byNewest); saveLog(upd);
+      showToast('Inspection updated', f + ' record for ' + date + ' was corrected.', 'fa-pen-to-square');
+      clearEditState(); openWeek(f, 'day', date); return;
+    }
+  }
   inspectionLogs.unshift(log); inspectionLogs.sort(byNewest); saveLog(log);
   showToast(Safety.criticalFails(log).length ? 'DO NOT OPERATE' : 'Inspection Submitted', Safety.criticalFails(log).length ? `${f} has a critical failure and is locked.` : `${f} checklist successfully recorded!`, Safety.criticalFails(log).length ? 'fa-ban' : 'fa-circle-check');
-  $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; switchView('dashboard');
+  $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; switchView('apk');
 }
 
 /* ---- dashboard ---- */
@@ -2166,12 +2217,12 @@ async function openScanner() {
 let torchOn = false;
 function setupTorch() {
   torchOn = false; const btn = $('torchBtn'); $('torchTxt').textContent = 'Flash off'; btn.style.background = 'transparent'; btn.classList.add('hidden');
-  try { const t = scanStream.getVideoTracks()[0], c = t.getCapabilities ? t.getCapabilities() : {}; if (c.torch) btn.classList.remove('hidden'); } catch (e) {}
+  btn.classList.remove('hidden');
 }
 async function toggleTorch() {
   try { const t = scanStream.getVideoTracks()[0]; torchOn = !torchOn; await t.applyConstraints({ advanced: [{ torch: torchOn }] });
     $('torchTxt').textContent = torchOn ? 'Flash on' : 'Flash off'; $('torchBtn').style.background = torchOn ? '#ff7a1a' : 'transparent'; }
-  catch (e) { torchOn = false; $('scanMsg').textContent = 'This phone cannot switch the flashlight from the browser. Use the phone\'s own flashlight.'; }
+  catch (e) { torchOn = false; $('torchTxt').textContent = 'Flash off'; $('torchBtn').style.background = 'transparent'; $('scanMsg').textContent = 'This phone does not allow the flash from the browser. Switch on the phone\'s own flashlight instead.'; }
 }
 function closeScanner() {
   scanRunning = false; torchOn = false;
@@ -2247,7 +2298,7 @@ function wkPickDay(date) { wk.day = date; wk.mode = 'day'; wk.auto = true; rende
 function renderWeek() {
   const data = weekData(wk.unit, wk.monday), today = localDate();
   $('wkLabel').textContent = weekLabel(wk.monday);
-  $('wkModeDay').className = wk.mode === 'day' ? 'on' : ''; $('wkModeWeek').className = wk.mode === 'week' ? 'on' : '';
+  $('wkModeWeek').className = wk.mode === 'week' ? 'on' : '';
   $('wkChips').style.display = wk.mode === 'day' ? 'flex' : 'none';
   $('wkChips').innerHTML = data.map(d => { const dot = !d.logs.length ? '#9ca3af' : d.logs.some(logHasFail) ? '#dc2626' : '#16a34a';
     return `<button type="button" class="wkchip ${d.date === wk.day ? 'on' : ''}" onclick="wkPickDay('${d.date}')"><span class="wkdot" style="background:${dot}"></span>${dowOf(d.date)}<small>${d.date === today ? 'Today' : d.date.slice(5)}</small></button>`; }).join('');
@@ -2270,6 +2321,7 @@ function dayCardHtml(d) {
       <div class="wkitems mt-3">${CHECKLIST_ITEMS.map((it, i) => { const v = l.results && l.results[i]; return `<div><span>${esc(it)}</span><b class="${v === 'Fail' ? 'f' : 'p'}" style="padding:0 6px;border-radius:6px">${v === 'Fail' ? 'FAIL' : v === 'Pass' ? 'PASS' : '-'}</b></div>`; }).join('')}</div>
       <div class="wkrow" style="border:0"><span>Remarks</span><b style="text-align:right">${esc(l.remarks || '-')}</b></div>
       <button type="button" onclick="openA4Modal('${esc(l.id)}')" class="mt-2 px-4 py-2 rounded-xl text-xs font-bold border" style="border-color:var(--accent-color);color:var(--accent-color)"><i class="fa-solid fa-file-lines mr-1"></i> Full record sheet (A4)</button>
+      <button type="button" onclick="startEdit('${esc(l.id)}')" class="mt-2 ml-2 px-4 py-2 rounded-xl text-xs font-bold border" style="border-color:var(--accent-color);color:#fff;background:var(--accent-color)"><i class="fa-solid fa-pen-to-square mr-1"></i> Edit</button>
     </div>`; }).join('');
 }
 function weekGridHtml(data) {

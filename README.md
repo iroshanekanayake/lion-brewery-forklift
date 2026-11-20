@@ -74,3 +74,16 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v6.2
 - Weekly sheet: "FORKLIFT OWNER" and "WEEK END" moved a little toward the middle (they now start in line with the Wed column). Page breaks are only placed between sheets, so a single sheet no longer produces a blank second page. Service worker v18.
+
+## v6.3
+- Home, Monthly and Settings (and its QR page) now need the supervisor PIN. Inspect and Weekly stay open for operators. The bottom navigation bar looks the same. The first person to tap one of the locked tabs creates the PIN, so the supervisor should do this first. Going back to Inspect or Weekly locks the PIN again. After sending an inspection the app stays on the Inspect screen.
+- QR scanner: the Flash button is always shown while the camera is on (if the phone does not allow the browser to use the flash it says so). Service worker v19.
+
+## v6.4
+- Weekly > day card: new Edit button. It opens the record in the Inspect form (banner "Editing ...", button "Save Changes", Cancel). Operators can edit without a PIN during the same hours window as delete (Settings, default 24 h); older records ask for the supervisor PIN. The original record is kept (same id and submit time), marked as edited, and synced to the other phones. Service worker v20.
+
+## v6.5
+- Weekly screen: the "Day report / This week" switch was removed. The week table now opens by default; tap a day name to see that day (with the Edit button), and use the new "Week view" button there to go back. Service worker v21.
+
+## v6.6
+- Weekly screen: only the "Day report" button is removed. The day record card (all 21 checks, Edit and A4 buttons) shows by default again with the Mon-Sun day chips; the "This week" button switches to the week table and back. Service worker v22.
