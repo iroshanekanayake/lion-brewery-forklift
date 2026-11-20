@@ -225,7 +225,7 @@
         .wkdot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; }
         .wkrow { display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-bottom:1px solid var(--border-color); font-size:13px; } .wkrow span:first-child { color:var(--text-muted); }
         .wkitems { display:grid; grid-template-columns:1fr; gap:0; font-size:13px; } .wkitems div { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--border-color); }
-        .wkpage { font-family:Arial, Helvetica, sans-serif; background:#fff; color:#000; padding:0; page-break-after:always; break-after:page; } .wkpage:last-child { page-break-after:auto; break-after:auto; }
+        .wkpage { font-family:Arial, Helvetica, sans-serif; background:#fff; color:#000; padding:0; } .wkpage + .wkpage { page-break-before:always; break-before:page; }
         .wkpage, .wkpage h1, .wkpage .sub, .wkpage b, .wkpage th, .wkpage td, .wkpage div { color:#000; } .wkpage .ttl { font-size:16px; font-weight:700; margin:0; text-align:center; } .wkpage .sub { text-align:center; font-size:11px; margin:2px 0 8px; }
         .wkpage table { width:100%; border-collapse:collapse; font-size:9.5px; margin-top:4px; } .wkpage th, .wkpage td { border:1px solid #444; padding:1.5px 4px; text-align:center; line-height:1.25; } .wkpage td.l, .wkpage th.l { text-align:left; }
         .wkpage th { background:#e5e5e5; } .wkpage .p { color:#15803d; font-weight:800; } .wkpage .f { color:#b00020; font-weight:900; background:#fde8e8; }
@@ -236,14 +236,16 @@
 
         /* weekly sheet - same look as the company sample PDF */
         .wkpage.w2 { font-family: Roboto, Arial, Helvetica, sans-serif; }
+        .wkpage.w2 { box-sizing:border-box; width:100%; max-width:100%; overflow:hidden; }
+        @media print and (orientation: portrait) { .wkpage.w2 { zoom:.68; } }
         .w2 .ttl { font-size:18px; font-weight:800; text-decoration:underline; text-align:center; margin:2px 0 12px; }
         .w2 .sub1 { text-align:center; font-weight:700; font-size:9.5px; }
         .w2 .sub2 { text-align:center; font-size:9.5px; margin:6px 0 4px; }
-        .w2 .meta2 { display:grid; grid-template-columns:1fr 1fr; row-gap:6px; font-size:9.5px; margin:6px 0 6px; }
+        .w2 .meta2 { display:grid; grid-template-columns:44.6% 1fr; row-gap:6px; font-size:9.5px; margin:6px 0 6px; }
         .wkpage.w2 table { table-layout:fixed; font-size:9.5px; margin-top:2px; }
         .wkpage.w2 th, .wkpage.w2 td { border:1.5px solid #666; background:#fff; padding:1px 3px; }
         .wkpage.w2 th b { font-weight:700; }
-        .wkpage.w2 td.sn { width:4.5%; } .wkpage.w2 td.nm { width:30%; text-align:left; font-weight:700; white-space:nowrap; }
+        .wkpage.w2 td.sn { width:4.5%; } .wkpage.w2 td.nm { width:34%; text-align:left; font-weight:700; font-size:9px; overflow-wrap:anywhere; }
         .wkpage.w2 td { color:#777; } .wkpage.w2 td.p { color:#15803d; font-weight:800; } .wkpage.w2 td.f { color:#b00020; font-weight:900; background:#fde8e8; } .wkpage.w2 td.sn, .wkpage.w2 td.nm { color:#000; }
         .w2 .leg2 { font-size:7.5px; margin-top:3px; }
         .w2 .days2 { display:grid; gap:6px; margin-top:8px; }
@@ -263,7 +265,8 @@
             .wkpage { page: wkland; }
             #bottomNav, #scanOverlay, #modal, #viewer, #toastBanner { display: none !important; }
             body.print-week header, body.print-week main > section, body.print-week #toastBanner, body.print-week #a4ModalBackdrop, body.print-week #a4PrintArea { display:none !important; }
-            body.print-week, body.print-week main { background:#fff !important; padding:0 !important; max-width:none !important; }
+            body.print-week, body.print-week main { background:#fff !important; padding:0 !important; margin:0 !important; max-width:none !important; min-height:0 !important; height:auto !important; }
+            body.print-week #wkPrintArea { margin:0 !important; padding:0 !important; }
             body.print-week #wkPrintArea { display:block !important; visibility:visible !important; } body.print-week #wkPrintArea * { visibility:visible !important; }
             /* single record sheet: print only the sheet, once, in normal page flow */
             body:not(.print-report):not(.print-qr):not(.print-week) > *:not(#a4ModalBackdrop) { display: none !important; }
@@ -1864,7 +1867,8 @@ function switchView(v) {
   if (v === 'dashboard') renderDashboard(); else if (v === 'apk') initApkForm(); else if (v === 'report') initReportView(); else if (v === 'settings') initSettingsView(); else if (v === 'qr') initQrView(); else if (v === 'week') initWeekView();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function printMode(name) { document.body.classList.add('print-' + name); window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
+function printMode(name) { document.body.classList.add('print-' + name);
+  if (name === 'week') { const st = document.createElement('style'); st.id = 'wkPageStyle'; st.textContent = '@page { size: A4 landscape; margin: 7mm; }'; document.head.appendChild(st); window.addEventListener('afterprint', () => { const e = document.getElementById('wkPageStyle'); if (e) e.remove(); }, { once: true }); } window.addEventListener('afterprint', () => document.body.classList.remove('print-' + name), { once: true }); setTimeout(() => window.print(), 60); }
 
 /* ---- operator form ---- */
 function renderPills() {

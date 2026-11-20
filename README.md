@@ -68,3 +68,9 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## v6
 - Weekly report sheet (Print / PDF) now looks exactly like the company sample PDF: SN + checks grid, Mon-Sun day boxes (Operator, Supervisor, Shift, Time, Hour Meter), Remarks / Defect Details box, Safety Notes, and "Generated ... No signatures required" (no signature lines). The office-copy summary page also has no signature lines.
 - Employee list: all names from the company list were already in the app. Settings now shows the position (Fork Lift Operator) under each operator, and supervisors show Forklift - Supervisor / Logistic Division. No ID numbers are stored. Service worker v16.
+
+## v6.1
+- Weekly PDF is forced to A4 landscape when printing; if a phone's print screen still uses portrait, the sheet shrinks to fit (nothing is cut off). Long check names no longer run into the Mon column. Service worker v17.
+
+## v6.2
+- Weekly sheet: "FORKLIFT OWNER" and "WEEK END" moved a little toward the middle (they now start in line with the Wed column). Page breaks are only placed between sheets, so a single sheet no longer produces a blank second page. Service worker v18.
