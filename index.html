@@ -288,6 +288,98 @@
             body.print-qr .qrsheet { grid-template-columns:repeat(var(--cols), calc(var(--lw) * 1mm)); gap:0; justify-content:center; }
             body.print-qr .qrl { width:calc(var(--lw) * 1mm); height:calc(var(--lh) * 1mm); aspect-ratio:auto; border-radius:0; border:1px dashed #999; }
         }
+
+
+        /* v6.6 visual refresh: Premium Navy / blue-glass dashboard skin.
+           Scoped to the screen UI; print layouts retain their original paper styling. */
+        body.theme-premium-navy {
+            --bg-main: #071326;
+            --bg-card: #0d1d35;
+            --bg-card-hover: #122846;
+            --border-color: #203b60;
+            --text-main: #e8f2ff;
+            --text-muted: #91a9c8;
+            --accent-color: #2588ff;
+            --accent-hover: #1474e8;
+            --accent-glow: rgba(37, 136, 255, .28);
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+            color-scheme: dark;
+        }
+        body.theme-premium-navy > header,
+        body.theme-premium-navy header.border-b {
+            background: rgba(7, 19, 38, .96) !important;
+            border-color: rgba(70, 119, 177, .28) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .22);
+            backdrop-filter: blur(16px);
+        }
+        body.theme-premium-navy > header > div:first-child {
+            background: #071326 !important;
+        }
+        body.theme-premium-navy > header > div:first-child > div:nth-child(2) {
+            background: linear-gradient(90deg, rgba(4,13,29,.18), rgba(4,13,29,.74) 54%, rgba(4,13,29,.96)) !important;
+        }
+        body.theme-premium-navy .neu-card {
+            background: linear-gradient(145deg, rgba(17, 39, 68, .98), rgba(10, 27, 50, .98)) !important;
+            border: 1px solid rgba(86, 139, 199, .24) !important;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .20), inset 0 1px 0 rgba(210, 232, 255, .035) !important;
+        }
+        body.theme-premium-navy .neu-card:hover {
+            border-color: rgba(64, 153, 255, .42) !important;
+        }
+        body.theme-premium-navy nav,
+        body.theme-premium-navy #bottomNav {
+            background: rgba(9, 26, 49, .96) !important;
+            border-color: rgba(78, 130, 190, .28) !important;
+            box-shadow: 0 12px 32px rgba(0,0,0,.28);
+            backdrop-filter: blur(18px);
+        }
+        body.theme-premium-navy button.bg-coral-500,
+        body.theme-premium-navy .bg-coral-500 {
+            background-color: #2588ff !important;
+        }
+        body.theme-premium-navy .text-coral-500,
+        body.theme-premium-navy .text-coral-600 { color: #65b2ff !important; }
+        body.theme-premium-navy .border-coral-500,
+        body.theme-premium-navy .border-coral-500\/40 { border-color: rgba(67, 157, 255, .55) !important; }
+        body.theme-premium-navy input:not([type="checkbox"]):not([type="radio"]),
+        body.theme-premium-navy select,
+        body.theme-premium-navy textarea {
+            background-color: #08182d !important;
+            color: #e8f2ff !important;
+            border-color: #29496f !important;
+        }
+        body.theme-premium-navy input::placeholder,
+        body.theme-premium-navy textarea::placeholder { color: #7892b3 !important; }
+        body.theme-premium-navy .bg-dark-800,
+        body.theme-premium-navy .bg-dark-900,
+        body.theme-premium-navy .bg-zinc-900,
+        body.theme-premium-navy .bg-zinc-800 { background-color: #0b1d35 !important; }
+        body.theme-premium-navy .border-dark-700,
+        body.theme-premium-navy .border-zinc-700 { border-color: #254365 !important; }
+        body.theme-premium-navy .shadow-md,
+        body.theme-premium-navy .shadow-lg,
+        body.theme-premium-navy .shadow-xl { box-shadow: 0 8px 24px rgba(0,0,0,.24) !important; }
+        body.theme-premium-navy #cloudStatus {
+            box-shadow: 0 4px 16px rgba(0,0,0,.3);
+            border: 1px solid rgba(255,255,255,.14);
+        }
+        body.theme-premium-navy .bnav-item { color: #91a9c8; }
+        body.theme-premium-navy .bnav-item.active,
+        body.theme-premium-navy .bnav-item[aria-current="page"] { color: #ffffff; }
+        body.theme-premium-navy ::-webkit-scrollbar-track { background: #08182d; }
+        body.theme-premium-navy ::-webkit-scrollbar-thumb { background: #29496f; }
+        @media (max-width: 767px) {
+            body.theme-premium-navy #bottomNav {
+                background: rgba(7, 20, 39, .97) !important;
+                border: 1px solid rgba(82, 139, 201, .28) !important;
+            }
+        }
+        @media print {
+            body.theme-premium-navy, body.theme-premium-navy * { color-adjust: exact; }
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-coral-500 selection:text-white">
@@ -789,7 +881,8 @@
                         <label for="settingTheme" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Application Theme Preset</label>
                         <select id="settingTheme" onchange="changeTheme(this.value)"
                             class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
-                            <option value="dark-coral">Dark Coral (Default)</option>
+                            <option value="premium-navy">Premium Navy (New)</option>
+                            <option value="dark-coral">Dark Coral</option>
                             <option value="sky-neumorphism">Sky Neumorphism</option>
                             <option value="official-corporate">Official Corporate</option>
                         </select>
@@ -1205,8 +1298,10 @@
 
         // Theme Switcher
         function changeTheme(themeName, quiet) {
-            document.body.classList.remove('theme-sky-neumorphism', 'theme-official-corporate');
-            if (themeName === 'sky-neumorphism') {
+            document.body.classList.remove('theme-sky-neumorphism', 'theme-official-corporate', 'theme-premium-navy');
+            if (themeName === 'premium-navy') {
+                document.body.classList.add('theme-premium-navy');
+            } else if (themeName === 'sky-neumorphism') {
                 document.body.classList.add('theme-sky-neumorphism');
             } else if (themeName === 'official-corporate') {
                 document.body.classList.add('theme-official-corporate');
@@ -2446,7 +2541,7 @@ const Cloud = (() => {
 
 /* ---- start ---- */
 window.addEventListener('DOMContentLoaded', async () => {
-  changeTheme(localStorage.getItem('lion_brewery_theme') || 'dark-coral', true);
+  const savedTheme = localStorage.getItem('lion_brewery_theme'); changeTheme((!savedTheme || savedTheme === 'dark-coral') ? 'premium-navy' : savedTheme, true);
   loadConfig(); try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
   initApkForm(); renderDashboard();
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
