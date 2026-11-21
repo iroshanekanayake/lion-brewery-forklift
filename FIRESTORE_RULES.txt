@@ -4,5 +4,8 @@ service cloud.firestore {
     match /logs/{logId} {
       allow read, create, update, delete: if request.auth != null;
     }
+    match /config/{docId} {
+      allow read, create, update, delete: if request.auth != null;
+    }
   }
 }

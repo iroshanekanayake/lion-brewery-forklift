@@ -329,6 +329,11 @@
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <span class="hidden sm:inline">Inspection</span>
                     </button>
+                    <button type="button" id="navTodayBtn" onclick="switchView('today')" title="Today's forklift check status" style="display:none; color: var(--text-muted);"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span class="hidden sm:inline">Today</span>
+                    </button>
                     <button type="button" id="navWeekBtn" onclick="openWeek()" title="Weekly Forklift Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
                         <i class="fa-solid fa-calendar-week"></i>
@@ -967,6 +972,10 @@
         <!-- ===================================================================== -->
         <!-- VIEW 6: WEEKLY FORKLIFT REPORT (Mon-Fri)                              -->
         <!-- ===================================================================== -->
+        <section id="viewToday" class="hidden max-w-4xl mx-auto space-y-4">
+            <div id="todayPanel" class="space-y-4"></div>
+        </section>
+
         <section id="viewWeek" class="hidden max-w-4xl mx-auto space-y-4 wk">
             <div class="neu-card rounded-2xl p-4 space-y-3">
                 <div class="flex flex-wrap items-end gap-3">
@@ -1040,6 +1049,11 @@
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
                 <i class="fa-solid fa-calendar-week text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Weekly</span>
+            </button>
+            <button type="button" id="bnavToday" onclick="switchView('today')" style="display:none"
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
+                <i class="fa-solid fa-list-check text-sm"></i>
+                <span class="text-[10px] font-bold mt-0.5">Today</span>
             </button>
             <button type="button" id="bnavDashboard" onclick="switchView('dashboard')"
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all"
@@ -1810,7 +1824,9 @@ function mergeBackupLogs() {
   ids.forEach(id => { const i = inspectionLogs.findIndex(x => x.id === id); if (i >= 0) inspectionLogs[i] = b[id]; else inspectionLogs.push(b[id]); saveLog(b[id]); });
   inspectionLogs.sort(byNewest);
 }
-function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify({ appSettings, departmentEmployees, fleet, deleteWindowHours })); } catch (e) {} }
+const KEY_CFG_TS = 'forklift_config_ts';
+function cfgPayload() { return { appSettings, departmentEmployees, fleet, deleteWindowHours }; }
+function saveConfig() { try { localStorage.setItem(KEY_CFG, JSON.stringify(cfgPayload())); const ts = Date.now(); localStorage.setItem(KEY_CFG_TS, String(ts)); Cloud.pushConfig(ts); } catch (e) {} }
 function loadConfig() {
   try {
     const c = JSON.parse(localStorage.getItem(KEY_CFG));
@@ -1832,6 +1848,25 @@ function loadConfig() {
     // Persist only after all saved settings have been restored.
     if (Array.isArray(c.fleet) && c.fleet.length && fleet.length < c.fleet.length) saveConfig();
   } catch (e) {}
+}
+/* ---- shared settings (forklifts, operators, supervisors, owners...) : newest change wins, the cloud copy is shared by every phone ---- */
+function applyRemoteConfig(c, ts) {
+  if (c.appSettings) appSettings = { ...appSettings, ...c.appSettings };
+  if (c.departmentEmployees) departmentEmployees = c.departmentEmployees;
+  if (Array.isArray(c.fleet) && c.fleet.length) fleet = c.fleet;
+  if (c.deleteWindowHours > 0) deleteWindowHours = c.deleteWindowHours;
+  try { localStorage.setItem(KEY_CFG, JSON.stringify(cfgPayload())); localStorage.setItem(KEY_CFG_TS, String(ts)); } catch (e) {}
+  try { initApkForm(); if (!$('viewSettings').classList.contains('hidden')) initSettingsView(); if (!$('viewWeek').classList.contains('hidden')) renderWeek(); renderDashboard(); } catch (e) {}
+}
+function handleConfigSnap(doc, pushFn) {
+  const localTs = parseInt(localStorage.getItem(KEY_CFG_TS) || '0', 10) || 0;
+  if (!doc.exists) {                                           // nothing in the cloud yet: the first supervisor phone with saved settings shares them
+    if (!OPERATOR_ONLY && localStorage.getItem(KEY_CFG)) { const ts = localTs || Date.now(); try { localStorage.setItem(KEY_CFG_TS, String(ts)); } catch (e) {} pushFn(ts); }
+    return;
+  }
+  const d = doc.data() || {}, ts = d.updatedAt || 0;
+  if (ts > localTs) { try { applyRemoteConfig(JSON.parse(d.json), ts); } catch (e) {} }
+  else if (localTs > ts && !OPERATOR_ONLY) pushFn(localTs);
 }
 const byNewest = (a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || 0) - (a.createdAt || 0);
 function newLogId(date) { const prefix = 'CHK-' + date.replaceAll('-', '') + '-'; let max = 0; for (const l of inspectionLogs) if (l.id && l.id.startsWith(prefix)) max = Math.max(max, parseInt(l.id.slice(prefix.length), 10) || 0); return prefix + String(max + 1).padStart(3, '0'); }
@@ -1895,13 +1930,14 @@ function switchView(v) {
   _switchView(v);
 }
 function _switchView(v) {
-  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'], week: ['viewWeek', 'navWeekBtn'] };
+  if (v === 'today') renderToday();
+  const map = { dashboard: ['viewDashboard', 'navDashboardBtn'], apk: ['viewApk', 'navApkBtn'], report: ['viewReport', 'navReportBtn'], settings: ['viewSettings', 'navSettingsBtn'], qr: ['viewQr', 'navSettingsBtn'], week: ['viewWeek', 'navWeekBtn'], today: ['viewToday', 'navTodayBtn'] };
   Object.values(map).forEach(([s, b]) => { $(s).classList.add('hidden'); const btn = $(b); btn.style.color = 'var(--text-muted)'; btn.style.backgroundColor = 'transparent'; btn.classList.remove('text-white', 'shadow-md'); });
   const [s, b] = map[v]; $(s).classList.remove('hidden'); const btn = $(b); btn.style.backgroundColor = 'var(--accent-color)'; btn.style.color = ''; btn.classList.add('text-white', 'shadow-md');
   // sync floating bottom nav active state
-  const bnavMap = { dashboard: 'bnavDashboard', apk: 'bnavApk', report: 'bnavReport', settings: 'bnavSettings', qr: 'bnavSettings', week: 'bnavWeek' };
+  const bnavMap = { dashboard: 'bnavDashboard', apk: 'bnavApk', report: 'bnavReport', settings: 'bnavSettings', qr: 'bnavSettings', week: 'bnavWeek', today: 'bnavToday' };
   const activeB = bnavMap[v];
-  ['bnavDashboard', 'bnavApk', 'bnavWeek', 'bnavReport', 'bnavSettings'].forEach(id => {
+  ['bnavDashboard', 'bnavApk', 'bnavWeek', 'bnavToday', 'bnavReport', 'bnavSettings'].forEach(id => {
     const el = document.getElementById(id); if (!el) return;
     if (id === activeB) {
       el.style.backgroundColor = 'var(--accent-color)'; el.style.color = '#ffffff';
@@ -1991,13 +2027,46 @@ function rangeLogs() {
 function hydratePhotos(root) { root.querySelectorAll('img[data-photo]').forEach(async img => { const u = await Photos.get(img.dataset.photo); if (u) { img.src = u; img.style.cursor = 'pointer'; } }); }
 document.addEventListener('click', e => { const t = e.target; if (t.matches && t.matches('img[data-photo]') && t.src) { $('big').src = t.src; $('viewer').classList.add('show'); } });
 
+/* ---- this shift: every forklift, green = passed, red = failed, grey = not checked yet (tap grey to check it now) ---- */
+function shiftStatus() {
+  const sh = Safety.currentShift(), m = {};
+  inspectionLogs.filter(l => l.date === sh.date && Safety.shiftKeyOf(l.shift) === sh.key).forEach(l => { const f = Safety.failedIdx(l).length > 0; m[l.forkliftNo] = (m[l.forkliftNo] === 'fail' || f) ? 'fail' : 'pass'; });
+  return { sh, m };
+}
+function statusPanelHtml() {
+  const { sh, m } = shiftStatus(), names = fleetNames(), done = names.filter(u => m[u]).length, fails = names.filter(u => m[u] === 'fail').length, left = names.length - done;
+  const chip = u => {
+    const st = m[u];
+    const css = st === 'fail' ? 'border-color:#ef4444;background:rgba(239,68,68,.18);color:#f87171;font-weight:800' : st === 'pass' ? 'border-color:#22c55e;background:rgba(34,197,94,.18);color:#4ade80;font-weight:800' : 'border-color:var(--border-color);color:var(--text-main)';
+    const ic = st === 'fail' ? '<i class="fa-solid fa-xmark mr-1"></i>' : st === 'pass' ? '<i class="fa-solid fa-check mr-1"></i>' : '';
+    const act = st ? `openWeek('${esc(u)}','day','${sh.date}')` : `goInspect('${esc(u)}')`;
+    return `<button type="button" onclick="${act}" class="px-2.5 py-1 rounded-full border text-xs" style="${css}">${ic}${esc(u)}</button>`;
+  };
+  return `<div class="neu-card rounded-2xl p-4"><p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">This shift (${sh.label}, ${sh.date}): ${done} of ${names.length} checked${left ? ' \u00B7 ' + left + ' not checked yet' : ''}${fails ? ' \u00B7 ' + fails + ' failed' : ''}</p>
+    <div class="flex flex-wrap gap-1.5 mt-3">${names.map(chip).join('')}</div>
+    <p class="text-[11px] mt-3" style="color: var(--text-muted);"><span style="color:#4ade80">&#9632;</span> Passed &nbsp; <span style="color:#f87171">&#9632;</span> Failed &nbsp; <span>&#9633;</span> Not checked yet. Tap a grey forklift to check it now, tap a green or red one to see its record.</p>
+    ${left ? '' : '<p class="text-xs text-emerald-500 font-semibold mt-2">Every forklift has been checked.</p>'}</div>`;
+}
+function goInspect(u) {
+  switchView('apk');
+  const f = findUnit(u), sh = Safety.currentShift();
+  if (f) { $('formForkliftNo').value = f.unit; onForkliftChange(); }
+  $('formInspectionDate').value = sh.date;
+  const want = sh.key === 'N' ? 'Night' : 'Day', o = [...$('formShiftTime').options].find(x => x.value.startsWith(want)); if (o) $('formShiftTime').value = o.value;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function renderToday() {
+  const el = $('todayPanel'); if (!el) return;
+  const locked = Safety.lockedUnits(inspectionLogs), us = Object.keys(locked);
+  const warn = us.length ? `<div class="rounded-2xl border-2 border-red-500 bg-red-500/10 p-4 text-sm font-extrabold text-red-500"><i class="fa-solid fa-ban mr-1"></i> DO NOT OPERATE: ${us.map(esc).join(', ')}<div class="text-xs font-semibold mt-1" style="color: var(--text-main);">Tell your supervisor. Only a supervisor can clear the defect.</div></div>` : '';
+  el.innerHTML = warn + statusPanelHtml();
+}
 function renderLockPanel() {
   const locked = Safety.lockedUnits(inspectionLogs), us = Object.keys(locked); let h = '';
   if (us.length) h += `<div class="rounded-2xl border-2 border-red-500 bg-red-500/10 p-4 space-y-2"><p class="text-sm font-extrabold text-red-500"><i class="fa-solid fa-ban mr-1"></i> DO NOT OPERATE: ${us.length} forklift${us.length > 1 ? 's' : ''}</p>` +
     us.map(u => locked[u].map(l => `<div class="flex items-center justify-between gap-3 text-xs border-t border-red-500/30 pt-2" style="color: var(--text-main);"><div><strong>${esc(u)}</strong> <span style="color: var(--text-muted);">${esc(l.id)} &bull; ${esc(l.date)}</span><div>${Safety.criticalFails(l).map(i => esc(CHECKLIST_ITEMS[i].slice(4))).join(', ')}</div></div><button type="button" onclick="toggleDefectResolution('${l.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold border shrink-0" style="background-color: var(--bg-card); border-color: var(--border-color);">Clear defect</button></div>`).join('')).join('') + '</div>';
-  const sh = Safety.currentShift(), missed = Safety.missedUnits(inspectionLogs);
-  h += `<div class="neu-card rounded-2xl p-4"><p class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-muted);">Not checked this shift (${sh.label}, ${sh.date}): ${missed.length} of ${fleet.length}</p><div class="flex flex-wrap gap-1.5 mt-2">${missed.length ? missed.map(u => `<span class="px-2 py-0.5 rounded-full border text-xs" style="border-color: var(--border-color); color: var(--text-main);">${esc(u)}</span>`).join('') : '<span class="text-xs text-emerald-500 font-semibold">Every forklift has been checked.</span>'}</div></div>`;
-  $('lockPanel').innerHTML = h;
+  h += statusPanelHtml();
+  $('lockPanel').innerHTML = h; renderToday();
 }
 function renderDashboard() {
   const range = rangeLogs(), q = ($('logSearchInput').value || '').toLowerCase(), failed = l => Safety.failedIdx(l).length > 0;
@@ -2417,6 +2486,9 @@ const Cloud = (() => {
   function loadScript(src) { return new Promise((res, rej) => { const t = document.createElement('script'); t.src = src; t.onload = res; t.onerror = () => rej(new Error('Could not load Firebase files (check internet)')); document.head.appendChild(t); }); }
   function clean(l) { const c = JSON.parse(JSON.stringify(l)); c.photos = {}; if (!c.updatedAt) c.updatedAt = c.createdAt || Date.now(); return c; }
   async function push(l) { if (!ready) return; try { await db.collection('logs').doc(l.id).set(clean(l)); setState('ok'); } catch (e) { setState('err', e.code || e.message); } }
+  let cfgWarned = false;
+  function cfgWarn(e) { if (cfgWarned) return; cfgWarned = true; showToast('Settings not shared yet', 'Add the new rule from FIRESTORE_RULES.txt in the Firebase console (' + (e.code || e.message) + ').', 'fa-triangle-exclamation'); }
+  async function pushConfig(ts) { if (!ready || OPERATOR_ONLY) return; try { await db.collection('config').doc('main').set({ json: JSON.stringify(cfgPayload()), updatedAt: ts }); } catch (e) { cfgWarn(e); } }
   async function remove(id) { if (!ready) return; try { await db.collection('logs').doc(id).delete(); } catch (e) { setState('err', e.code || e.message); } }
   async function onSnap(snap, first) {
     let changed = false;
@@ -2443,11 +2515,12 @@ const Cloud = (() => {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       await firebase.auth().signInAnonymously();
       db = firebase.firestore(); ready = true; let first = true;
+      db.collection('config').doc('main').onSnapshot(doc => handleConfigSnap(doc, pushConfig), cfgWarn);
       db.collection('logs').onSnapshot(snap => { const f = first; first = false; onSnap(snap, f); }, err => setState('err', err.code || err.message));
     } catch (e) { started = false; ready = false; setState('err', e.code || e.message); }
   }
   function info() { const st = $('cloudStatus').dataset.state; showToast(st === 'ok' ? 'Synced' : st === 'busy' ? 'Syncing' : st === 'err' ? 'Sync problem' : 'Not synced', st === 'ok' ? 'Reports are shared with all phones that use this app.' : (reason || 'Working offline. Reports are kept on this phone and will sync later.'), st === 'ok' ? 'fa-cloud' : 'fa-triangle-exclamation'); if (st !== 'ok' && st !== 'busy') { started = false; start(); } }
-  return { start, push, remove, info };
+  return { start, push, remove, info, pushConfig };
 })();
 
 /* ---- start ---- */
@@ -2458,9 +2531,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
   mergeBackupLogs();
   Cloud.start();
+  if (OPERATOR_ONLY) ['bnavToday', 'navTodayBtn'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
   if (OPERATOR_ONLY) ['bnavDashboard', 'bnavReport', 'bnavSettings', 'navDashboardBtn', 'navReportBtn', 'navSettingsBtn'].forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
   renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
-  setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); }, 60000);
+  setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); else renderToday(); }, 60000);
 });
 
     </script>

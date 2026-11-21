@@ -91,3 +91,12 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## v6.7
 - "Office copy: all forklifts" no longer adds the summary page. The PDF now holds one full weekly sheet per forklift (one page each, same layout as the single-forklift sheet), for every forklift that has at least one inspection that week.
 - Operator-only build support: set OPERATOR_ONLY = true at the top of the switchView code to hide Home / Monthly / Settings completely (see the separate operator zip). Service worker v23.
+
+## v7: shared settings
+- Forklifts, operators per department, supervisors, owners/models and the edit window are now shared through the cloud (document config/main). The newest change wins. The PIN is NOT shared (it stays on the supervisor's phone). The operator app only reads these settings.
+- One-time Firebase step: Firestore Database > Rules > paste the new FIRESTORE_RULES.txt (it adds a "config" rule) > Publish.
+- The first supervisor phone that opens this version with its saved settings uploads them; other phones then take them from the cloud.
+
+## v7.1: this-shift status
+- Home: the "Not checked this shift" box is now "This shift": every forklift as a chip, green = passed, red = failed, grey = not checked yet. Tap a grey chip to open the Inspect form with that forklift (and the current shift) selected; tap a green or red chip to see its record.
+- Operator app: a third tab "Today" shows the same panel (plus a DO NOT OPERATE notice if a forklift is locked). Service worker v25.
