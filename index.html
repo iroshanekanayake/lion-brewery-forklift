@@ -219,6 +219,10 @@
         .wk th, .wk td { border:1px solid var(--line); padding:5px 6px; text-align:center; vertical-align:middle; }
         .wk td.l, .wk th.l { text-align:left; }
         .wk .p { color:#16a34a; font-weight:800; } .wk .f { color:#dc2626; font-weight:800; background:rgba(220,38,38,.12); } .wk .o { color:var(--mute); }
+        .langbtn { padding:8px 18px; border-radius:12px; font-size:13px; font-weight:700; border:1px solid var(--border-color); color:var(--text-main); background:transparent; }
+        .langbtn.on { background:var(--accent-color); color:#fff; border-color:var(--accent-color); }
+        body.lang-si, body.lang-si * { letter-spacing:normal !important; font-family:'Noto Sans Sinhala','Iskoola Pota','Nirmala UI',Inter,sans-serif; }
+        body.lang-si .fa-solid, body.lang-si .fa-regular, body.lang-si .fa-brands { font-family:'Font Awesome 6 Free','Font Awesome 6 Brands' !important; }
         .wk .seg button, .wkchip { padding:8px 12px; border-radius:12px; font-size:12px; font-weight:700; border:1px solid var(--border-color); color:var(--text-main); background:transparent; }
         .wk .seg button.on, .wkchip.on { background:var(--accent-color); color:#fff; border-color:var(--accent-color); }
         .wkchip { min-width:62px; text-align:center; line-height:1.25; } .wkchip small { display:block; font-weight:600; opacity:.8; }
@@ -333,6 +337,11 @@
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all">
                         <i class="fa-solid fa-list-check"></i>
                         <span class="hidden sm:inline">Today</span>
+                    </button>
+                    <button type="button" id="navLangBtn" onclick="openLangSheet()" title="Language" style="display:none; color: var(--text-muted);"
+                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all">
+                        <i class="fa-solid fa-language"></i>
+                        <span class="hidden sm:inline">Language</span>
                     </button>
                     <button type="button" id="navWeekBtn" onclick="openWeek()" title="Weekly Forklift Report"
                         class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all" style="color: var(--text-muted);">
@@ -791,6 +800,11 @@
 
                 <form onsubmit="saveSystemSettings(event)" class="p-6 space-y-5">
                     <div>
+                        <label class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Language</label>
+                        <div class="flex gap-2"><button type="button" id="langEn" class="langbtn" onclick="setLang('en')">English</button><button type="button" id="langSi" class="langbtn" onclick="setLang('si')">සිංහල</button></div>
+                        <p class="text-[11px] mt-1.5" style="color: var(--text-muted);">Only this phone changes language.</p>
+                    </div>
+                    <div>
                         <label for="settingTheme" class="block text-xs font-bold uppercase mb-1.5" style="color: var(--text-main);">Application Theme Preset</label>
                         <select id="settingTheme" onchange="changeTheme(this.value)"
                             class="w-full border rounded-xl px-3.5 py-2.5 text-sm font-bold focus:outline-none" style="background-color: var(--bg-main); border-color: var(--border-color); color: var(--text-main);">
@@ -1054,6 +1068,11 @@
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
                 <i class="fa-solid fa-list-check text-sm"></i>
                 <span class="text-[10px] font-bold mt-0.5">Today</span>
+            </button>
+            <button type="button" id="bnavLang" onclick="openLangSheet()" style="display:none"
+                class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all">
+                <i class="fa-solid fa-language text-sm"></i>
+                <span class="text-[10px] font-bold mt-0.5">Language</span>
             </button>
             <button type="button" id="bnavDashboard" onclick="switchView('dashboard')"
                 class="bnav-item flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all"
@@ -1917,10 +1936,10 @@ function cancelEdit() { const l = inspectionLogs.find(x => x.id === editingId); 
 /* Operators only need Inspect + Weekly. Home, Monthly and Settings need the supervisor PIN. */
 /* OPERATOR_ONLY = true builds the operator app: only Inspect + Weekly, no Home / Monthly / Settings at all. */
 const OPERATOR_ONLY = false;
-const PIN_VIEWS = ['dashboard', 'report', 'settings', 'qr'];
+const PIN_VIEWS = ['report', 'settings', 'qr'];     // Home is open; Monthly and Settings need the supervisor PIN
 function switchView(v) {
   if (v !== 'apk' && editingId) clearEditState();
-  if (OPERATOR_ONLY && PIN_VIEWS.includes(v)) return;
+  if (OPERATOR_ONLY && (v === 'dashboard' || PIN_VIEWS.includes(v))) return;
   if (PIN_VIEWS.includes(v)) {
     if (Pin.isUnlocked()) return _switchView(v);
     requireSupervisor().then(ok => { if (ok) _switchView(v); });
@@ -2523,6 +2542,119 @@ const Cloud = (() => {
   return { start, push, remove, info, pushConfig };
 })();
 
+/* ===== language: English / Sinhala (per phone, not shared) ===== */
+const LANG_KEY = OPERATOR_ONLY ? 'forklift_lang_op' : 'forklift_lang';
+let LANG = 'en';
+try { if (localStorage.getItem(LANG_KEY) === 'si') LANG = 'si'; } catch (e) {}
+const SI = {"Forklift Safety & Pre-Check": "ෆෝක්ලිෆ්ට් ආරක්ෂාව සහ පෙර-පරීක්ෂාව", "Notification": "දැනුම්දීම", "Action completed successfully.": "ක්‍රියාව සාර්ථකව අවසන් විය.", "Inspection": "පරීක්ෂාව", "Inspect": "පරීක්ෂා", "Today": "අද", "Weekly": "සතිපතා", "Dashboard": "ප්‍රධාන පුවරුව", "Monthly": "මාසික", "Home": "මුල්පිටුව", "Settings": "සැකසුම්", "Language": "භාෂාව", "Daily": "දෛනික", "Safety Officer Analytics & Fleet Overview": "ආරක්ෂක නිලධාරී විශ්ලේෂණ සහ ෆෝක්ලිෆ්ට් සමස්ත දැක්ම", "Live Feed": "සජීවී", "Real-time forklift pre-check compliance, shift logs, and defect resolution across the whole fleet.": "සියලුම ෆෝක්ලිෆ්ට් වල පෙර-පරීක්ෂා අනුකූලතාව, ෂිෆ්ට් වාර්තා සහ දෝෂ විසඳීම් සජීවීව.", "Export CSV": "CSV බාගන්න", "New Inspection (APK)": "නව පරීක්ෂාවක් (APK)", "Scan QR": "QR ස්කෑන් කරන්න", "Passed": "සමත්", "Failed": "අසමත්", "Not checked yet. Tap a grey forklift to check it now, tap a green or red one to see its record.": "තවම පරීක්ෂා කර නැත. අළු පාට ෆෝක්ලිෆ්ට් එකක් ඔබා දැන්ම පරීක්ෂා කරන්න; කොළ හෝ රතු එකක් ඔබා එහි වාර්තාව බලන්න.", "Every forklift has been checked.": "සියලුම ෆෝක්ලිෆ්ට් පරීක්ෂා කර ඇත.", "Total Inspections": "මුළු පරීක්ෂා ගණන", "21-Point Check": "ලක්ෂ්‍ය 21 පරීක්ෂාව", "Active Fleet Checked": "පරීක්ෂා කළ ක්‍රියාකාරී ෆෝක්ලිෆ්ට්", "Open Defects / Issues": "විවෘත දෝෂ / ගැටලු", "Requires Maintenance Action": "නඩත්තු ක්‍රියාමාර්ග අවශ්‍යයි", "No inspections yet": "තවම පරීක්ෂා නැත", "Average Meter (per forklift)": "සාමාන්‍ය මීටරය (ෆෝක්ලිෆ්ට් එකකට)", "HRS": "පැය", "Forklift Engine / Battery Meter": "ෆෝක්ලිෆ්ට් එන්ජින් / බැටරි මීටරය", "Verified HRS": "තහවුරු කළ පැය", "Inspections & Running Hours (HRS) Trend": "පරීක්ෂා සහ ධාවන පැය (HRS) ප්‍රවණතාව", "Comparative pre-check volume and average hour-meter telemetry": "පෙර-පරීක්ෂා ප්‍රමාණය සහ සාමාන්‍ය පැය-මීටර කියවීම් සංසන්දනය", "Inspections Count": "පරීක්ෂා ගණන", "Avg Meter (HRS)": "සාමාන්‍ය මීටරය (HRS)", "Shift & Fleet Distribution": "ෂිෆ්ට් සහ ෆෝක්ලිෆ්ට් බෙදීම", "12-Hour Shift coverage and contractor ownership": "පැය 12 ෂිෆ්ට් ආවරණය සහ කොන්ත්‍රාත්කරු අයිතිය", "Day Shift (06:00 AM - 06:00 PM)": "දවල් ෂිෆ්ට් (පෙ.ව. 06:00 - ප.ව. 06:00)", "Night Shift (06:00 PM - 06:00 AM)": "රාත්‍රී ෂිෆ්ට් (ප.ව. 06:00 - පෙ.ව. 06:00)", "Day shift": "දවල් ෂිෆ්ට්", "Night shift": "රාත්‍රී ෂිෆ්ට්", "Day": "දවල්", "Night": "රාත්‍රී", "Forklift Owner Breakdown": "ෆෝක්ලිෆ්ට් අයිතිකරුවන් අනුව", "Kanban Issue & Defect Tracker": "ගැටලු සහ දෝෂ නිරීක්ෂණය", "Failed checklist items reported by operators requiring safety officer verification": "ආරක්ෂක නිලධාරියාගේ තහවුරු කිරීම අවශ්‍ය, ක්‍රියාකරුවන් වාර්තා කළ අසමත් පරීක්ෂා අයිතම", "No forklift defects reported. All units safe for operation!": "ෆෝක්ලිෆ්ට් දෝෂ වාර්තා වී නැත. සියලුම ඒකක ක්‍රියාත්මක කිරීමට ආරක්ෂිතයි!", "Recent Pre-Check Inspection Logs": "මෑත පෙර-පරීක්ෂා වාර්තා", "Click \"View Sheet\" on any entry to inspect or print the official A4 Forklift Pre-Check Sheet": "නිල A4 ෆෝක්ලිෆ්ට් පෙර-පරීක්ෂා පත්‍රිකාව බැලීමට හෝ මුද්‍රණයට ඕනෑම පේළියක \"පත්‍රිකාව බලන්න\" ඔබන්න", "Date & Shift": "දිනය සහ ෂිෆ්ට්", "Forklift": "ෆෝක්ලිෆ්ට්", "Owner / Model": "අයිතිකරු / ආකෘතිය", "Department": "අංශය", "Operator Name": "ක්‍රියාකරුගේ නම", "Supervisor": "අධීක්ෂක", "Meter (HRS)": "මීටරය (HRS)", "Status": "තත්ත්වය", "STATUS": "තත්ත්වය", "Official Sheet": "නිල පත්‍රිකාව", "View Sheet": "පත්‍රිකාව බලන්න", "Editing record": "වාර්තාව සංස්කරණය කරමින්", "Cancel": "අවලංගු කරන්න", "Mobile Operator APK": "ක්‍රියාකරු APK", "Lion Brewery (Biyagama)": "ලයන් බ්‍රුවරි (බියගම)", "Forklift Daily Pre-Check List": "ෆෝක්ලිෆ්ට් දෛනික පෙර-පරීක්ෂා ලැයිස්තුව", "Complete all 21 mandatory safety checks prior to operating machinery.": "යන්ත්‍රය ක්‍රියාත්මක කිරීමට පෙර අනිවාර්ය ආරක්ෂක පරීක්ෂා 21ම සම්පූර්ණ කරන්න.", "Mandatory Plant Safety Rules": "කර්මාන්තශාලාවේ අනිවාර්ය ආරක්ෂක නීති", "Forklifts must be properly cleaned before and after operation.": "ක්‍රියාත්මක කිරීමට පෙරත් පසුවත් ෆෝක්ලිෆ්ට් නිසි ලෙස පිරිසිදු කළ යුතුයි.", "Always maintain a maximum speed limit of 5 KMH": "සැමවිටම උපරිම වේග සීමාව පැයට කි.මී. 5ක් ලෙස තබාගන්න", "inside plant premises.": "කර්මාන්තශාලා පරිශ්‍රය තුළ.", "Appropriate Personal Protective Equipment (PPE) and seat belt must be worn at all times while on duty.": "රාජකාරියේ සිටින සියලුම වේලාවන්හි සුදුසු පුද්ගලික ආරක්ෂක ආම්පන්න (PPE) සහ සීට් බෙල්ට් පැළඳිය යුතුයි.", "Forklift Number: *": "ෆෝක්ලිෆ්ට් අංකය: *", "Scan forklift QR with camera": "කැමරාවෙන් ෆෝක්ලිෆ්ට් QR ස්කෑන් කරන්න", "Inspection Date: *": "පරීක්ෂා කළ දිනය: *", "Forklift Owner: *": "ෆෝක්ලිෆ්ට් අයිතිකරු: *", "Forklift Model / Fuel Type: *": "ෆෝක්ලිෆ්ට් ආකෘතිය / ඉන්ධන වර්ගය: *", "Gas": "ගෑස්", "Battery": "බැටරි", "Diesel": "ඩීසල්", "Petrol": "පෙට්‍රල්", "Shift Time: *": "ෂිෆ්ට් වේලාව: *", "Running Hours Meter (HRS): *": "ධාවන පැය මීටරය (HRS): *", "Department (Lion Location): *": "අංශය (ලයන් ස්ථානය): *", "Logistic Division": "ලොජිස්ටික් අංශය", "Logistic Division & Procurement Division - Meegoda": "ලොජිස්ටික් අංශය සහ ප්‍රසම්පාදන අංශය - මීගොඩ", "Procurement Division - HO": "ප්‍රසම්පාදන අංශය - ප්‍රධාන කාර්යාලය", "Procurement Division - Meegoda": "ප්‍රසම්පාදන අංශය - මීගොඩ", "Operator Name: *": "ක්‍රියාකරුගේ නම: *", "Supervisor Name: *": "අධීක්ෂකගේ නම: *", "21-Point Pre-Check Inspection": "ලක්ෂ්‍ය 21 පෙර-පරීක්ෂාව", "Select Pass, Fail, or N/A for each item": "එක් එක් අයිතමයට සමත්, අසමත් හෝ අදාළ නැත තෝරන්න", "Mark All Pass": "සියල්ල සමත් ලෙස සලකුණු කරන්න", "Pass": "සමත්", "Fail": "අසමත්", "N/A": "අදාළ නැත", "PASS": "සමත්", "FAIL": "අසමත්", "FAILED": "අසමත්", "ALL PASS": "සියල්ල සමත්", "All Pass": "සියල්ල සමත්", "Remarks / Defect Details (required if any item is Fail):": "සටහන් / දෝෂ විස්තර (කිසියම් අයිතමයක් අසමත් නම් අනිවාර්යයි):", "Submit Pre-Check Inspection": "පෙර-පරීක්ෂාව යවන්න", "Save Changes": "වෙනස්කම් සුරකින්න", "System & Fleet Configuration Settings": "පද්ධති සහ ෆෝක්ලිෆ්ට් සැකසුම්", "Customize reporting period, fleet owners, models, departments, and supervisors.": "වාර්තා කාලය, ෆෝක්ලිෆ්ට් අයිතිකරුවන්, ආකෘති, අංශ සහ අධීක්ෂකවරුන් සකසන්න.", "Reset Defaults": "මුල් සැකසුම් නැවත පිහිටුවන්න", "Application Theme Preset": "යෙදුමේ තේමාව", "Dark Coral (Default)": "තද කොරල් (පෙරනිමි)", "Sky Neumorphism": "අහස් නියුමෝර්ෆික්", "Official Corporate": "නිල සමාගම්", "dark coral": "තද කොරල්", "sky neumorphism": "අහස් නියුමෝර්ෆික්", "official corporate": "නිල සමාගම්", "Follow today's date automatically (reporting year and month)": "අදට අනුව වාර්තා වර්ෂය සහ මාසය ස්වයංක්‍රීයව තෝරන්න", "Active Reporting Month": "වාර්තා කරන මාසය", "Departments / Lion Locations (Comma Separated)": "අංශ / ලයන් ස්ථාන (කොමා වලින් වෙන් කරන්න)", "Forklift Models (Comma Separated)": "ෆෝක්ලිෆ්ට් ආකෘති (කොමා වලින් වෙන් කරන්න)", "Forklift Owners (Comma Separated)": "ෆෝක්ලිෆ්ට් අයිතිකරුවන් (කොමා වලින් වෙන් කරන්න)", "Authorized Supervisors (Comma Separated)": "අවසර ලත් අධීක්ෂකවරු (කොමා වලින් වෙන් කරන්න)", "Position: Forklift - Supervisor · Lion Location: Logistic Division": "තනතුර: ෆෝක්ලිෆ්ට් - අධීක්ෂක · ලයන් ස්ථානය: ලොජිස්ටික් අංශය", "Hours a report can be deleted after saving": "සුරැකීමෙන් පසු වාර්තාවක් මකා දැමිය හැකි පැය ගණන", "Save Settings": "සැකසුම් සුරකින්න", "Supervisor PIN": "අධීක්ෂක PIN", "Not set": "සකසා නැත", "You will be asked to create a PIN the first time it is needed.": "PIN එක මුලින්ම අවශ්‍ය වන විට එය සෑදීමට ඔබෙන් ඉල්ලනු ඇත.", "Lock now": "දැන් ලොක් කරන්න", "Change PIN": "PIN වෙනස් කරන්න", "Forklift Fleet (": "ෆෝක්ලිෆ්ට් ලැයිස්තුව (", "units)": "ඒකක)", "Add any forklift number or name. Owner and model are filled in automatically on the inspection form.": "ඕනෑම ෆෝක්ලිෆ්ට් අංකයක් හෝ නමක් එකතු කරන්න. අයිතිකරු සහ ආකෘතිය පරීක්ෂා ෆෝරමයේ ස්වයංක්‍රීයව පිරෙනවා.", "Add forklift": "ෆෝක්ලිෆ්ට් එකතු කරන්න", "Open QR label sheet": "QR ලේබල් පත්‍රය විවෘත කරන්න", "Department Employee Management": "අංශ සේවක කළමනාකරණය", "Select a department to view, add, or remove operators instantly.": "ක්‍රියාකරුවන් බැලීමට, එකතු කිරීමට හෝ ඉවත් කිරීමට අංශයක් තෝරන්න.", "Select Department": "අංශය තෝරන්න", "Add New Operator Name": "නව ක්‍රියාකරුගේ නම එකතු කරන්න", "Add": "එකතු කරන්න", "Current Operators in Selected Department": "තෝරාගත් අංශයේ දැනට සිටින ක්‍රියාකරුවන්", "Year": "වර්ෂය", "Month": "මාසය", "Print / Save as PDF": "මුද්‍රණය / PDF ලෙස සුරකින්න", "This week": "මේ සතිය", "Print / PDF: this forklift": "මුද්‍රණය / PDF: මේ ෆෝක්ලිෆ්ට්", "Office copy: all forklifts": "කාර්යාල පිටපත: සියලු ෆෝක්ලිෆ්ට්", "QR labels for forklifts": "ෆෝක්ලිෆ්ට් සඳහා QR ලේබල්", "Print, laminate and stick one on each forklift. Scanning opens this app with that forklift already chosen.": "මුද්‍රණය කර ලැමිනේට් කර එක් එක් ෆෝක්ලිෆ්ට් එකේ ඇලවන්න. ස්කෑන් කළ විට මේ යෙදුම ඒ ෆෝක්ලිෆ්ට් එක තෝරාගෙන විවෘත වේ.", "Back": "ආපසු", "App address (the link of this app)": "යෙදුමේ ලිපිනය (මේ යෙදුමේ ලින්ක් එක)", "From": "සිට", "To": "දක්වා", "Size": "ප්‍රමාණය", "6 per A4 (large)": "A4 එකකට 6ක් (විශාල)", "12 per A4 (medium)": "A4 එකකට 12ක් (මධ්‍යම)", "20 per A4 (small)": "A4 එකකට 20ක් (කුඩා)", "Scan forklift QR": "ෆෝක්ලිෆ්ට් QR ස්කෑන් කරන්න", "Flash off": "ෆ්ලෑෂ් නැත", "Flash on": "ෆ්ලෑෂ් ඇත", "Close": "වසන්න", "Point the camera at the QR label on the forklift.": "කැමරාව ෆෝක්ලිෆ්ට් එකේ QR ලේබලයට දිශාවට අල්ලන්න.", "Official A4 Forklift Pre-Check Sheet": "නිල A4 ෆෝක්ලිෆ්ට් පෙර-පරීක්ෂා පත්‍රිකාව", "Print / Save PDF": "මුද්‍රණය / PDF සුරකින්න", "Only this phone changes language.": "භාෂාව වෙනස් වන්නේ මේ ෆෝන් එකේ පමණයි.", "January": "ජනවාරි", "February": "පෙබරවාරි", "March": "මාර්තු", "April": "අප්‍රේල්", "May": "මැයි", "June": "ජූනි", "July": "ජූලි", "August": "අගෝස්තු", "September": "සැප්තැම්බර්", "October": "ඔක්තෝබර්", "November": "නොවැම්බර්", "December": "දෙසැම්බර්", "Jan": "ජන", "Feb": "පෙබ", "Mar": "මාර්", "Apr": "අප්‍රේ", "Jun": "ජූනි", "Jul": "ජූලි", "Aug": "අගෝ", "Sep": "සැප්", "Oct": "ඔක්", "Nov": "නොවැ", "Dec": "දෙසැ", "Mon": "සඳු", "Tue": "අඟ", "Wed": "බදා", "Thu": "බ්‍රහ", "Fri": "සිකු", "Sat": "සෙන", "Sun": "ඉරි", "Monday": "සඳුදා", "Tuesday": "අඟහරුවාදා", "Wednesday": "බදාදා", "Thursday": "බ්‍රහස්පතින්දා", "Friday": "සිකුරාදා", "Saturday": "සෙනසුරාදා", "Sunday": "ඉරිදා", "● Synced": "● සමමුහුර්තයි", "● Not synced": "● සමමුහුර්ත නැත", "● Sync problem": "● සමමුහුර්ත ගැටලුවක්", "● Syncing...": "● සමමුහුර්ත වෙමින්...", "Synced": "සමමුහුර්තයි", "Syncing": "සමමුහුර්ත වෙමින්", "Sync problem": "සමමුහුර්ත ගැටලුවක්", "Not synced": "සමමුහුර්ත නැත", "Reports are shared with all phones that use this app.": "වාර්තා මේ යෙදුම භාවිතා කරන සියලුම ෆෝන් වල බෙදාගැනේ.", "Working offline. Reports are kept on this phone and will sync later.": "අන්තර්ජාලය නැත. වාර්තා මේ ෆෝන් එකේ තබාගෙන පසුව සමමුහුර්ත කරනවා.", "No internet": "අන්තර්ජාලය නැත", "01. Hour Meter / Running Hours Check": "01. පැය මීටරය / ධාවන පැය පරීක්ෂාව", "02. Head lights": "02. ඉදිරි පහන්", "03. Signal lights": "03. සංඥා පහන්", "04. Brake lights": "04. තිරිංග පහන්", "05. Reverse lights": "05. පසුපස (රිවස්) පහන්", "06. Parking lights": "06. නවතන (පාකින්) පහන්", "07. Spinning light": "07. කැරකෙන (ස්පිනින්) පහන", "08. Horn working": "08. හෝන් එක ක්‍රියා කරයි", "09. Safety belts": "09. ආරක්ෂිත පටි (සීට් බෙල්ට්)", "10. Windshield clean": "10. ඉදිරිපස වීදුරුව පිරිසිදුයි", "11. Side mirrors condition": "11. පැති කැඩපත් තත්ත්වය", "12. Fork movement": "12. ෆෝක් චලනය", "13. Reverse horn": "13. රිවස් හෝන් එක", "14. Brake check": "14. තිරිංග පරීක්ෂාව", "15. Any exterior damage": "15. බාහිර හානි තිබේද", "16. All tires' conditions": "16. සියලු ටයර් වල තත්ත්වය", "17. Battery condition": "17. බැටරි තත්ත්වය", "18. Any leakages": "18. කාන්දු වීම් තිබේද", "19. Power steering": "19. පවර් ස්ටියරින්", "20. Hand brake": "20. හැන්ඩ් බ්‍රේක් එක", "21. Workability of handles & locks are satisfactory": "21. හැන්ඩල් සහ ලොක් වල ක්‍රියාකාරීත්වය තෘප්තිකරයි", "Operator": "ක්‍රියාකරු", "Hour meter": "පැය මීටරය", "Time": "වේලාව", "Shift": "ෂිෆ්ට්", "Remarks": "සටහන්", "Date": "දිනය", "Owner": "අයිතිකරු", "Model": "ආකෘතිය", "Operator:": "ක්‍රියාකරු:", "Supervisor:": "අධීක්ෂක:", "Shift:": "ෂිෆ්ට්:", "Time:": "වේලාව:", "Hour Meter:": "පැය මීටරය:", "Date:": "දිනය:", "Department:": "අංශය:", "Owner:": "අයිතිකරු:", "Forklift No:": "ෆෝක්ලිෆ්ට් අංකය:", "Model / Fuel:": "ආකෘතිය / ඉන්ධන:", "Log ID:": "වාර්තා අංකය:", "No remarks provided.": "සටහන් නැත.", "Full record sheet (A4)": "සම්පූර්ණ වාර්තා පත්‍රිකාව (A4)", "Edit": "සංස්කරණය", "Editing": "සංස්කරණය", "No inspection recorded for this forklift on this day.": "මේ දවසේ මේ ෆෝක්ලිෆ්ට් එක සඳහා පරීක්ෂාවක් වාර්තා වී නැත.", "No inspections recorded for this forklift this week.": "මේ සතියේ මේ ෆෝක්ලිෆ්ට් එක සඳහා පරීක්ෂා වාර්තා වී නැත.", "No inspections were recorded in this week.": "මේ සතියේ කිසිදු පරීක්ෂාවක් වාර්තා වී නැත.", "Nothing to print": "මුද්‍රණය කිරීමට කිසිවක් නැත", "DO NOT OPERATE": "ක්‍රියාත්මක නොකරන්න", "Tell your supervisor. Only a supervisor can clear the defect.": "ඔබේ අධීක්ෂකට කියන්න. දෝෂය ඉවත් කළ හැක්කේ අධීක්ෂකට පමණයි.", "Clear defect": "දෝෂය ඉවත් කරන්න", "Mark Cleared": "විසඳූ ලෙස සලකුණු කරන්න", "Mark cleared": "විසඳූ ලෙස සලකුණු කරන්න", "Re-open": "නැවත විවෘත කරන්න", "Cleared": "විසඳා ඇත", "Active": "ක්‍රියාකාරී", "Cleared & Safe": "විසඳා ඇත සහ ආරක්ෂිතයි", "Cleared by": "විසඳූවේ", "Defect cleared by:": "දෝෂය විසඳූවේ:", "Defect resolved": "දෝෂය විසඳා ඇත", "Defects cleared": "විසඳූ දෝෂ", "Defects still open": "තවම විවෘත දෝෂ", "Defect Alert": "දෝෂ අනතුරු ඇඟවීම", "In Maintenance": "නඩත්තුවේ", "What was done to fix it": "එය හදන්න කළ දේ", "Reason:": "හේතුව:", "e.g. Brake pads replaced, tested OK": "උදා: තිරිංග පෑඩ් මාරු කළා, පරීක්ෂා කළා, හරි", "Locked": "ලොක් කර ඇත", "Critical": "බරපතල", "Critical Fails": "බරපතල අසමත්වීම්", "Failed items": "අසමත් අයිතම", "Create supervisor PIN": "අධීක්ෂක PIN එකක් සාදන්න", "Choose a new PIN": "නව PIN එකක් තෝරන්න", "Repeat the PIN": "PIN එක නැවත ඇතුළත් කරන්න", "Enter your 4-digit PIN": "ඔබේ ඉලක්කම් 4ක PIN එක ඇතුළත් කරන්න", "Current PIN": "දැන් තියෙන PIN එක", "New 4-digit PIN": "නව ඉලක්කම් 4ක PIN එක", "Forgot PIN?": "PIN එක අමතක වුණාද?", "Reset PIN": "PIN එක යළි සකසන්න", "Save PIN": "PIN සුරකින්න", "Continue": "ඉදිරියට", "Yes": "ඔව්", "OK": "හරි", "Recovery code": "ප්‍රතිසාධන කේතය", "I wrote it down": "මම ලියාගත්තා", "Write this down and keep it with the Safety Officer. It is shown only once and is the only way to reset a forgotten PIN.": "මෙය ලියාගෙන ආරක්ෂක නිලධාරී ළඟ තබාගන්න. මෙය පෙන්වන්නේ එක් වරක් පමණි, අමතක වූ PIN එකක් යළි සැකසීමට ඇති එකම ක්‍රමය මෙයයි.", "Enter the code you wrote down when the PIN was created.": "PIN එක සෑදූ විට ඔබ ලියාගත් කේතය ඇතුළත් කරන්න.", "Needed to clear defects, delete reports and remove forklifts.": "දෝෂ ඉවත් කිරීමට, වාර්තා මකා දැමීමට සහ ෆෝක්ලිෆ්ට් ඉවත් කිරීමට මෙය අවශ්‍යයි.", "Locks again after 5 minutes.": "විනාඩි 5කට පසු නැවත ලොක් වේ.", "The PIN must be 4 digits.": "PIN එක ඉලක්කම් 4ක් විය යුතුයි.", "The new PIN must be 4 digits.": "නව PIN එක ඉලක්කම් 4ක් විය යුතුයි.", "The two PINs do not match.": "PIN දෙක ගැළපෙන්නේ නැහැ.", "Too many wrong tries. Locked for 1 minute.": "වැරදි උත්සාහ ඉතා වැඩියි. විනාඩි 1කට ලොක් කළා.", "Choose who is clearing it.": "එය විසඳන්නේ කවුදැයි තෝරන්න.", "Write what was done to fix it.": "එය හදන්න කළ දේ ලියන්න.", "Record not found.": "වාර්තාව හමු වුණේ නැහැ.", "PIN": "PIN", "Supervisor only": "අධීක්ෂකට පමණයි", "Action needed": "ක්‍රියාමාර්ගයක් අවශ්‍යයි", "Already in the list": "දැනටමත් ලැයිස්තුවේ ඇත", "Already recorded": "දැනටමත් වාර්තා වී ඇත", "CSV Exported": "CSV බාගත කළා", "Camera not available": "කැමරාව නැහැ", "Checklist Updated": "ලැයිස්තුව යාවත්කාලීන කළා", "All 21 items marked as Pass.": "අයිතම 21ම සමත් ලෙස සලකුණු කළා.", "Defect Status Updated": "දෝෂ තත්ත්වය යාවත්කාලීන කළා", "Forklift added": "ෆෝක්ලිෆ්ට් එකතු කළා", "Inspection updated": "පරීක්ෂාව යාවත්කාලීන කළා", "Name needed": "නමක් අවශ්‍යයි", "Type the forklift number or name.": "ෆෝක්ලිෆ්ට් අංකය හෝ නම ටයිප් කරන්න.", "Nothing to export": "බාගැනීමට කිසිවක් නැත", "There are no records for this choice.": "මේ තේරීම සඳහා වාර්තා නැත.", "Photo problem": "ඡායාරූප ගැටලුවක්", "Remarks needed": "සටහන් අවශ්‍යයි", "Report deleted": "වාර්තාව මකා දැමුවා", "Settings restored. The forklift list and reports were not changed.": "සැකසුම් යළි පිහිටුවා ඇත. ෆෝක්ලිෆ්ට් ලැයිස්තුවට සහ වාර්තා වලට වෙනසක් වී නැහැ.", "Saving is off": "සුරැකීම අක්‍රියයි", "This browser cannot store records. Export CSV often.": "මේ බ්‍රවුසරයට වාර්තා ගබඩා කළ නොහැක. නිතර CSV බාගන්න.", "Saving problem": "සුරැකීමේ ගැටලුවක්", "Settings Saved": "සැකසුම් සුරැකුවා", "System configuration successfully updated.": "පද්ධති සැකසුම් සාර්ථකව යාවත්කාලීන කළා.", "Settings not shared yet": "සැකසුම් තවම බෙදා ගෙන නැහැ", "Theme Updated": "තේමාව යාවත්කාලීන කළා", "Unknown forklift code": "නොදන්නා ෆෝක්ලිෆ්ට් කේතයක්", "Inspection Submitted": "පරීක්ෂාව යවන ලදී", "Operator Added": "ක්‍රියාකරු එකතු කළා", "Operator Removed": "ක්‍රියාකරු ඉවත් කළා", "Open the app from the https link, or choose the forklift by hand.": "යෙදුම https ලින්ක් එකෙන් විවෘත කරන්න, නැත්නම් ෆෝක්ලිෆ්ට් එක අතින් තෝරන්න.", "Camera is blocked. Allow camera for this app in the browser settings, or choose the forklift by hand.": "කැමරාව අවහිරයි. බ්‍රවුසර සැකසුම් වල මේ යෙදුමට කැමරාව ඉඩ දෙන්න, නැත්නම් ෆෝක්ලිෆ්ට් එක අතින් තෝරන්න.", "Starting camera...": "කැමරාව ආරම්භ කරමින්...", "Scanner could not load. Connect to the internet once, then try again.": "ස්කෑනරය පූරණය වුණේ නැහැ. එක වරක් අන්තර්ජාලයට සම්බන්ධ වී නැවත උත්සාහ කරන්න.", "This QR is not a forklift label from this app. Try again.": "මේ QR එක මේ යෙදුමේ ෆෝක්ලිෆ්ට් ලේබලයක් නොවේ. නැවත උත්සාහ කරන්න.", "This phone does not allow the flash from the browser. Switch on the phone's own flashlight instead.": "මේ ෆෝන් එක බ්‍රවුසරයෙන් ෆ්ලෑෂ් එකට ඉඩ දෙන්නේ නැහැ. ඒ වෙනුවට ෆෝන් එකේම ටෝච් එක දාගන්න.", "Could not read that picture.": "ඒ පින්තූරය කියවිය නොහැකි වුණා.", "Could not load Firebase files (check internet)": "Firebase ගොනු පූරණය කළ නොහැකි වුණා (අන්තර්ජාලය බලන්න)", "Kept in backup storage and will be retried.": "උපස්ථ ගබඩාවේ තබා ඇත, නැවත උත්සාහ කරනවා.", "Not saved.": "සුරැකුවේ නැහැ.", "Its past reports stay in the records.": "එහි පැරණි වාර්තා වාර්තා වල ඉතිරි වේ.", "Overall": "සමස්ත", "Inspections": "පරීක්ෂා", "Forklifts inspected": "පරීක්ෂා කළ ෆෝක්ලිෆ්ට්", "Pass rate": "සමත් අනුපාතය", "% Pass Rate": "% සමත් අනුපාතය", "Inspections with Fail": "අසමත් වූ පරීක්ෂා", "Days checked": "පරීක්ෂා කළ දින", "Items that failed most": "වැඩිම වාර ගණනක් අසමත් වූ අයිතම", "Repeat problems": "නැවත නැවත එන ගැටලු", "Times failed": "අසමත් වූ වාර", "Times": "වාර", "Item": "අයිතමය", "Unit": "ඒකකය", "Units": "ඒකක", "Forklifts": "ෆෝක්ලිෆ්ට්", "By forklift": "ෆෝක්ලිෆ්ට් අනුව", "By owner": "අයිතිකරු අනුව", "With Fail": "අසමත් සහිත", "Last hour meter": "අවසන් පැය මීටරය", "Saved at": "සුරැකුවේ", "All": "සියල්ල", "All records": "සියලුම වාර්තා", "Which records": "කුමන වාර්තා", "What do you want to open?": "ඔබට විවෘත කිරීමට අවශ්‍ය මොනවාද?", "Today's report": "අද වාර්තාව", "Check": "පරීක්ෂාව", "Checks": "පරීක්ෂා", "Download": "බාගන්න", "Next": "ඊළඟ", "Remove": "ඉවත් කරන්න", "Unknown": "නොදන්නා", "No Operators Found": "ක්‍රියාකරුවන් හමු වුණේ නැහැ", "No operators in this department.": "මේ අංශයේ ක්‍රියාකරුවන් නැහැ.", "Take photo": "ඡායාරූපයක් ගන්න", "Gallery": "ගැලරිය", "Defect photo": "දෝෂ ඡායාරූපය", "DEFECT PHOTOS:": "දෝෂ ඡායාරූප:", "New inspection (operator)": "නව පරීක්ෂාවක් (ක්‍රියාකරු)", "Scan before every shift": "සෑම ෂිෆ්ට් එකකටම පෙර ස්කෑන් කරන්න", "QR code": "QR කේතය", "Digitally Verified via APK": "APK හරහා ඩිජිටල් ලෙස තහවුරු කළා", "Model (optional)": "ආකෘතිය (අත්‍යවශ්‍ය නැත)", "Owner (optional)": "අයිතිකරු (අත්‍යවශ්‍ය නැත)", "Winwill": "Winwill", "Tasma": "Tasma", "Other": "වෙනත්", "Today's forklift check status": "අද ෆෝක්ලිෆ්ට් පරීක්ෂා තත්ත්වය", "Weekly Forklift Report": "සතිපතා ෆෝක්ලිෆ්ට් වාර්තාව", "Monthly Report": "මාසික වාර්තාව", "System Settings": "පද්ධති සැකසුම්", "Search FL no, operator, dept...": "ෆෝක්ලිෆ්ට් අංකය, ක්‍රියාකරු, අංශය සොයන්න...", "e.g. 1425.5": "උදා: 1425.5", "Describe any mechanical defects, oil leakages, tire wear, light failures, or operational remarks in detail...": "යාන්ත්‍රික දෝෂ, තෙල් කාන්දු වීම්, ටයර් ගෙවීම්, පහන් අක්‍රීය වීම් හෝ වෙනත් සටහන් විස්තරාත්මකව ලියන්න...", "New forklift, e.g. FL 31": "නව ෆෝක්ලිෆ්ට් එක, උදා: FL 31", "Search the list...": "ලැයිස්තුව සොයන්න...", "Enter operator full name...": "ක්‍රියාකරුගේ සම්පූර්ණ නම ඇතුළත් කරන්න...", "Previous week": "කලින් සතිය", "Next week": "ඊළඟ සතිය", "Fork Lift Operator": "ෆෝක්ලිෆ්ට් ක්‍රියාකරු", "Forklift - Supervisor": "ෆෝක්ලිෆ්ට් - අධීක්ෂක", "*Note - Forklifts should be properly cleaned before and after operation": "*සටහන - ක්‍රියාත්මක කිරීමට පෙරත් පසුවත් ෆෝක්ලිෆ්ට් නිසි ලෙස පිරිසිදු කළ යුතුයි"};
+const T = x => (SI[x] !== undefined ? SI[x] : x);
+const SI_ITEMS = {}; CHECKLIST_ITEMS.forEach(it => { SI_ITEMS[it.slice(4)] = T(it).slice(4); });
+Object.assign(SI, SI_ITEMS, {
+  'Defect Fail': 'දෝෂ අසමත්', '(critical)': '(බරපතල)',
+  'No forklift failed the same item twice.': 'කිසිදු ෆෝක්ලිෆ්ට් එකක් එකම අයිතමය දෙවරක් අසමත් වී නැහැ.',
+  'Prepared by / Date': 'සකස් කළේ / දිනය', 'Reviewed by (Safety Officer) / Date': 'සමාලෝචනය (ආරක්ෂක නිලධාරී) / දිනය',
+  'Looks good.': 'හොඳයි.', 'Phones need an https link to open the app. Check it is your real address.': 'යෙදුම විවෘත කිරීමට ෆෝන් වලට https ලින්ක් එකක් අවශ්‍යයි. එය ඔබේ සැබෑ ලිපිනය දැයි බලන්න.',
+  "P = Pass · F = Fail · - = not checked. Tap a day name to open that day's report.": 'P = සමත් · F = අසමත් · - = පරීක්ෂා නැත. ඒ දවසේ වාර්තාව බැලීමට දවසේ නම ඔබන්න.'
+});
+const Titems = s => s.split(', ').map(x => SI_ITEMS[x] || T(x)).join(', ');
+const SI_DOW = { Mon: 'සඳුදා', Tue: 'අඟහරුවාදා', Wed: 'බදාදා', Thu: 'බ්‍රහස්පතින්දා', Fri: 'සිකුරාදා', Sat: 'සෙනසුරාදා', Sun: 'ඉරිදා' };
+const SI_PAT = [
+  [/^This shift \((Day shift|Night shift), (\S+)\): (\d+) of (\d+) checked(?: · (\d+) not checked yet)?(?: · (\d+) failed)?$/, (m, sh, d, n, tot, left, f) => `මේ ෂිෆ්ට් එක (${T(sh)}, ${d}): ${tot}න් ${n}ක් පරීක්ෂා කර ඇත` + (left ? ` · තවම පරීක්ෂා නැත ${left}` : '') + (f ? ` · අසමත් ${f}` : '')],
+  [/^Selected Period: (.+)$/, (m, p) => `තෝරාගත් කාලය: ${T(p)}`],
+  [/^\/ (\d+) Units$/, (m, n) => `/ ඒකක ${n}`],
+  [/^(\d+)% of the fleet inspected$/, (m, n) => `ෆෝක්ලිෆ්ට් වලින් ${n}% ක් පරීක්ෂා කර ඇත`],
+  [/^(\d+) Active Defects?$/, (m, n) => `ක්‍රියාකාරී දෝෂ ${n}`],
+  [/^(.+) HRS$/, (m, n) => `පැය ${n}`],
+  [/^(Day|Night) Shift$/, (m, s) => T(s + ' shift')],
+  [/^(.+) added to (.+)$/, (m, n, d) => `${T(d)} වෙත ${n} එකතු කළා`],
+  [/^(.+) removed from (.+)$/, (m, n, d) => `${T(d)} වෙතින් ${n} ඉවත් කළා`],
+  [/^Switched to (.+)$/, (m, t) => `${T(t)} වෙත මාරු විය`],
+  [/^(.+) exists\.$/, (m, u) => `${u} දැනටමත් ඇත.`],
+  [/^(.+) already has this shift's check for (\S+)\.$/, (m, f, d) => `${d} සඳහා මේ ෂිෆ්ට් එකේ පරීක්ෂාව ${f} සඳහා දැනටමත් වාර්තා වී ඇත.`],
+  [/^(\d+) records? downloaded\.$/, (m, n) => `වාර්තා ${n}ක් බාගත කළා.`],
+  [/^Log (\S+) marked as (Cleared|Active)$/, (m, id, s) => `${id} වාර්තාව ${T(s)} ලෙස සලකුණු කළා`],
+  [/^(.+) is now in the list\.$/, (m, n) => `${n} දැන් ලැයිස්තුවේ ඇත.`],
+  [/^(.+) record for (\S+) was corrected\.$/, (m, f, d) => `${d} සඳහා ${f} වාර්තාව නිවැරදි කළා.`],
+  [/^Reports older than (\d+) hours cannot be deleted\.$/, (m, n) => `පැය ${n}ට වඩා පරණ වාර්තා මකා දැමිය නොහැක.`],
+  [/^Records older than (\d+) hours can only be corrected by a supervisor\.$/, (m, n) => `පැය ${n}ට වඩා පරණ වාර්තා නිවැරදි කළ හැක්කේ අධීක්ෂකට පමණයි.`],
+  [/^Write a remark for: (.+)$/, (m, l) => `මේ සඳහා සටහනක් ලියන්න: ${Titems(l)}`],
+  [/^(.+) was removed\.$/, (m, id) => `${id} ඉවත් කළා.`],
+  [/^"(.*)" is not in the forklift list\. Choose it by hand\.$/, (m, r) => `"${r}" ෆෝක්ලිෆ්ට් ලැයිස්තුවේ නැහැ. අතින් තෝරන්න.`],
+  [/^(.+) has a critical failure and is locked\.$/, (m, f) => `${f} හි බරපතල අසමත්වීමක් ඇති නිසා එය ලොක් කළා.`],
+  [/^(.+) checklist successfully recorded!$/, (m, f) => `${f} ලැයිස්තුව සාර්ථකව වාර්තා කළා!`],
+  [/^DO NOT OPERATE: (\d+) forklifts?$/, (m, n) => `ක්‍රියාත්මක නොකරන්න: ෆෝක්ලිෆ්ට් ${n}`],
+  [/^DO NOT OPERATE: (.+)$/, (m, l) => `ක්‍රියාත්මක නොකරන්න: ${l}`],
+  [/^(.+) is locked \((.+)\)\. Do not operate until a supervisor clears it\.$/, (m, f, l) => `${f} ලොක් කර ඇත (${Titems(l)}). අධීක්ෂකවරයෙක් එය ඉවත් කරන තෙක් ක්‍රියාත්මක නොකරන්න.`],
+  [/^Forklift Pre-Check Monthly Report: (\w+) (\d{4})$/, (m, mo, y) => `ෆෝක්ලිෆ්ට් පෙර-පරීක්ෂා මාසික වාර්තාව: ${T(mo)} ${y}`],
+  [/^Generated (.+)\. An inspection counts as Pass when none of its 21 items is Fail\.$/, (m, d) => `${d} සකස් කළා. පරීක්ෂාවක අයිතම 21න් කිසිවක් අසමත් නොවන විට එය සමත් ලෙස සැලකේ.`],
+  [/^Pass rate \((\d+) of (\d+)\)$/, (m, a, b) => `සමත් අනුපාතය (${b}න් ${a})`],
+  [/^Not inspected this month \((\d+)\)$/, (m, n) => `මේ මාසයේ පරීක්ෂා නොකළ (${n})`],
+  [/^Reporting month \((\w+) (\d+)\)$/, (m, mo, y) => `වාර්තා මාසය (${T(mo)} ${y})`],
+  [/^Showing the latest 200 of (\d+)\. Use the search box or export a CSV for the rest\.$/, (m, n) => `${n}න් අලුත්ම 200 පෙන්වමින්. ඉතිරි ඒවාට සෙවුම් කොටුව හෝ CSV බාගැනීම භාවිතා කරන්න.`],
+  [/^(\d+) labels?, (\d+) A4 pages?\. Example link: (.+)$/, (m, a, b, l) => `ලේබල් ${a}ක්, A4 පිටු ${b}ක්. උදාහරණ ලින්ක්: ${l}`],
+  [/^This week's reports \(Mon to (.+)\)$/, (m, d) => `මේ සතියේ වාර්තා (සඳුදා සිට ${SI_DOW[d] || d} දක්වා)`],
+  [/^· Mon to (.+)$/, (m, d) => `· සඳුදා සිට ${SI_DOW[d] || d} දක්වා`],
+  [/^Unlocked (\d+) min$/, (m, n) => `විවෘතයි (විනාඩි ${n})`],
+  [/^Wrong\. (\d+) tries left\.$/, (m, n) => `වැරදියි. උත්සාහ ${n}ක් ඉතිරියි.`],
+  [/^Too many wrong tries\. Wait (\d+) s\.$/, (m, n) => `වැරදි උත්සාහ ඉතා වැඩියි. තත්පර ${n}ක් රැඳී සිටින්න.`],
+  [/^(\d+) h left$/, (m, n) => `පැය ${n}ක් ඉතිරියි`],
+  [/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (\d{2}-\d{2})$/, (m, d, md) => `${T(d)} ${md}`],
+  [/^· (Mon|Tue|Wed|Thu|Fri|Sat|Sun) (\d{4}-\d{2}-\d{2})( \(today\))?$/, (m, d, dt, t) => `· ${SI_DOW[d]} ${dt}${t ? ' (අද)' : ''}`],
+  [/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) (\d{4}-\d{2}-\d{2})( \(today\))?$/, (m, d, dt, t) => `${SI_DOW[d]} ${dt}${t ? ' (අද)' : ''}`],
+  [/^(.+) • (Defect Alert|Critical)$/, (m, f, k) => `${f} • ${T(k === 'Critical' ? 'Critical' : k)}`],
+  [/^(\d+)% Pass Rate$/, (m, n) => `සමත් අනුපාතය ${n}%`],
+[/^(\d+) FAILED$/, (m, n) => `අසමත් ${n}`],
+  [/^Delete \((\d+) h left\)$/, (m, n) => `මකන්න (පැය ${n}ක් ඉතිරියි)`],
+  [/^(.+?)\. (.+)$/, (m, a, b) => (a.split(', ').every(x => SI_ITEMS[x]) ? Titems(a) + '. ' + b : undefined)],
+  [/^(.+) \((.+)\)$/, (m, a, b) => (SI[b] !== undefined && SI[b] !== b ? `${a} (${SI[b]})` : undefined)],
+  [/^(\d+) of (\d+)$/, (m, a, b) => `${b}න් ${a}`],
+  [/^Delete report (\S+) \((.+), (\S+)\)\? This cannot be undone\.$/, (m, id, f, d) => `${id} වාර්තාව (${f}, ${d}) මකා දමන්නද? මෙය ආපසු හැරවිය නොහැක.`],
+  [/^Remove (.+) from the forklift list\?( Its past reports stay in the records\.)?$/, (m, u, k) => `ෆෝක්ලිෆ්ට් ලැයිස්තුවෙන් ${u} ඉවත් කරන්නද?` + (k ? ' එහි පැරණි වාර්තා වාර්තා වල ඉතිරි වේ.' : '')],
+  [/^The hour meter \((.+)\) is lower than the last reading for (.+) \((.+)\)\. Save anyway\?$/, (m, a, f, b) => `පැය මීටරය (${a}) ${f} හි අවසන් කියවීමට (${b}) වඩා අඩුයි. කෙසේ වුවත් සුරකින්නද?`],
+  [/^Saving problem$/, () => 'සුරැකීමේ ගැටලුවක්'],
+  [/^Add the new rule from FIRESTORE_RULES\.txt in the Firebase console \((.*)\)\.$/, (m, c) => `Firebase console එකේ FIRESTORE_RULES.txt හි අලුත් rule එක එකතු කරන්න (${c}).`],
+];
+function trText(raw) {
+  const t = raw.replace(/\s+/g, ' ').trim(); if (!t) return null;
+  let r = SI[t];
+  if (r === undefined) for (const [re, fn] of SI_PAT) { const m = t.match(re); if (m) { const x = fn(...m); if (x !== undefined) { r = x; break; } } }
+  if (r === undefined || r === t) return null;
+  return raw.match(/^\s*/)[0] + r + raw.match(/\s*$/)[0];
+}
+const TR_SKIP = '#wkPrintArea, #a4PrintArea, [data-notranslate]';
+function trTextNode(n) { const p = n.parentElement; if (!p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName) || p.closest(TR_SKIP)) return; const r = trText(n.nodeValue); if (r !== null) n.nodeValue = r; }
+function trAttrs(el) { if (!el.getAttribute || el.closest(TR_SKIP)) return; ['placeholder', 'title', 'aria-label'].forEach(a => { const v = el.getAttribute(a); if (v) { const r = trText(v); if (r !== null) el.setAttribute(a, r); } }); }
+function trTree(root) {
+  if (root.nodeType === 3) return trTextNode(root);
+  if (root.nodeType !== 1) return;
+  trAttrs(root);
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT); let n;
+  while ((n = w.nextNode())) { if (n.nodeType === 3) trTextNode(n); else trAttrs(n); }
+}
+function startTranslator() {
+  if (LANG !== 'si') return;
+  document.documentElement.lang = 'si'; document.body.classList.add('lang-si');
+  const _confirm = window.confirm.bind(window); window.confirm = m => _confirm(trText(String(m)) || m);
+  const _alert = window.alert.bind(window); window.alert = m => _alert(trText(String(m)) || m);
+  trTree(document.body);
+  new MutationObserver(ms => ms.forEach(m => {
+    if (m.type === 'characterData') trTextNode(m.target);
+    else if (m.type === 'attributes') trAttrs(m.target);
+    else m.addedNodes.forEach(trTree);
+  })).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'title', 'aria-label'] });
+}
+function setLang(l) { try { localStorage.setItem(LANG_KEY, l === 'si' ? 'si' : 'en'); } catch (e) {} location.reload(); }
+function openLangSheet() {
+  if (document.getElementById('langSheet')) return;
+  const o = document.createElement('div'); o.id = 'langSheet';
+  o.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;padding:16px 16px 28px';
+  const b = (l, txt) => `<button type="button" data-lang="${l}" style="width:100%;padding:14px;border-radius:14px;font-weight:800;font-size:16px;margin-top:10px;border:2px solid var(--accent-color);${LANG === l ? 'background:var(--accent-color);color:#fff' : 'background:transparent;color:var(--text-main)'}">${txt}${LANG === l ? ' ✓' : ''}</button>`;
+  o.innerHTML = `<div style="width:100%;max-width:420px;border-radius:20px;padding:18px;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-main)"><div style="font-weight:800;font-size:17px">Language / භාෂාව</div>${b('en', 'English')}${b('si', 'සිංහල')}<button type="button" data-lang="" style="width:100%;padding:12px;margin-top:10px;font-weight:700;color:var(--text-muted)">${LANG === 'si' ? 'අවලංගු කරන්න' : 'Cancel'}</button></div>`;
+  o.addEventListener('click', e => { const bt = e.target.closest('button[data-lang]'); if (bt && bt.dataset.lang) { if (bt.dataset.lang !== LANG) setLang(bt.dataset.lang); else o.remove(); } else if (e.target === o || bt) o.remove(); });
+  document.body.appendChild(o);
+}
+function renderLangButtons() { const e = $('langEn'), s = $('langSi'); if (!e || !s) return; e.className = 'langbtn' + (LANG === 'en' ? ' on' : ''); s.className = 'langbtn' + (LANG === 'si' ? ' on' : ''); }
+
 /* ---- start ---- */
 window.addEventListener('DOMContentLoaded', async () => {
   changeTheme(localStorage.getItem('lion_brewery_theme') || 'dark-coral', true);
@@ -2531,9 +2663,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   try { inspectionLogs = (await LogDB.all()).sort(byNewest); } catch (e) { showToast('Saving is off', 'This browser cannot store records. Export CSV often.', 'fa-triangle-exclamation'); }
   mergeBackupLogs();
   Cloud.start();
-  if (OPERATOR_ONLY) ['bnavToday', 'navTodayBtn'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
+  if (OPERATOR_ONLY) ['bnavToday', 'navTodayBtn', 'bnavLang', 'navLangBtn'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
   if (OPERATOR_ONLY) ['bnavDashboard', 'bnavReport', 'bnavSettings', 'navDashboardBtn', 'navReportBtn', 'navSettingsBtn'].forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
   renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
+  renderLangButtons(); startTranslator();
   setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); else renderToday(); }, 60000);
 });
 

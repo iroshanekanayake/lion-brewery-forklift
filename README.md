@@ -100,3 +100,11 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## v7.1: this-shift status
 - Home: the "Not checked this shift" box is now "This shift": every forklift as a chip, green = passed, red = failed, grey = not checked yet. Tap a grey chip to open the Inspect form with that forklift (and the current shift) selected; tap a green or red chip to see its record.
 - Operator app: a third tab "Today" shows the same panel (plus a DO NOT OPERATE notice if a forklift is locked). Service worker v25.
+
+## v8: Sinhala language
+- Settings > Language: English / Sinhala. The choice is kept per phone only (it is not shared through the cloud), so one phone can be Sinhala while the others stay English. Changing it reloads the app once.
+- Operator app: a fourth button "Language" in the bottom bar opens the same choice.
+- The whole screen is translated (menus, forms, the 21 checks, messages, pop-ups). Names, forklift numbers and remarks written by people stay as typed. The printed/PDF weekly sheets, QR labels and CSV stay in English like the company sheet. Service worker v26.
+
+## v8.1
+- Home no longer asks for the supervisor PIN. Monthly and Settings (and its QR page) still do. In the operator app Home still does not exist. Service worker v27.
