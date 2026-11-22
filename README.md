@@ -115,3 +115,11 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v8.3: Share PDF
 - Weekly screen: two new buttons, "Share PDF: this forklift" and "Share PDF: all forklifts". They make the weekly sheet(s) as a PDF file (same layout as the printed sheet, A4 landscape, one page per forklift) and open the phone's share menu (WhatsApp, Gmail, Drive...). On a device without a share menu (e.g. a computer) the PDF is saved to Downloads. Service worker v29.
+
+## v9: "Fleet Pro" look (new UI)
+- A new look for the whole app: deep navy background with soft blue glow, glass panels, a sliding pill on the navigation bar (left rail on a laptop, bottom bar on a phone), blur page changes and number count-up on Home. It is only a visual skin: every button, form, rule and feature works exactly as before.
+- It is now the default look. The old look is still there: Settings > Application Theme Preset > "Dark Coral (old look)" (the Sky and Corporate presets are unchanged).
+- Printed/PDF sheets stay white and identical. Status bar colour changed to match (manifest theme colours). Service worker v30.
+
+## v9.1: who can edit an inspection
+- Every new inspection remembers which phone sent it. In the OPERATOR app the Edit button appears only on inspections sent from that same phone (and only within the edit window, Settings > delete hours, default 24 h). Other operators see "Only the operator who sent this can edit it." The main (supervisor) app can still edit every inspection (older than the window needs the PIN). Inspections sent before this version have no phone mark, so only the main app can edit them. Service worker v31.
