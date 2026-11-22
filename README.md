@@ -108,3 +108,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v8.1
 - Home no longer asks for the supervisor PIN. Monthly and Settings (and its QR page) still do. In the operator app Home still does not exist. Service worker v27.
+
+## v8.2
+- Several forklifts can share one number (different company / fuel). Add them in Settings > Forklift Fleet: type the same number, choose the owner and model, press Add (it is saved as e.g. "FL 07 (Winwill, Gas)"). Each one has its own checks, weekly sheet, status chip and QR label.
+- A plain "FL 07" that shares its number now shows its own owner and fuel too, e.g. "FL 07 (Tasma, Battery)", in the Inspect list, Weekly list, status chips, QR labels and the printed sheet. The saved name is unchanged, so old records are safe. Service worker v28.
