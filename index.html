@@ -1147,6 +1147,7 @@
     </nav>
 
         <div id="wkPrintArea"></div>
+        <p id="appVer" class="text-center text-[11px] mt-8 mb-28" style="color: var(--text-muted); opacity:.7"></p>
     </main>
 
     <!-- ===================================================================== -->
@@ -1974,7 +1975,7 @@ function setEditUi(on, l) {
   if (on && l) $('editBannerTxt').textContent = 'Editing ' + l.forkliftNo + ' \u00B7 ' + l.date + ' \u00B7 ' + String(l.shift || '').split(' (')[0];
   $('submitBtnTxt').textContent = on ? 'Save Changes' : 'Submit Pre-Check Inspection';
 }
-function clearEditState() { editingId = null; setEditUi(false); $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; $('formInspectionDate').value = ''; }
+function clearEditState() { editingId = null; dsTouched = false; setEditUi(false); $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; $('formInspectionDate').value = ''; }
 function ensureOption(id, val) { const el = $(id); if (val && ![...el.options].some(o => o.value === val)) el.add(new Option(val, val)); if (val) el.value = val; }
 async function startEdit(id) {
   const l = inspectionLogs.find(x => x.id === id); if (!l) return;
@@ -2078,16 +2079,35 @@ function renderPills() {
   $('ownerPillGroup').innerHTML = appSettings.owners.map(o => pill(o, selectedOwner === o, 'selectOwner')).join('');
   $('modelPillGroup').innerHTML = appSettings.models.map(m => pill(m, selectedModel === m, 'selectModel')).join('');
 }
+/* ---- the Inspect form follows the clock: today's date and the shift that is running now (until the person picks something by hand) ---- */
+const APP_VERSION = 'v9.2';
+let dsTouched = false, hiddenAt = 0;
+function autoDateShift() {
+  if (editingId || dsTouched) return;
+  const sh = Safety.currentShift(), want = sh.key === 'N' ? 'Night' : 'Day', o = [...$('formShiftTime').options].find(x => x.value.startsWith(want));
+  $('formInspectionDate').value = sh.date; if (o) $('formShiftTime').value = o.value;
+}
+function watchDateShift() {
+  ['formInspectionDate', 'formShiftTime'].forEach(id => $(id).addEventListener('change', () => { dsTouched = true; }));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (hiddenAt && Date.now() - hiddenAt > 10 * 60 * 1000) dsTouched = false;      // back after a while: start fresh
+    if (!$('viewApk').classList.contains('hidden') && !editingId) { autoDateShift(); onForkliftChange(); }
+  });
+  const v = $('appVer'); if (v) v.textContent = (OPERATOR_ONLY ? 'Operator app' : 'Main app') + ' \u00B7 ' + APP_VERSION;
+}
 function initApkForm() {
   const keep = { f: $('formForkliftNo').value, d: $('formDepartment').value, o: $('formOperator').value, s: $('formSupervisor').value };
   const opts = a => a.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
   $('formForkliftNo').innerHTML = fleetNames().map(n => `<option value="${esc(n)}">${esc(unitLabel(n))}</option>`).join(''); if (keep.f && findUnit(keep.f)) $('formForkliftNo').value = findUnit(keep.f).unit;
   if (!$('formInspectionDate').value) $('formInspectionDate').value = localDate();
+  autoDateShift();
   $('formDepartment').innerHTML = opts(appSettings.departments); if (keep.d && appSettings.departments.includes(keep.d)) $('formDepartment').value = keep.d;
   $('formSupervisor').innerHTML = opts(appSettings.supervisors); if (keep.s && appSettings.supervisors.includes(keep.s)) $('formSupervisor').value = keep.s;
   onDepartmentChange(); if (keep.o && [...$('formOperator').options].some(o => o.value === keep.o)) $('formOperator').value = keep.o;
   CHECKLIST_ITEMS.forEach((_, idx) => { if (!checklistResponses[idx]) checklistResponses[idx] = 'Pass'; });
-  renderPills(); renderChecklistItems(); updateLockWarn();
+  if (!editingId) onForkliftChange(); else renderPills();
+  renderChecklistItems(); updateLockWarn();
 }
 function updateLockWarn() {
   const lk = Safety.lockedUnits(inspectionLogs)[$('formForkliftNo').value];
@@ -2133,7 +2153,7 @@ async function handlePreCheckSubmit(e) {
   }
   inspectionLogs.unshift(log); inspectionLogs.sort(byNewest); saveLog(log);
   showToast(Safety.criticalFails(log).length ? 'DO NOT OPERATE' : 'Inspection Submitted', Safety.criticalFails(log).length ? `${f} has a critical failure and is locked.` : `${f} checklist successfully recorded!`, Safety.criticalFails(log).length ? 'fa-ban' : 'fa-circle-check');
-  $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; switchView('apk');
+  $('preCheckForm').reset(); checklistResponses = {}; pendingPhotos = {}; dsTouched = false; switchView('apk');
 }
 
 /* ---- dashboard ---- */
@@ -2844,9 +2864,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   Cloud.start();
   if (OPERATOR_ONLY) ['bnavToday', 'navTodayBtn', 'bnavLang', 'navLangBtn'].forEach(id => { const el = $(id); if (el) el.style.display = ''; });
   if (OPERATOR_ONLY) ['bnavDashboard', 'bnavReport', 'bnavSettings', 'navDashboardBtn', 'navReportBtn', 'navSettingsBtn'].forEach(id => { const el = $(id); if (el) el.style.display = 'none'; });
+  watchDateShift();
   renderDashboard(); switchView('apk'); handleDeepLink(); renderPinState();
   renderLangButtons(); startTranslator();
-  setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); else renderToday(); }, 60000);
+  setInterval(() => { renderPinState(); if (!$('viewDashboard').classList.contains('hidden')) renderLockPanel(); else renderToday();  if (!$('viewApk').classList.contains('hidden')) autoDateShift(); }, 60000);
 });
 
     </script>

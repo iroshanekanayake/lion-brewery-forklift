@@ -123,3 +123,7 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 
 ## v9.1: who can edit an inspection
 - Every new inspection remembers which phone sent it. In the OPERATOR app the Edit button appears only on inspections sent from that same phone (and only within the edit window, Settings > delete hours, default 24 h). Other operators see "Only the operator who sent this can edit it." The main (supervisor) app can still edit every inspection (older than the window needs the PIN). Inspections sent before this version have no phone mark, so only the main app can edit them. Service worker v31.
+
+## v9.2
+- Inspect screen: the date and the shift now follow the clock by themselves (Day shift 6 am to 6 pm, Night shift 6 pm to 6 am; after midnight the night shift keeps the date it started on). They update when the screen opens, when the app is opened again and once a minute, until the person picks a date or shift by hand. The owner and model buttons also follow the selected forklift when the screen opens.
+- A small label at the bottom of every page shows which app and version is running ("Operator app · v9.2" or "Main app · v9.2"), to check that a phone really has the update. Service worker v32.
