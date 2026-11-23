@@ -127,3 +127,8 @@ Lion Brewery (Biyagama). A phone-friendly web app (PWA) for the daily 21-point f
 ## v9.2
 - Inspect screen: the date and the shift now follow the clock by themselves (Day shift 6 am to 6 pm, Night shift 6 pm to 6 am; after midnight the night shift keeps the date it started on). They update when the screen opens, when the app is opened again and once a minute, until the person picks a date or shift by hand. The owner and model buttons also follow the selected forklift when the screen opens.
 - A small label at the bottom of every page shows which app and version is running ("Operator app · v9.2" or "Main app · v9.2"), to check that a phone really has the update. Service worker v32.
+
+## v10: stricter edit time, supervisor alert, defects that stop a forklift
+- Operator app: an operator can correct their own inspection for 20 minutes only (Settings > "Minutes an operator can correct their own inspection"). After that only a supervisor can change it, in the main app. The main app keeps its normal rule: edit or delete without the PIN for 24 hours (Settings), then the PIN is needed.
+- A critical failure (horn, seat belt, brake check, power steering, hand brake) already locked the forklift. Now a red "NOT SAFE TO OPERATE" box opens right after submitting, with a "Notify supervisor (WhatsApp)" button. Put the supervisor's WhatsApp number in Settings to open that chat directly; empty = the phone's share menu.
+- A normal defect (for example a signal light) that stays unrepaired for 5 days (Settings, 0 = never) stops the forklift too, like a critical failure, until a supervisor clears it. The Home list shows "Not repaired for N days". Service worker v33, label v10.
