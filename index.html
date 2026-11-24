@@ -2107,7 +2107,7 @@ function renderPills() {
   $('modelPillGroup').innerHTML = appSettings.models.map(m => pill(m, selectedModel === m, 'selectModel')).join('');
 }
 /* ---- the Inspect form follows the clock: today's date and the shift that is running now (until the person picks something by hand) ---- */
-const APP_VERSION = 'v10.1';
+const APP_VERSION = 'v10.2';
 let dsTouched = false, hiddenAt = 0;
 function autoDateShift() {
   if (editingId || dsTouched) return;
@@ -2704,13 +2704,148 @@ function shareReadyDialog(file) {                         // a fresh tap is need
     o.querySelector('#spGo').onclick = async () => { try { await navigator.share({ files: [file], title: 'Forklift weekly inspection record' }); } catch (e) {} o.remove(); res(); };
   });
 }
+/* ---- real (vector) PDF of the weekly sheet: text and lines, not a picture. Written by the app itself (no library). ---- */
+const AFM_R = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,556,556,556,222,556,333,1000,556,556,333,1000,667,333,1000,556,611,556,556,222,222,333,333,350,556,1000,333,1000,500,333,944,556,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,556,737,333,400,584,556,556,333,556,537,278,333,556,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500], AFM_B = [278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,556,556,556,278,556,500,1000,556,556,333,1000,667,333,1000,556,611,556,556,278,278,500,500,350,556,1000,333,1000,556,333,944,556,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,556,737,333,400,584,556,556,333,611,556,278,333,556,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556];
+const WINANSI_X = { '\u20AC': 128, '\u201A': 130, '\u0192': 131, '\u201E': 132, '\u2026': 133, '\u2020': 134, '\u2021': 135, '\u02C6': 136, '\u2030': 137, '\u0160': 138, '\u2039': 139, '\u0152': 140, '\u017D': 142, '\u2018': 145, '\u2019': 146, '\u201C': 147, '\u201D': 148, '\u2022': 149, '\u2013': 150, '\u2014': 151, '\u02DC': 152, '\u2122': 153, '\u0161': 154, '\u203A': 155, '\u0153': 156, '\u017E': 158, '\u0178': 159 };
+function waBytes(str) {                                    // text -> WinAnsi bytes, or null when a letter is not covered (for example Sinhala)
+  const out = [];
+  for (const ch of String(str == null ? '' : str).replace(/[\r\n\t]+/g, ' ')) {
+    const c = ch.codePointAt(0);
+    if ((c >= 32 && c <= 126) || (c >= 160 && c <= 255)) out.push(c); else if (WINANSI_X[ch]) out.push(WINANSI_X[ch]); else return null;
+  }
+  return out;
+}
+const pdfW = (bytes, size, bold) => { const t = bold ? AFM_B : AFM_R; let w = 0; for (const b of bytes) w += t[b - 32] || 556; return w * size / 1000; };
+const pdfRgb = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(v => (v / 255).toFixed(3)).join(' '); };
+function pdfWrap(str, size, bold, firstW, restW) {          // word wrap with the real Helvetica widths
+  const words = String(str).replace(/\s+/g, ' ').trim().split(' '), lines = []; let cur = '', limit = firstW;
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (cur && pdfW(waBytes(t), size, bold) > limit) { lines.push(cur); cur = w; limit = restW; } else cur = t;
+  }
+  lines.push(cur); return lines;
+}
+function pdfText(c, str, x, top, size, bold, col) {         // one line, top of the line box = top
+  const bytes = waBytes(str); if (!bytes || !bytes.length) return 0;
+  const s = bytes.map(b => (b === 40 || b === 41 || b === 92) ? '\\' + String.fromCharCode(b) : (b < 32 || b > 126) ? '\\' + b.toString(8).padStart(3, '0') : String.fromCharCode(b)).join('');
+  c.ops.push(`BT /F${bold ? 2 : 1} ${size} Tf ${pdfRgb(col || '#000000')} rg 1 0 0 -1 ${x.toFixed(2)} ${(top + size * 0.92).toFixed(2)} Tm (${s}) Tj ET`);
+  return pdfW(bytes, size, bold);
+}
+function pdfTextC(c, str, cx, top, size, bold, col) { const b = waBytes(str); return pdfText(c, str, cx - (b ? pdfW(b, size, bold) : 0) / 2, top, size, bold, col); }
+function pdfRect(c, x, y, w, h, o) { o = o || {}; if (o.fill) c.ops.push(`${pdfRgb(o.fill)} rg ${x.toFixed(2)} ${y.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re f`); if (o.stroke) c.ops.push(`${o.lw || 0.8} w ${pdfRgb(o.stroke)} RG ${o.dash ? '[2 2] 0 d' : '[] 0 d'} ${x.toFixed(2)} ${y.toFixed(2)} ${w.toFixed(2)} ${h.toFixed(2)} re S`); }
+function pdfLine(c, x1, y1, x2, y2, lw, col, dash) { c.ops.push(`${lw} w ${pdfRgb(col)} RG ${dash ? '[2 2] 0 d' : '[] 0 d'} ${x1.toFixed(2)} ${y1.toFixed(2)} m ${x2.toFixed(2)} ${y2.toFixed(2)} l S`); }
+function pdfRaster(str, size, bold, maxW, col) {            // letters Helvetica does not have (Sinhala ...): drawn as a small sharp picture, placed inside the real PDF
+  const S = 6, cv = document.createElement('canvas'), g = cv.getContext('2d'), font = `${bold ? 'bold ' : ''}${size * S}px Arial, "Noto Sans Sinhala", "Iskoola Pota", sans-serif`;
+  g.font = font; const lines = []; let cur = '';
+  for (const w of String(str).replace(/\s+/g, ' ').trim().split(' ')) { const t = cur ? cur + ' ' + w : w; if (cur && g.measureText(t).width > maxW * S) { lines.push(cur); cur = w; } else cur = t; }
+  lines.push(cur);
+  const lh = size * 1.25 * S, W = Math.max(8, Math.ceil(Math.min(maxW * S, Math.max(...lines.map(l => g.measureText(l).width)) + 4))), H = Math.ceil(lines.length * lh);
+  cv.width = W; cv.height = H; g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.font = font; g.fillStyle = col || '#000'; g.textBaseline = 'top';
+  lines.forEach((l, i) => g.fillText(l, 0, i * lh + size * S * 0.08));
+  const bin = atob(cv.toDataURL('image/jpeg', 0.93).split(',')[1]);
+  return { data: Uint8Array.from(bin, ch => ch.charCodeAt(0)), wPx: W, hPx: H, w: W / S, h: H / S };
+}
+function pdfImage(c, im, x, y) { c.imgs.push(im); c.ops.push(`q ${im.w.toFixed(2)} 0 0 ${(-im.h).toFixed(2)} ${x.toFixed(2)} ${(y + im.h).toFixed(2)} cm /Im${c.imgs.length - 1} Do Q`); }
+function pdfLV(c, label, value, x, y, maxW, size) {         // "Label: value" (label bold), wrapping inside maxW; returns the height used
+  const lh = size * 1.2, wl = pdfW(waBytes(label + ' '), size, true); pdfText(c, label, x, y, size, true);
+  const v = value == null || value === '' ? '\u2014' : String(value);
+  if (waBytes(v)) { const ls = pdfWrap(v, size, false, maxW - wl, maxW); ls.forEach((l, i) => pdfText(c, l, i ? x : x + wl, y + i * lh, size, false)); return ls.length * lh; }
+  const im = pdfRaster(v, size, false, maxW - wl, '#000'); pdfImage(c, im, x + wl, y); return Math.max(lh, im.h);
+}
+function drawSheetPdf(c, unit, mon) {
+  const CW = 801.9, data = weekData(unit, mon), dates = data.map(d => d.date), NS = 'N';
+  let y = 1.5;
+  const tl = 'FORKLIFT PRE-CHECK LIST', tw = pdfW(waBytes(tl), 13.5, true);
+  pdfTextC(c, tl, CW / 2, y, 13.5, true); pdfLine(c, CW / 2 - tw / 2, y + 14.6, CW / 2 + tw / 2, y + 14.6, 0.8, '#000000');
+  y += 16.2 + 9; pdfTextC(c, 'LION BREWERY (BIYAGAMA)', CW / 2, y, 7.1, true);
+  y += 8.5 + 4.5; pdfTextC(c, 'WEEKLY INSPECTION RECORD \u00B7 MONDAY TO ' + ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'][WEEK_DAYS - 1], CW / 2, y, 7.1, false);
+  y += 8.5 + 3 + 4.5;
+  const mx = CW * 0.446;
+  [['FORKLIFT NO:', unitLabel(unit), 'FORKLIFT OWNER:', ownerOf(unit, data)], ['WEEK START:', fmtLong(dates[0]), 'WEEK END:', fmtLong(dates[dates.length - 1])]].forEach((r, i) => { pdfLV(c, r[0], r[1], 0, y, mx - 8, 7.1); pdfLV(c, r[2], r[3], mx, y, CW - mx, 7.1); y += 8.5 + (i ? 0 : 4.5); });
+  y += 4.5 + 1.5;
+  // ---- table
+  const cSN = CW * 0.04, cNm = CW * 0.27, sub = (CW - cSN - cNm) / 14, h1 = 23, h2 = 10, rh = 10.6, ty = y, GRID = '#666666';
+  pdfRect(c, 0, ty, cSN, h1 + h2, { stroke: GRID }); pdfTextC(c, 'SN', cSN / 2, ty + (h1 + h2) / 2 - 3.5, 7.1, true);
+  pdfRect(c, cSN, ty, cNm, h1 + h2, { stroke: GRID }); pdfTextC(c, 'CHECKS (21 POINTS)', cSN + cNm / 2, ty + (h1 + h2) / 2 - 3.5, 7.1, true);
+  data.forEach((d, k) => {
+    const x = cSN + cNm + k * 2 * sub; pdfRect(c, x, ty, 2 * sub, h1, { stroke: GRID }); pdfTextC(c, dowOf(d.date), x + sub, ty + 3, 7.1, true); pdfTextC(c, d.date.slice(5), x + sub, ty + 12, 7.1, false);
+    ['D', 'N'].forEach((t, j) => { pdfRect(c, x + j * sub, ty + h1, sub, h2, { stroke: GRID }); pdfTextC(c, t, x + j * sub + sub / 2, ty + h1 + 1.6, 6, true, '#333333'); });
+  });
+  CHECKLIST_ITEMS.forEach((it, i) => {
+    const ry = ty + h1 + h2 + i * rh;
+    pdfRect(c, 0, ry, cSN, rh, { stroke: GRID }); pdfTextC(c, it.slice(0, 2), cSN / 2, ry + 1.9, 7.1, false);
+    pdfRect(c, cSN, ry, cNm, rh, { stroke: GRID }); pdfText(c, it.slice(4), cSN + 2.5, ry + 2, 6.75, true);
+    data.forEach((d, k) => ['D', 'N'].forEach((sk, j) => {
+      const x = cSN + cNm + (k * 2 + j) * sub, m = shiftMark(d.logs, sk, i);
+      pdfRect(c, x, ry, sub, rh, { stroke: GRID, fill: m.c === 'f' ? '#fde8e8' : null }); pdfTextC(c, m.t, x + sub / 2, ry + 1.9, 7.1, m.c !== '', m.c === 'p' ? '#15803d' : m.c === 'f' ? '#b00020' : '#777777');
+    }));
+  });
+  y = ty + h1 + h2 + 21 * rh + 2.25;
+  pdfText(c, '* Manual entry', 0, y, 5.6, false); let lx = pdfW(waBytes('* Manual entry'), 5.6, false) + 9;
+  [['D', ' = Day Shift'], ['N', ' = Night Shift'], ['P', ' = Pass'], ['F', ' = Fail'], ['N/A', ' = Not Applicable']].forEach(p => { lx += pdfText(c, p[0], lx, y, 5.6, true); lx += pdfText(c, p[1], lx, y, 5.6, false) + 6; });
+  y += 6.75 + 6;
+  // ---- day boxes
+  const gap = 4.5, bw = (CW - 6 * gap) / 7, fs = 6.4, lh = fs * 1.2, pad = 2.25, ix = 3.75, iw = bw - 2 * ix;
+  const entries = data.map(d => { const ls = d.logs.slice().sort((a, b) => (Safety.shiftKeyOf(a.shift) === NS) - (Safety.shiftKeyOf(b.shift) === NS));
+    return ls.length > 1 ? ls.map(l => [[(Safety.shiftKeyOf(l.shift) === NS ? 'Night shift' : 'Day shift'), ' \u00B7 ' + fmtTime(l.createdAt), 1], ['Operator:', l.operator], ['Supervisor:', l.supervisor], ['Hour Meter:', l.hourMeter]])
+      : [ls.length ? [['Operator:', ls[0].operator], ['Supervisor:', ls[0].supervisor], ['Shift:', ls[0].shift], ['Time:', fmtTime(ls[0].createdAt)], ['Hour Meter:', ls[0].hourMeter]] : [['Operator:', ''], ['Supervisor:', ''], ['Shift:', ''], ['Time:', ''], ['Hour Meter:', '']]]; });
+  const probe = { ops: [], imgs: [] };                                           // measure the tallest box first
+  const boxH = e => { let h = pad + 6.75 * 1.2 + 0.75; e.forEach((ent, n) => { if (n) h += 2.25 + 2.25 + 0.75; ent.forEach(ln => { h += ln[2] ? lh : pdfLV(probe, ln[0], ln[1], 0, 0, iw, fs); }); }); return h + pad; };
+  const bh = Math.max(...entries.map(boxH));
+  data.forEach((d, k) => {
+    const bx = k * (bw + gap); pdfRect(c, bx, y, bw, bh, { stroke: '#888888', lw: 1 });
+    let cy = y + pad; cy += pdfText(c, dowOf(d.date) + ' \u00B7 ' + d.date, bx + ix, cy, 6.75, true) * 0 + 6.75 * 1.2 + 0.75;
+    entries[k].forEach((ent, n) => {
+      if (n) { cy += 2.25; pdfLine(c, bx + 1, cy, bx + bw - 1, cy, 0.6, '#888888', true); cy += 0.75 + 2.25; }
+      ent.forEach(ln => { if (ln[2]) { const w = pdfText(c, ln[0], bx + ix, cy, fs, true); pdfText(c, ln[1], bx + ix + w, cy, fs, false); cy += lh; } else cy += pdfLV(c, ln[0], ln[1], bx + ix, cy, iw, fs); });
+    });
+  });
+  y += bh + 6;
+  // ---- remarks
+  const rem = data.map(d => d.logs.filter(l => logHasFail(l) || (l.remarks && l.remarks !== 'No remarks provided.')).map(l => l.remarks).join(' | ')), rp = 10.5, cw7 = (CW - 2 * rp) / 7, rfs = 6, rlh = rfs * 1.2;
+  const cellH = rem.map((t, k) => { const w = pdfW(waBytes(dowOf(data[k].date) + ': '), rfs, true), v = t || '\u2014'; return waBytes(v) ? pdfWrap(v, rfs, false, cw7 - 4.5 - w, cw7 - 4.5).length * rlh : pdfRaster(v, rfs, false, cw7 - 4.5 - w, '#000').h; });
+  const rbh = 5.25 + rfs * 1.2 + 4.5 + Math.max(rlh, ...cellH) + 6;
+  pdfRect(c, 0, y, CW, rbh, { stroke: '#888888', lw: 1 }); pdfText(c, 'REMARKS / DEFECT DETAILS', rp, y + 5.25, rfs, true);
+  rem.forEach((t, k) => { const rx = rp + k * cw7; if (k) pdfLine(c, rx, y + 5.25 + rfs * 1.2 + 4.5, rx, y + rbh - 6, 0.75, '#666666'); pdfLV(c, dowOf(data[k].date) + ':', t, rx + (k ? 4.5 : 0), y + 5.25 + rfs * 1.2 + 4.5, cw7 - (k ? 4.5 : 0), rfs); });
+  y += rbh + 6; pdfLine(c, 0, y, CW, y, 1.1, '#aaaaaa'); y += 6;
+  const notes = String(SAFETY_NOTES).replace(/<[^>]*>/g, ''), nl = pdfWrap(notes, 5.6, false, CW - pdfW(waBytes('SAFETY NOTES: '), 5.6, true), CW);
+  pdfText(c, 'SAFETY NOTES:', 0, y, 5.6, true); const nw = pdfW(waBytes('SAFETY NOTES: '), 5.6, true); nl.forEach((l, i) => pdfText(c, l, i ? 0 : nw, y + i * 6.75, 5.6, false));
+  y += nl.length * 6.75 + 7.5; const gt = 'Generated: ' + localDate() + ' \u00B7 Digital record \u00B7 No signatures required'; pdfText(c, gt, CW - pdfW(waBytes(gt), 5.25, false), y, 5.25, false);
+  return y + 6.3;
+}
+async function pdfDeflate(bytes) {
+  if (typeof CompressionStream === 'undefined') return null;
+  try { const s = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate')); return new Uint8Array(await new Response(s).arrayBuffer()); } catch (e) { return null; }
+}
+async function buildSheetPdf(units, mon) {                 // one A4 landscape page per forklift
+  const PW = 841.89, PH = 595.28, M = 19.84, enc = t => Uint8Array.from(t, ch => ch.charCodeAt(0) & 255), parts = [], off = []; let len = 0;
+  const put = b => { parts.push(b); len += b.length; };
+  const pages = units.map(u => { const c = { ops: [], imgs: [] }, H = drawSheetPdf(c, u, mon), k = Math.min(1, (PH - 2 * M) / H); c.k = k; return c; });
+  let id = 5; pages.forEach(c => { c.pid = id++; c.cid = id++; c.iids = c.imgs.map(() => id++); });
+  const total = id - 1;
+  put(enc('%PDF-1.4\n'));
+  const obj = (n, head, stream) => { off[n] = len; put(enc(`${n} 0 obj\n${head}\n`)); if (stream) { put(enc('stream\n')); put(stream); put(enc('\nendstream\n')); } put(enc('endobj\n')); };
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>'); obj(2, `<< /Type /Pages /Kids [${pages.map(c => c.pid + ' 0 R').join(' ')}] /Count ${pages.length} >>`);
+  obj(3, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>'); obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+  for (const c of pages) {
+    obj(c.pid, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << ${c.imgs.map((_, n) => `/Im${n} ${c.iids[n]} 0 R`).join(' ')} >> >> /Contents ${c.cid} 0 R >>`);
+    const raw = enc(`q ${c.k.toFixed(4)} 0 0 ${(-c.k).toFixed(4)} ${M} ${(PH - M).toFixed(2)} cm\n${c.ops.join('\n')}\nQ`), z = await pdfDeflate(raw);
+    obj(c.cid, `<< /Length ${(z || raw).length}${z ? ' /Filter /FlateDecode' : ''} >>`, z || raw);
+    c.imgs.forEach((im, n) => obj(c.iids[n], `<< /Type /XObject /Subtype /Image /Width ${im.wPx} /Height ${im.hPx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${im.data.length} >>`, im.data));
+  }
+  const xr = len; let t = `xref\n0 ${total + 1}\n0000000000 65535 f \n`; for (let i = 1; i <= total; i++) t += String(off[i]).padStart(10, '0') + ' 00000 n \n';
+  put(enc(t + `trailer\n<< /Size ${total + 1} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF\n`));
+  const out = new Uint8Array(len); let o = 0; parts.forEach(b => { out.set(b, o); o += b.length; }); return out;
+}
 async function shareWeekPdf(all) {
   const mon = wk.monday; let units = [wk.unit];
   if (all) { units = fleetNames().filter(u => weekData(u, mon).some(d => d.logs.length)); if (!units.length) { showToast('Nothing to share', 'No inspections were recorded in this week.', 'fa-triangle-exclamation'); return; } }
   showToast('Preparing the PDF', 'Please wait a moment.', 'fa-file-pdf');
   try {
-    const pages = []; for (const u of units) pages.push(await sheetToJpeg(sheetHtml(u, mon), units.length > 8 ? 1.5 : 2));
-    const blob = new Blob([buildJpegPdf(pages)], { type: 'application/pdf' });
+    let bytes;
+    try { bytes = await buildSheetPdf(units, mon); }                                        // the real PDF: sharp text and lines, prints well
+    catch (err) { console.warn('vector PDF failed, using the picture version', err); const pages = []; for (const u of units) pages.push(await sheetToJpeg(sheetHtml(u, mon), units.length > 8 ? 1.5 : 2)); bytes = buildJpegPdf(pages); }
+    const blob = new Blob([bytes], { type: 'application/pdf' });
     const name = all ? `Forklift-weekly-all-${mon}.pdf` : `Forklift-${String(wk.unit).replace(/[^A-Za-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${mon}.pdf`;
     const file = new File([blob], name, { type: 'application/pdf' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
