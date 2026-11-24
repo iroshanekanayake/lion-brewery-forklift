@@ -198,6 +198,7 @@
             body.theme-fleet-pro #navPill { width: 46px; height: 46px; }
         }
         @media (prefers-reduced-motion: reduce) { body.theme-fleet-pro .page-in { animation: none; } }
+        @media print { #appVer { display: none !important; } }
         @media print { body.theme-fleet-pro { background: #fff !important; background-image: none !important; color: #000 !important; padding-left: 0 !important; } body.theme-fleet-pro #bottomNav { display: none !important; } }
         body.theme-fleet-pro #editBanner { background-color: rgba(79,124,255,.14) !important; }
 
@@ -290,7 +291,8 @@
         /* weekly sheet - same look as the company sample PDF */
         .wkpage.w2 { font-family: Roboto, Arial, Helvetica, sans-serif; }
         .wkpage.w2 { box-sizing:border-box; width:100%; max-width:100%; overflow:hidden; }
-        @media print and (orientation: portrait) { .wkpage.w2 { zoom:.68; } }
+        @media print and (orientation: portrait) { .wkpage.w2 { zoom: calc(.68 * var(--fit, 1)); } }
+        .wkpage.w2 { zoom: var(--fit, 1); } .wkpage.w2 th.sub { font-size: 8px; font-weight: 700; padding: 0 1px; color: #333; }
         .w2 .ttl { font-size:18px; font-weight:800; text-decoration:underline; text-align:center; margin:2px 0 12px; }
         .w2 .sub1 { text-align:center; font-weight:700; font-size:9.5px; }
         .w2 .sub2 { text-align:center; font-size:9.5px; margin:6px 0 4px; }
@@ -315,7 +317,8 @@
 
         @page wkland { size: A4 landscape; margin: 7mm; }
         @media print {
-            .wkpage { page: wkland; }
+            body.print-week { page: wkland; }
+            #appVer { display: none !important; }
             #bottomNav, #scanOverlay, #modal, #viewer, #toastBanner { display: none !important; }
             body.print-week header, body.print-week main > section, body.print-week #toastBanner, body.print-week #a4ModalBackdrop, body.print-week #a4PrintArea { display:none !important; }
             body.print-week, body.print-week main { background:#fff !important; padding:0 !important; margin:0 !important; max-width:none !important; min-height:0 !important; height:auto !important; }
@@ -2104,7 +2107,7 @@ function renderPills() {
   $('modelPillGroup').innerHTML = appSettings.models.map(m => pill(m, selectedModel === m, 'selectModel')).join('');
 }
 /* ---- the Inspect form follows the clock: today's date and the shift that is running now (until the person picks something by hand) ---- */
-const APP_VERSION = 'v10';
+const APP_VERSION = 'v10.1';
 let dsTouched = false, hiddenAt = 0;
 function autoDateShift() {
   if (editingId || dsTouched) return;
@@ -2608,24 +2611,37 @@ function weekGridHtml(data) {
 function ownerOf(unit, data) { for (const d of data) if (d.logs.length && d.logs[0].owner) return d.logs[0].owner; const u = findUnit(unit); return (u && u.owner) || '-'; }
 const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmtLong(s) { const d = dParse(s); return MONTHS_SHORT[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(); }
+function shiftMark(logs, key, i) {                       // the check result of ONE shift (D or N) of a day
+  const l = logs.find(x => Safety.shiftKeyOf(x.shift) === key); if (!l) return { t: '—', c: '' };
+  const v = mark(l.results && l.results[i]); return { t: v === '-' ? '—' : v, c: v === 'F' ? 'f' : v === 'P' ? 'p' : '' };
+}
 function printMark(logs, i) {
   if (!logs.length) return { t: '—', c: '' };
   const v = logs.map(l => mark(l.results && l.results[i]));
   const t = logs.length === 1 ? v[0] : logs.map((l, k) => shiftShort(l)[0] + ':' + v[k]).join(' ');
   return { t: t === '-' ? '—' : t, c: v.includes('F') ? 'f' : v.every(x => x === 'P') ? 'p' : '' };
 }
+function sheetFit(html) {                                  // zoom needed so that one sheet always fits one A4 landscape page
+  const t = document.createElement('div'); t.style.cssText = 'position:absolute;left:-9999px;top:0;width:1069px;visibility:hidden'; t.innerHTML = html; document.body.appendChild(t);
+  const h = t.firstElementChild ? t.firstElementChild.scrollHeight : 0; t.remove(); return h > 726 ? 726 / h : 1;
+}
 function sheetHtml(unit, mon) {
+  const raw = sheetHtmlRaw(unit, mon), k = sheetFit(raw);
+  return k < 1 ? raw.replace('<div class="wkpage w2">', `<div class="wkpage w2" style="--fit:${k.toFixed(3)}">`) : raw;
+}
+function sheetHtmlRaw(unit, mon) {
   const data = weekData(unit, mon), dates = data.map(d => d.date), D = '—';
-  const th = data.map(d => `<th><b>${dowOf(d.date)}</b><br>${d.date.slice(5)}</th>`).join('');
+  const th = data.map(d => `<th colspan="2"><b>${dowOf(d.date)}</b><br>${d.date.slice(5)}</th>`).join(''), th2 = data.map(() => '<th class="sub">D</th><th class="sub">N</th>').join('');
   const rows = CHECKLIST_ITEMS.map((it, i) => `<tr><td class="sn">${esc(it.slice(0, 2))}</td><td class="nm">${esc(it.slice(4))}</td>` +
-    data.map(d => { const c = printMark(d.logs, i); return `<td class="${c.c}">${c.t}</td>`; }).join('') + '</tr>').join('');
+    data.map(d => ['D', 'N'].map(k => { const c = shiftMark(d.logs, k, i); return `<td class="${c.c}">${c.t}</td>`; }).join('')).join('') + '</tr>').join('');
   const entry = l => `<div class="ent"><div><b>Operator:</b> ${esc(l ? (l.operator || D) : D)}</div><div><b>Supervisor:</b> ${esc(l ? (l.supervisor || D) : D)}</div><div><b>Shift:</b> ${esc(l ? (l.shift || D) : D)}</div><div><b>Time:</b> ${l ? fmtTime(l.createdAt) : D}</div><div><b>Hour Meter:</b> ${esc(l ? (l.hourMeter || D) : D)}</div></div>`;
-  const boxes = data.map(d => `<div class="dbox"><div class="dh">${dowOf(d.date)} · ${d.date}</div>${d.logs.length ? d.logs.map(entry).join('') : entry(null)}</div>`).join('');
+  const small = l => `<div class="ent"><div><b>${Safety.shiftKeyOf(l.shift) === 'N' ? 'Night shift' : 'Day shift'}</b> · ${fmtTime(l.createdAt)}</div><div><b>Operator:</b> ${esc(l.operator || D)}</div><div><b>Supervisor:</b> ${esc(l.supervisor || D)}</div><div><b>Hour Meter:</b> ${esc(l.hourMeter || D)}</div></div>`;
+  const boxes = data.map(d => { const ls = d.logs.slice().sort((a, b) => (Safety.shiftKeyOf(a.shift) === 'N') - (Safety.shiftKeyOf(b.shift) === 'N')); return `<div class="dbox"><div class="dh">${dowOf(d.date)} · ${d.date}</div>${ls.length > 1 ? ls.map(small).join('') : ls.length ? entry(ls[0]) : entry(null)}</div>`; }).join('');
   const rem = data.map(d => { const t = d.logs.filter(l => logHasFail(l) || (l.remarks && l.remarks !== 'No remarks provided.')).map(l => esc(l.remarks)).join(' | '); return `<div><b>${dowOf(d.date)}:</b> ${t || D}</div>`; }).join('');
   const last = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'][WEEK_DAYS - 1];
   return `<div class="wkpage w2"><div class="ttl">FORKLIFT PRE-CHECK LIST</div><div class="sub1">LION BREWERY (BIYAGAMA)</div><div class="sub2">WEEKLY INSPECTION RECORD · MONDAY TO ${last}</div>
     <div class="meta2"><div><b>FORKLIFT NO:</b> ${esc(unitLabel(unit))}</div><div><b>FORKLIFT OWNER:</b> ${esc(ownerOf(unit, data))}</div><div><b>WEEK START:</b> ${fmtLong(dates[0])}</div><div><b>WEEK END:</b> ${fmtLong(dates[dates.length - 1])}</div></div>
-    <table><tr><th>SN</th><th>CHECKS (21 POINTS)</th>${th}</tr>${rows}</table>
+    <table><colgroup><col style="width:4%"><col style="width:27%">${data.map(() => '<col><col>').join('')}</colgroup><tr><th rowspan="2">SN</th><th rowspan="2">CHECKS (21 POINTS)</th>${th}</tr><tr>${th2}</tr>${rows}</table>
     <div class="leg2">* Manual entry &nbsp;&nbsp; <b>D</b> = Day Shift &nbsp; <b>N</b> = Night Shift &nbsp; <b>P</b> = Pass &nbsp; <b>F</b> = Fail &nbsp; <b>N/A</b> = Not Applicable</div>
     <div class="days2" style="grid-template-columns:repeat(${WEEK_DAYS},1fr)">${boxes}</div>
     <div class="rem2"><div class="rh">REMARKS / DEFECT DETAILS</div><div class="rg" style="grid-template-columns:repeat(${WEEK_DAYS},1fr)">${rem}</div></div>
