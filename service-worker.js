@@ -3,12 +3,12 @@
    - own files (icons, manifest): cache first, refreshed in the background
    - CDN files (Tailwind, Chart.js, Font Awesome, Inter): saved on first visit so the app works offline
    To release an update, change VERSION below. */
-const VERSION = "v35";
+const VERSION = "v36";
 const SHELL_CACHE = `forklift-shell-${VERSION}`;
 const CDN_CACHE = "forklift-cdn-v1";
 const SCOPE = self.registration.scope;
 
-const SHELL = ["./", "index.html", "manifest.json", "app-icon-192.png", "app-icon-512.png",
+const SHELL = ["./", "index.html", "manifest.json", "app-icon-192.png", "app-icon-512.png", "apple-touch-icon.png",
                "app-icon-maskable-192.png", "app-icon-maskable-512.png", "favicon-32.png", "lion-banner.jpg", "header-logo.png"].map(p => new URL(p, SCOPE).href);
 
 const CDN_HOSTS = ["cdn.tailwindcss.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "fonts.googleapis.com", "fonts.gstatic.com", "www.gstatic.com"];
