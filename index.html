@@ -314,6 +314,21 @@
         .wkpage.w2 th b { font-weight:700; }
         .wkpage.w2 td.sn { width:4.5%; } .wkpage.w2 td.nm { width:34%; text-align:left; font-weight:700; font-size:9px; overflow-wrap:anywhere; }
         .wkpage.w2 td { color:#777; } .wkpage.w2 td.p { color:#15803d; font-weight:800; } .wkpage.w2 td.f { color:#b00020; font-weight:900; background:#fde8e8; } .wkpage.w2 td.sn, .wkpage.w2 td.nm { color:#000; }
+        /* PDF / monochrome print: make FAIL cells unmistakable */
+        @media print {
+            .wkpage.w2, .wkpage.w2 * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .wkpage.w2 td.f {
+                background: #333333 !important;
+                color: #ffffff !important;
+                font-weight: 900 !important;
+                border: 2px solid #111111 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
         .w2 .leg2 { font-size:7.5px; margin-top:3px; }
         .w2 .days2 { display:grid; gap:6px; margin-top:8px; }
         .w2 .dbox { border:1.5px solid #888; padding:3px 5px; font-size:8.5px; line-height:1.2; }
