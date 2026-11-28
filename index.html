@@ -287,7 +287,7 @@
         .wkpage { font-family:Arial, Helvetica, sans-serif; background:#fff; color:#000; padding:0; } .wkpage + .wkpage { page-break-before:always; break-before:page; }
         .wkpage, .wkpage h1, .wkpage .sub, .wkpage b, .wkpage th, .wkpage td, .wkpage div { color:#000; } .wkpage .ttl { font-size:16px; font-weight:700; margin:0; text-align:center; } .wkpage .sub { text-align:center; font-size:11px; margin:2px 0 8px; }
         .wkpage table { width:100%; border-collapse:collapse; font-size:9.5px; margin-top:4px; } .wkpage th, .wkpage td { border:1px solid #444; padding:1.5px 4px; text-align:center; line-height:1.25; } .wkpage td.l, .wkpage th.l { text-align:left; }
-        .wkpage th { background:#e5e5e5; } .wkpage .p { color:#15803d; font-weight:800; } .wkpage .f { color:#b00020; font-weight:900; background:#fde8e8; }
+        .wkpage th { background:#e5e5e5; } .wkpage .p { color:#15803d; font-weight:800; } .wkpage .f { color:#fff; font-weight:900; background:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
         .wkpage .meta { display:grid; grid-template-columns:1fr 1fr; gap:2px 16px; font-size:11px; margin-bottom:4px; }
         .wkpage .legend { font-size:10px; margin-top:4px; } .wkpage .notes { font-size:10px; margin-top:8px; border-top:1px solid #444; padding-top:4px; }
         .wkpage .sign { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:16px; font-size:10.5px; } .wkpage .sign div { border-top:1px solid #444; padding-top:3px; }
@@ -313,22 +313,7 @@
         .wkpage.w2 th, .wkpage.w2 td { border:1.5px solid #666; background:#fff; padding:1px 3px; }
         .wkpage.w2 th b { font-weight:700; }
         .wkpage.w2 td.sn { width:4.5%; } .wkpage.w2 td.nm { width:34%; text-align:left; font-weight:700; font-size:9px; overflow-wrap:anywhere; }
-        .wkpage.w2 td { color:#777; } .wkpage.w2 td.p { color:#15803d; font-weight:800; } .wkpage.w2 td.f { color:#b00020; font-weight:900; background:#fde8e8; } .wkpage.w2 td.sn, .wkpage.w2 td.nm { color:#000; }
-        /* PDF / monochrome print: make FAIL cells unmistakable */
-        @media print {
-            .wkpage.w2, .wkpage.w2 * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .wkpage.w2 td.f {
-                background: #333333 !important;
-                color: #ffffff !important;
-                font-weight: 900 !important;
-                border: 2px solid #111111 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-        }
+        .wkpage.w2 td { color:#777; } .wkpage.w2 td.p { color:#15803d; font-weight:800; } .wkpage.w2 td.f { color:#fff; font-weight:900; background:#000; -webkit-print-color-adjust:exact; print-color-adjust:exact; } .wkpage.w2 td.sn, .wkpage.w2 td.nm { color:#000; }
         .w2 .leg2 { font-size:7.5px; margin-top:3px; }
         .w2 .days2 { display:grid; gap:6px; margin-top:8px; }
         .w2 .dbox { border:1.5px solid #888; padding:3px 5px; font-size:8.5px; line-height:1.2; }
@@ -2162,7 +2147,7 @@ function renderPills() {
   $('modelPillGroup').innerHTML = appSettings.models.map(m => pill(m, selectedModel === m, 'selectModel')).join('');
 }
 /* ---- the Inspect form follows the clock: today's date and the shift that is running now (until the person picks something by hand) ---- */
-const APP_VERSION = 'v10.4';
+const APP_VERSION = 'v10.5';
 let dsTouched = false, hiddenAt = 0;
 function autoDateShift() {
   if (editingId || dsTouched) return;
@@ -2832,7 +2817,7 @@ function drawSheetPdf(c, unit, mon) {
     pdfRect(c, cSN, ry, cNm, rh, { stroke: GRID }); pdfText(c, it.slice(4), cSN + 2.5, ry + 2, 6.75, true);
     data.forEach((d, k) => ['D', 'N'].forEach((sk, j) => {
       const x = cSN + cNm + (k * 2 + j) * sub, m = shiftMark(d.logs, sk, i);
-      pdfRect(c, x, ry, sub, rh, { stroke: GRID, fill: m.c === 'f' ? '#fde8e8' : null }); pdfTextC(c, m.t, x + sub / 2, ry + 1.9, 7.1, m.c !== '', m.c === 'p' ? '#15803d' : m.c === 'f' ? '#b00020' : '#777777');
+      pdfRect(c, x, ry, sub, rh, { stroke: GRID, fill: m.c === 'f' ? '#000000' : null }); pdfTextC(c, m.t, x + sub / 2, ry + 1.9, 7.1, m.c !== '', m.c === 'p' ? '#15803d' : m.c === 'f' ? '#ffffff' : '#777777');
     }));
   });
   y = ty + h1 + h2 + 21 * rh + 2.25;
